@@ -7,7 +7,7 @@
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteY="4dp">
+        >
 
         <TableRow
             android:layout_width="match_parent"
@@ -24,8 +24,6 @@
                 android:id="@+id/addMeasurementTimeLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
-
                 android:layout_weight="3"
                 android:text="2018-05-15 20:52:45" />
 
@@ -136,30 +134,27 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/addMeasurementsaveBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:layout_weight="1"
-                android:text="Save" />
-
-            <Button
                 android:id="@+id/addMeasuremeanCancelBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
                 android:layout_weight="1"
+                android:background="@android:color/darker_gray"
                 android:text="Cancel" />
+
+            <Button
+                android:id="@+id/addMeasurementsaveBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_weight="1"
+                android:background="#4CAF50"
+                android:text="Save" />
+
         </TableRow>
 
     </TableLayout>
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="3"
-        tools:layout_editor_absoluteX="598dp"
-        tools:layout_editor_absoluteY="0dp" />
+
 
 </android.support.constraint.ConstraintLayout>

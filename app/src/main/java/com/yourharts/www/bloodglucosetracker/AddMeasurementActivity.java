@@ -1,14 +1,20 @@
 package com.yourharts.www.bloodglucosetracker;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.yourharts.www.Adapters.GenericSpinnerAdapter;
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
@@ -17,11 +23,17 @@ import com.yourharts.www.Models.BloodMeasurementModel;
 import com.yourharts.www.Models.DataModelInterface;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-public class AddMeasurementActivity extends AppCompatActivity {
+import static java.time.ZoneId.*;
+
+public class AddMeasurementActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private DBHelper mDbHelper;
     private DateFormat dbDateFormat;
     private Spinner mMeasurementUnitsDropdown;
@@ -35,6 +47,13 @@ public class AddMeasurementActivity extends AppCompatActivity {
     private boolean mIsEditMode;
     private BloodMeasurementModel mDataModel;
     private GlucoseMeasurementAdapter mGlucoseMEasurementAdapter;
+
+    private int _year;
+    private int _month;
+    private int _dayOfMonth;
+    private int _hour;
+    private int _minute;
+    private int _seconds;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +91,16 @@ public class AddMeasurementActivity extends AppCompatActivity {
 
         //Get defaults
         int currentCount = 0;
+
         int defaultMeasurementUnitID = 1;
         int defaultCorrectiveDrugID = 1;
         int defaultBaselineDrugID=1;
+
+        SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
+        defaultBaselineDrugID = sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
+        defaultCorrectiveDrugID = sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
+        defaultMeasurementUnitID = sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
+
         if(mDataModel != null)
         {
             mGlucoseAmountTB.setText(String.format(getString(R.string.decimal_format),mDataModel.getGlucoseMeasurement()));
@@ -95,7 +121,7 @@ public class AddMeasurementActivity extends AppCompatActivity {
                         break;
                     }
                 }
-                if (dmi.getID() == mDataModel.getGlucoseMeasurementUnitID()) {
+                else if (dmi.getID() == mDataModel.getGlucoseMeasurementUnitID()) {
                     mMeasurementUnitsDropdown.setSelection(currentCount);
                     break;
                 }
@@ -113,7 +139,7 @@ public class AddMeasurementActivity extends AppCompatActivity {
                 }
             }
 
-            if(dmi.getID() == mDataModel.getCorrectiveDoseType()){
+            else if(dmi.getID() == mDataModel.getCorrectiveDoseType()){
                 mCorrectiveDoseDrugDropdown.setSelection(currentCount);
                 break;
             }
@@ -129,7 +155,7 @@ public class AddMeasurementActivity extends AppCompatActivity {
                 }
             }
 
-            if(dmi.getID() == mDataModel.getBaselineDoseType()){
+            else if(dmi.getID() == mDataModel.getBaselineDoseType()){
                 mbaselineDoseDrugDropdown.setSelection(currentCount);
                 break;
             }
@@ -158,7 +184,31 @@ public class AddMeasurementActivity extends AppCompatActivity {
                 }
             }
         });
+        mDateLbl.setOnClickListener(new View.OnClickListener(){
 
+            @Override
+            public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                _year = cal.get(Calendar.YEAR);
+                _month = cal.get(Calendar.MONTH)+1;
+                _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+
+                if(mIsEditMode && mDataModel != null)
+                {
+                    try {
+                        Date modelDate = dbDateFormat.parse(mDataModel.getGlucoseMeasurementDate());
+                        cal.setTime(modelDate);
+                        _year = cal.get(Calendar.YEAR);
+                        _month = cal.get(Calendar.MONTH)+1;
+                        _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                DatePickerDialog dpd = new DatePickerDialog(AddMeasurementActivity.this, AddMeasurementActivity.this, _year, _month, _dayOfMonth);
+                dpd.show();
+            }
+        });
     }
     @Override
     public void onStop()
@@ -187,6 +237,7 @@ public class AddMeasurementActivity extends AppCompatActivity {
                 {
                     return false;
                 }
+                String selectedDate = _year+"-"+_month+"-"+_dayOfMonth+" "+_hour+":"+_minute;
                 BloodMeasurementModel dataModel = new BloodMeasurementModel(
                         mIsEditMode ? mDataModel.getID() : 0,
                         glucoseMeasurement,
@@ -198,7 +249,14 @@ public class AddMeasurementActivity extends AppCompatActivity {
                         ((DataModelInterface)mbaselineDoseDrugDropdown.getSelectedItem()).getID(),
                         mNotesTB.getText().toString());
 
+
                     retval = mDbHelper.AddGlucoseMeasurement(dataModel);
+                SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putInt(getString(R.string.defaultMeasuremntUnitID), dataModel.getGlucoseMeasurementUnitID());
+                editor.putInt(getString(R.string.defaultBaselineDrugID), dataModel.getBaselineDoseType());
+                editor.putInt(getString(R.string.defaultCorrectiveDrugID), dataModel.getCorrectiveDoseType());
+                editor.commit();
 
             }
             catch (Exception e){
@@ -226,6 +284,47 @@ public class AddMeasurementActivity extends AppCompatActivity {
 
     public void setDataModel(BloodMeasurementModel mDataModel) {
         this.mDataModel = mDataModel;
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        _year = year;
+        _month = month;
+        _dayOfMonth = dayOfMonth;
+
+
+        Calendar cal = Calendar.getInstance();
+        _minute = cal.get(Calendar.MINUTE);
+        _hour = cal.get(Calendar.HOUR);
+        _seconds = cal.get(Calendar.SECOND);
+
+        if(mIsEditMode && mDataModel != null)
+        {
+            try {
+                Date modelDate = dbDateFormat.parse(mDataModel.getGlucoseMeasurementDate());
+                cal.setTime(modelDate);
+                _minute = cal.get(Calendar.MINUTE);
+                _hour = cal.get(Calendar.HOUR);
+                _seconds = cal.get(Calendar.SECOND);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        TimePickerDialog tpd = new TimePickerDialog(AddMeasurementActivity.this, AddMeasurementActivity.this,_hour, _minute,true );
+        tpd.show();
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        _hour = hourOfDay;
+        _minute = minute;
+
+
+        String output = String.format("%d-%02d-%02d %02d:%02d",_year,_month+1, _dayOfMonth, _hour, _minute);
+        //String selectedDate = _year+"-"+_month+"-"+_dayOfMonth+" "+_hour+":"+_minute;
+        mDateLbl.setText(output);
+
     }
 }
 

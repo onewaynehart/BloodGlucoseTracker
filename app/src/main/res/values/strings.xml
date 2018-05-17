@@ -5,4 +5,7 @@
     <string name="deleteYesBtn">Delete It!</string>
     <string name="database_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="decimal_format">%.1f</string>
+    <string name="defaultCorrectiveDrugID">DEFAULT_CORRECTIVE_DRUG_ID</string>
+    <string name="defaultBaselineDrugID">DEFAULT_BASELINE_DRUG_ID</string>
+    <string name="defaultMeasuremntUnitID">DEFAULT_MEASUREMENT_UNIT_ID</string>
 </resources>
