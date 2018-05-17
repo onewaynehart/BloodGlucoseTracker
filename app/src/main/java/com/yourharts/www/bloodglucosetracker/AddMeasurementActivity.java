@@ -77,7 +77,7 @@ public class AddMeasurementActivity extends AppCompatActivity {
         int defaultBaselineDrugID=1;
         if(mDataModel != null)
         {
-            mGlucoseAmountTB.setText(String.format("%.1f",mDataModel.getGlucoseMeasurement()));
+            mGlucoseAmountTB.setText(String.format(getString(R.string.decimal_format),mDataModel.getGlucoseMeasurement()));
             mCorrectiveDrugAmountTB.setText(String.format("%.1f",mDataModel.getCorrectiveDoseAmount()));
             mbaselineDrugAmountTB.setText(String.format("%.1f",mDataModel.getBaselineDoseAmount()));
             mDateLbl.setText(mDataModel.getGlucoseMeasurementDate());
