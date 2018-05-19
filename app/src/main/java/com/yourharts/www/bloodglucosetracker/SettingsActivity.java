@@ -63,7 +63,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     }
 
-    public static class MainPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static  class MainPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
         private ListPreference _glucoseUnitsLP;
         private ListPreference _correctiveDrugTypeLP;
         private ListPreference _baselineDrugTypeLP;
@@ -73,12 +73,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_main);
-            _sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            _sharedPref = getActivity().getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
             _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath());
 
-            _glucoseUnitsLP = (ListPreference) findPreference("PREF_GLUCOSE_UNITS");
-            _correctiveDrugTypeLP = (ListPreference) findPreference("PREF_CORRECTIVE_DRUG") ;
-            _baselineDrugTypeLP = (ListPreference) findPreference("PREF_BASEILINE_DRUG") ;
+            _glucoseUnitsLP = (ListPreference) findPreference(getString(R.string.defaultMeasuremntUnitID));
+            _correctiveDrugTypeLP = (ListPreference) findPreference(getString(R.string.defaultCorrectiveDrugID));
+            _baselineDrugTypeLP = (ListPreference) findPreference(getString(R.string.defaultBaselineDrugID)) ;
             setDefaults();
 
 
@@ -158,14 +158,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
 
-        private static void updateListPrefSummary_PREF_LIST(ListPreference preference){
+        private  void updateListPrefSummary_PREF_LIST(ListPreference preference){
             CharSequence entry = preference.getEntry();
             preference.setSummary("Units: " + entry);
         }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if(key.equals("PREF_GLUCOSE_UNITS")) {
+            if(key.equals(getString(R.string.defaultMeasuremntUnitID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int measurementTypeID = 0;
                 try {
@@ -179,7 +179,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 }
             }
-            if(key.equals("PREF_CORRECTIVE_DRUG")) {
+            if(key.equals(getString(R.string.defaultCorrectiveDrugID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int correctiveDrugID = 0;
                 try {
@@ -193,7 +193,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 }
             }
-            if(key.equals("PREF_BASEILINE_DRUG")) {
+            if(key.equals(getString(R.string.defaultBaselineDrugID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int baselineDrugID = 0;
                 try {

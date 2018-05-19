@@ -23,7 +23,7 @@
         <ListPreference
             android:defaultValue="1"
 
-            android:key="PREF_BASEILINE_DRUG"
+            android:key="PREF_BASELINE_DRUG"
             android:summary="test"
             android:title="Default Baseline Drug" />
     </PreferenceCategory>

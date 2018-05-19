@@ -5,9 +5,9 @@
     <string name="deleteYesBtn">Delete It!</string>
     <string name="database_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="decimal_format">%.1f</string>
-    <string name="defaultCorrectiveDrugID">DEFAULT_CORRECTIVE_DRUG_ID</string>
-    <string name="defaultBaselineDrugID">DEFAULT_BASELINE_DRUG_ID</string>
-    <string name="defaultMeasuremntUnitID">DEFAULT_MEASUREMENT_UNIT_ID</string>
+    <string name="defaultCorrectiveDrugID">PREF_CORRECTIVE_DRUG</string>
+    <string name="defaultBaselineDrugID">PREF_BASELINE_DRUG</string>
+    <string name="defaultMeasuremntUnitID">PREF_GLUCOSE_UNITS</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -81,4 +81,5 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_file_key">ALL_PREFERENCES</string>
 </resources>

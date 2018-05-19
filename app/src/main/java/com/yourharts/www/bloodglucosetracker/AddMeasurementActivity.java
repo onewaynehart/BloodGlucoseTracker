@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -43,7 +44,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     private boolean mIsEditMode;
     private BloodMeasurementModel mDataModel;
     private GlucoseMeasurementAdapter mGlucoseMEasurementAdapter;
-
+    private SharedPreferences _sharedPref;
     private int _year;
     private int _month;
     private int _dayOfMonth;
@@ -85,7 +86,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
             mDataModel = mDbHelper.getBloodMeasurement(modelID);
 
         }
-
+        _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
         SetInitialValues();
         setupOnClickListeners();
@@ -94,10 +95,10 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     }
 
     private void SetInitialValues() {
-        SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
-        int defaultBaselineDrugID = sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
-        int defaultCorrectiveDrugID = sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
-        int defaultMeasurementUnitID = sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
+
+        int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
+        int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
+        int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
 
         //Use defaults
         if (!mIsEditMode) {
@@ -209,11 +210,12 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
 
 
             retval = mDbHelper.AddGlucoseMeasurement(dataModel);
-            SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
+
+            SharedPreferences.Editor editor = _sharedPref.edit();
             editor.putInt(getString(R.string.defaultMeasuremntUnitID), dataModel.getGlucoseMeasurementUnitID());
             editor.putInt(getString(R.string.defaultBaselineDrugID), dataModel.getBaselineDoseType());
             editor.putInt(getString(R.string.defaultCorrectiveDrugID), dataModel.getCorrectiveDoseType());
+            editor.apply();
             editor.commit();
 
         } catch (Exception e) {
