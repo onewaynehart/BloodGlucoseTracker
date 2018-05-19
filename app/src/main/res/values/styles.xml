@@ -27,7 +27,4 @@
         <item name="android:background">#4CAF50</item>
     </style>
 
-    <style name="Theme"></style>
-
-    <style name="ThemeOverlay"></style>
 </resources>
