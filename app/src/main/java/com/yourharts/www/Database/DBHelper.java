@@ -90,11 +90,30 @@ public class DBHelper  extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-
+    public int getPosition(List<DataModelInterface>items,String itemString){
+        int retval = -1;
+        for(int count = 0 ; count <items.size(); count++){
+            if(items.get(count).getString().equals(itemString)){
+                retval= count;
+                break;
+            }
+        }
+        return retval;
+    }
+    public int getPosition(List<DataModelInterface>items,int itemID){
+        int retval = -1;
+        for(int count = 0 ; count <items.size(); count++){
+            if(items.get(count).getID() == itemID){
+                retval= count;
+                break;
+            }
+        }
+        return retval;
+    }
     public List<DataModelInterface> getMeasurementUnits()
     {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DatabaseLocation, null, SQLiteDatabase.OPEN_READONLY);
-        String query = "SELECT id, UnitName FROM GlucoseUnitTypes Order By UnitName ASC";
+        String query = "SELECT id, UnitName FROM GlucoseUnitTypes" + " Order By UnitName ASC";
         Cursor cursor = db.rawQuery(query, null);
         List<DataModelInterface> retval = new ArrayList<DataModelInterface>();
         while(cursor.moveToNext()) {

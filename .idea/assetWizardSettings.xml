@@ -14,8 +14,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_alert" />
-                            <entry key="sourceFile" value="C:\Users\Wayne\Desktop\icons\alert.svg" />
+                            <entry key="outputName" value="ic_database" />
+                            <entry key="sourceFile" value="C:\Users\Wayne\Desktop\icons\database.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:icon="@drawable/ic_database"
+        android:title="User Defaults">
+
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+
+            android:key="PREF_GLUCOSE_UNITS"
+            android:summary="test"
+            android:title="Default glucose measurement unit" />
+        <ListPreference
+            android:defaultValue="1"
+
+            android:key="PREF_CORRECTIVE_DRUG"
+            android:summary="test"
+            android:title="Default Corrective Drug" />
+        <ListPreference
+            android:defaultValue="1"
+
+            android:key="PREF_BASEILINE_DRUG"
+            android:summary="test"
+            android:title="Default Baseline Drug" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:icon="@drawable/ic_sync_black_24dp"
+        android:title="Data Import/Export">
+
+    </PreferenceCategory>
+
+
+
+
+</PreferenceScreen>

@@ -25,13 +25,9 @@ import com.yourharts.www.Models.DataModelInterface;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static java.time.ZoneId.*;
 
 public class AddMeasurementActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private DBHelper mDbHelper;
@@ -54,6 +50,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     private int _hour;
     private int _minute;
     private int _seconds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,123 +80,82 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
         mbaselineDoseDrugDropdown.setAdapter(baselineDrugsAdapter);
         mMeasurementUnitsDropdown.setAdapter(unitsAdapter);
         int modelID = getIntent().getIntExtra("ID", 0);
-        if(modelID >0){
+        if (modelID > 0) {
             mIsEditMode = true;
             mDataModel = mDbHelper.getBloodMeasurement(modelID);
 
         }
 
-        //Get defaults
-        int currentCount = 0;
 
-        int defaultMeasurementUnitID = 1;
-        int defaultCorrectiveDrugID = 1;
-        int defaultBaselineDrugID=1;
+        SetInitialValues();
+        setupOnClickListeners();
 
+
+    }
+
+    private void SetInitialValues() {
         SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
-        defaultBaselineDrugID = sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
-        defaultCorrectiveDrugID = sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
-        defaultMeasurementUnitID = sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
+        int defaultBaselineDrugID = sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
+        int defaultCorrectiveDrugID = sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
+        int defaultMeasurementUnitID = sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
 
-        if(mDataModel != null)
+        //Use defaults
+        if (!mIsEditMode) {
+            mDateLbl.setText(dbDateFormat.format(Calendar.getInstance().getTime()));
+            mMeasurementUnitsDropdown.setSelection(((GenericSpinnerAdapter)mMeasurementUnitsDropdown.getAdapter()).getPosition(defaultMeasurementUnitID));
+            mCorrectiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mCorrectiveDoseDrugDropdown.getAdapter()).getPosition(defaultCorrectiveDrugID));
+            mbaselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mbaselineDoseDrugDropdown.getAdapter()).getPosition(defaultBaselineDrugID));
+        }
+        //Use existing model
+        else
         {
-            mGlucoseAmountTB.setText(String.format(getString(R.string.decimal_format),mDataModel.getGlucoseMeasurement()));
-            mCorrectiveDrugAmountTB.setText(String.format("%.1f",mDataModel.getCorrectiveDoseAmount()));
-            mbaselineDrugAmountTB.setText(String.format("%.1f",mDataModel.getBaselineDoseAmount()));
+            mGlucoseAmountTB.setText(String.format(getString(R.string.decimal_format), mDataModel.getGlucoseMeasurement()));
+            mCorrectiveDrugAmountTB.setText(String.format("%.1f", mDataModel.getCorrectiveDoseAmount()));
+            mbaselineDrugAmountTB.setText(String.format("%.1f", mDataModel.getBaselineDoseAmount()));
             mDateLbl.setText(mDataModel.getGlucoseMeasurementDate());
             mNotesTB.setText(mDataModel.getNotes());
+            mMeasurementUnitsDropdown.setSelection(((GenericSpinnerAdapter)mMeasurementUnitsDropdown.getAdapter()).getPosition(mDataModel.getGlucoseMeasurementUnitID()));
+            mCorrectiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mCorrectiveDoseDrugDropdown.getAdapter()).getPosition(getDataModel().getCorrectiveDoseType()));
+            mbaselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mbaselineDoseDrugDropdown.getAdapter()).getPosition(mDataModel.getBaselineDoseType()));
         }
 
-        //Set defaults
-        if(!mIsEditMode)
-            mDateLbl.setText(dbDateFormat.format( Calendar.getInstance().getTime()));
+    }
 
-        for(DataModelInterface dmi : ((GenericSpinnerAdapter)mMeasurementUnitsDropdown.getAdapter()).getDataset()) {
-            if (!mIsEditMode) {
-                    if (dmi.getID() == defaultMeasurementUnitID) {
-                        mMeasurementUnitsDropdown.setSelection(currentCount);
-                        break;
-                    }
-                }
-                else if (dmi.getID() == mDataModel.getGlucoseMeasurementUnitID()) {
-                    mMeasurementUnitsDropdown.setSelection(currentCount);
-                    break;
-                }
-
-                currentCount++;
-
-        }
-        currentCount = 0;
-        for(DataModelInterface dmi : ((GenericSpinnerAdapter)mCorrectiveDoseDrugDropdown.getAdapter()).getDataset())
-        {
-            if(!mIsEditMode) {
-                if (dmi.getID() == defaultCorrectiveDrugID) {
-                    mCorrectiveDoseDrugDropdown.setSelection(currentCount);
-                    break;
-                }
-            }
-
-            else if(dmi.getID() == mDataModel.getCorrectiveDoseType()){
-                mCorrectiveDoseDrugDropdown.setSelection(currentCount);
-                break;
-            }
-            currentCount++;
-        }
-        currentCount = 0;
-        for(DataModelInterface dmi : ((GenericSpinnerAdapter)mbaselineDoseDrugDropdown.getAdapter()).getDataset())
-        {
-            if(!mIsEditMode){
-                    if (dmi.getID() == defaultBaselineDrugID){
-                    mbaselineDoseDrugDropdown.setSelection(currentCount);
-                    break;
-                }
-            }
-
-            else if(dmi.getID() == mDataModel.getBaselineDoseType()){
-                mbaselineDoseDrugDropdown.setSelection(currentCount);
-                break;
-            }
-
-            currentCount++;
-        }
-
-
-
+    private void setupOnClickListeners() {
         //Button clicks
         Button cancelBtn = findViewById(R.id.addMeasuremeanCancelBtn);
         Button saveBtn = findViewById(R.id.addMeasurementsaveBtn);
 
-        cancelBtn.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 finish();
             }
         });
 
-        saveBtn.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                if(saveData()){
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (saveData()) {
                     Intent intent = new Intent(AddMeasurementActivity.this, MainActivity.class);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
             }
         });
-        mDateLbl.setOnClickListener(new View.OnClickListener(){
+        mDateLbl.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Calendar cal = Calendar.getInstance();
                 _year = cal.get(Calendar.YEAR);
-                _month = cal.get(Calendar.MONTH)+1;
+                _month = cal.get(Calendar.MONTH) + 1;
                 _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 
-                if(mIsEditMode && mDataModel != null)
-                {
+                if (mIsEditMode && mDataModel != null) {
                     try {
                         Date modelDate = dbDateFormat.parse(mDataModel.getGlucoseMeasurementDate());
                         cal.setTime(modelDate);
                         _year = cal.get(Calendar.YEAR);
-                        _month = cal.get(Calendar.MONTH)+1;
+                        _month = cal.get(Calendar.MONTH) + 1;
                         _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -210,58 +166,59 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
             }
         });
     }
+
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         this.setResult(RESULT_OK);
     }
-
+    @Override
+    public void onResume(){
+        super.onResume();
+        SetInitialValues();
+    }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         this.setResult(RESULT_OK);
     }
-    private boolean saveData()
-    {
-            boolean retval = false;
-            try {
-                double glucoseMeasurement = mGlucoseAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mGlucoseAmountTB.getText().toString());
-                double correctiveDoseAmount = mCorrectiveDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mCorrectiveDrugAmountTB.getText().toString());
-                double baselineDoseAmount = mbaselineDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mbaselineDrugAmountTB.getText().toString());
+
+    private boolean saveData() {
+        boolean retval = false;
+        try {
+            double glucoseMeasurement = mGlucoseAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mGlucoseAmountTB.getText().toString());
+            double correctiveDoseAmount = mCorrectiveDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mCorrectiveDrugAmountTB.getText().toString());
+            double baselineDoseAmount = mbaselineDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mbaselineDrugAmountTB.getText().toString());
 
 
-                if(glucoseMeasurement == 0)
-                {
-                    return false;
-                }
-                String selectedDate = _year+"-"+_month+"-"+_dayOfMonth+" "+_hour+":"+_minute;
-                BloodMeasurementModel dataModel = new BloodMeasurementModel(
-                        mIsEditMode ? mDataModel.getID() : 0,
-                        glucoseMeasurement,
-                        ((DataModelInterface)mMeasurementUnitsDropdown.getSelectedItem()).getID(),
-                        mDateLbl.getText().toString(),
-                        correctiveDoseAmount,
-                        ((DataModelInterface)mCorrectiveDoseDrugDropdown.getSelectedItem()).getID(),
-                        baselineDoseAmount,
-                        ((DataModelInterface)mbaselineDoseDrugDropdown.getSelectedItem()).getID(),
-                        mNotesTB.getText().toString());
-
-
-                    retval = mDbHelper.AddGlucoseMeasurement(dataModel);
-                SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt(getString(R.string.defaultMeasuremntUnitID), dataModel.getGlucoseMeasurementUnitID());
-                editor.putInt(getString(R.string.defaultBaselineDrugID), dataModel.getBaselineDoseType());
-                editor.putInt(getString(R.string.defaultCorrectiveDrugID), dataModel.getCorrectiveDoseType());
-                editor.commit();
-
+            if (glucoseMeasurement == 0) {
+                return false;
             }
-            catch (Exception e){
-                retval  =false;
-            }
+
+            BloodMeasurementModel dataModel = new BloodMeasurementModel(
+                    mIsEditMode ? mDataModel.getID() : 0,
+                    glucoseMeasurement,
+                    ((DataModelInterface) mMeasurementUnitsDropdown.getSelectedItem()).getID(),
+                    mDateLbl.getText().toString(),
+                    correctiveDoseAmount,
+                    ((DataModelInterface) mCorrectiveDoseDrugDropdown.getSelectedItem()).getID(),
+                    baselineDoseAmount,
+                    ((DataModelInterface) mbaselineDoseDrugDropdown.getSelectedItem()).getID(),
+                    mNotesTB.getText().toString());
+
+
+            retval = mDbHelper.AddGlucoseMeasurement(dataModel);
+            SharedPreferences sharedPref = AddMeasurementActivity.this.getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt(getString(R.string.defaultMeasuremntUnitID), dataModel.getGlucoseMeasurementUnitID());
+            editor.putInt(getString(R.string.defaultBaselineDrugID), dataModel.getBaselineDoseType());
+            editor.putInt(getString(R.string.defaultCorrectiveDrugID), dataModel.getCorrectiveDoseType());
+            editor.commit();
+
+        } catch (Exception e) {
+            retval = false;
+        }
         return retval;
     }
 
@@ -298,8 +255,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
         _hour = cal.get(Calendar.HOUR);
         _seconds = cal.get(Calendar.SECOND);
 
-        if(mIsEditMode && mDataModel != null)
-        {
+        if (mIsEditMode && mDataModel != null) {
             try {
                 Date modelDate = dbDateFormat.parse(mDataModel.getGlucoseMeasurementDate());
                 cal.setTime(modelDate);
@@ -311,7 +267,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
             }
         }
 
-        TimePickerDialog tpd = new TimePickerDialog(AddMeasurementActivity.this, AddMeasurementActivity.this,_hour, _minute,true );
+        TimePickerDialog tpd = new TimePickerDialog(AddMeasurementActivity.this, AddMeasurementActivity.this, _hour, _minute, true);
         tpd.show();
     }
 
@@ -319,10 +275,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         _hour = hourOfDay;
         _minute = minute;
-
-
-        String output = String.format("%d-%02d-%02d %02d:%02d",_year,_month+1, _dayOfMonth, _hour, _minute);
-        //String selectedDate = _year+"-"+_month+"-"+_dayOfMonth+" "+_hour+":"+_minute;
+        String output = String.format("%d-%02d-%02d %02d:%02d", _year, _month + 1, _dayOfMonth, _hour, _minute);
         mDateLbl.setText(output);
 
     }
