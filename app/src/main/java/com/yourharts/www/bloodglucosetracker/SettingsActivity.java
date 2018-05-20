@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 import com.yourharts.www.Database.DBHelper;
@@ -21,6 +22,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private ListPreference _glucoseUnitsLP;
         private ListPreference _correctiveDrugTypeLP;
         private ListPreference _baselineDrugTypeLP;
+        private SwitchPreference _useLastAsDefaultSw;
         private DBHelper _dbHelper;
         private SharedPreferences _sharedPref;
         @Override
@@ -30,9 +32,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             _sharedPref = getActivity().getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
             _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath());
 
-            _glucoseUnitsLP = (ListPreference) findPreference(getString(R.string.defaultMeasuremntUnitID));
-            _correctiveDrugTypeLP = (ListPreference) findPreference(getString(R.string.defaultCorrectiveDrugID));
-            _baselineDrugTypeLP = (ListPreference) findPreference(getString(R.string.defaultBaselineDrugID)) ;
+            _glucoseUnitsLP = (ListPreference) findPreference(getString(R.string.pref_defaultMeasurementUnitID));
+            _correctiveDrugTypeLP = (ListPreference) findPreference(getString(R.string.pref_defaultCorrectiveDrugID));
+            _baselineDrugTypeLP = (ListPreference) findPreference(getString(R.string.pref_defaultBaselineDrugID)) ;
+            _useLastAsDefaultSw = (SwitchPreference)findPreference(getString(R.string.pref_use_last_as_default));
             setDefaults();
         }
         private void setDefaults() {
@@ -51,9 +54,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             CharSequence[] baselineDrugNames = new CharSequence[baselineDrugs.size()];
             CharSequence[] baselineDrugIDs = new CharSequence[baselineDrugs.size()];
 
-            int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
-            int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
-            int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
+            int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.pref_defaultMeasurementUnitID), 1);
+            int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
+            int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.pref_defaultBaselineDrugID), 1);
             int count = 0;
             for(DataModelInterface dmi : glucoseMeasurementTypes)
             {
@@ -116,12 +119,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if(key.equals(getString(R.string.defaultMeasuremntUnitID))) {
+            if(key.equals(getString(R.string.pref_defaultMeasurementUnitID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int measurementTypeID = 0;
                 try {
                     measurementTypeID = Integer.parseInt(_glucoseUnitsLP.getValue());
-                    editor.putInt(getString(R.string.defaultMeasuremntUnitID), measurementTypeID);
+                    editor.putInt(getString(R.string.pref_defaultMeasurementUnitID), measurementTypeID);
                     editor.apply();
                     editor.commit();
                     updateListPrefSummary_PREF_LIST(_glucoseUnitsLP);
@@ -130,12 +133,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 }
             }
-            if(key.equals(getString(R.string.defaultCorrectiveDrugID))) {
+            if(key.equals(getString(R.string.pref_defaultCorrectiveDrugID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int correctiveDrugID = 0;
                 try {
                     correctiveDrugID = Integer.parseInt(_correctiveDrugTypeLP.getValue());
-                    editor.putInt(getString(R.string.defaultCorrectiveDrugID), correctiveDrugID);
+                    editor.putInt(getString(R.string.pref_defaultCorrectiveDrugID), correctiveDrugID);
                     editor.apply();
                     editor.commit();
                     updateListPrefSummary_PREF_LIST(_correctiveDrugTypeLP);
@@ -144,15 +147,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 }
             }
-            if(key.equals(getString(R.string.defaultBaselineDrugID))) {
+            if(key.equals(getString(R.string.pref_defaultBaselineDrugID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int baselineDrugID = 0;
                 try {
                     baselineDrugID = Integer.parseInt(_baselineDrugTypeLP.getValue());
-                    editor.putInt(getString(R.string.defaultBaselineDrugID), baselineDrugID);
+                    editor.putInt(getString(R.string.pref_defaultBaselineDrugID), baselineDrugID);
                     editor.apply();
                     editor.commit();
                     updateListPrefSummary_PREF_LIST(_baselineDrugTypeLP);
+                }
+                catch(Exception e){
+
+                }
+            }
+            if(key.equals(getString(R.string.pref_use_last_as_default))) {
+                SharedPreferences.Editor editor = _sharedPref.edit();
+                boolean useLastAsDefault = false;
+                try {
+                    useLastAsDefault = _useLastAsDefaultSw.isChecked();
+                    editor.putBoolean(getString(R.string.pref_use_last_as_default), useLastAsDefault);
+                    editor.apply();
+                    editor.commit();
                 }
                 catch(Exception e){
 

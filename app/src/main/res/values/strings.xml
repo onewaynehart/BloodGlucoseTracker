@@ -4,9 +4,10 @@
     <string name="deleteYesBtn">Delete It!</string>
     <string name="database_date_format">yyyy-MM-dd HH:mm:ss</string>
     <string name="decimal_format">%.1f</string>
-    <string name="defaultCorrectiveDrugID">PREF_CORRECTIVE_DRUG</string>
-    <string name="defaultBaselineDrugID">PREF_BASELINE_DRUG</string>
-    <string name="defaultMeasuremntUnitID">PREF_GLUCOSE_UNITS</string>
+    <string name="pref_defaultCorrectiveDrugID">PREF_CORRECTIVE_DRUG</string>
+    <string name="pref_defaultBaselineDrugID">PREF_BASELINE_DRUG</string>
+    <string name="pref_defaultMeasurementUnitID">PREF_GLUCOSE_UNITS</string>
+    <string name="pref_use_last_as_default">PREF_LAST_ENTRY_DEFAULT</string>
     <string name="title_activity_settings">Settings</string>
     <string name="pref_file_key">ALL_PREFERENCES</string>
 </resources>

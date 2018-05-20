@@ -18,8 +18,6 @@ import com.yourharts.www.bloodglucosetracker.AddMeasurementActivity;
 import com.yourharts.www.bloodglucosetracker.MainActivity;
 import com.yourharts.www.bloodglucosetracker.R;
 
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -143,7 +141,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
                             public void onClick(DialogInterface dialog, int which) {
                                 // continue with delete
                                 BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                                if(mActivity.getmDbHelper().DeleteMeasurementRecord(model.getID())==true)
+                                if(mActivity.getmDbHelper().deleteMeasurementRecord(model.getID())==true)
                                     removeAt(getAdapterPosition());
                             }
                         });

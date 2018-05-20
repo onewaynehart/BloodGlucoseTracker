@@ -43,8 +43,6 @@ public class DBHelper  extends SQLiteOpenHelper {
 
             if(!checkDataBase())
                 copyDataBase();
-
-
     }
     private boolean checkDataBase() {
         boolean checkDB = false;
@@ -175,11 +173,10 @@ public class DBHelper  extends SQLiteOpenHelper {
         db.close();
         return retval;
     }
-    public boolean DeleteMeasurementRecord(int ID)
+    public boolean deleteMeasurementRecord(int ID)
     {
         boolean retval = false;
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DatabaseLocation, null, SQLiteDatabase.OPEN_READWRITE);
-        String query = "SELECT * FROM GlucoseMeasurement where ID = "+ID;
         try{
             db.delete("GlucoseMeasurement", "ID = "+ID, null);
             db.close();
@@ -191,7 +188,18 @@ public class DBHelper  extends SQLiteOpenHelper {
         }
         return retval;
     }
-    public boolean AddGlucoseMeasurement(BloodMeasurementModel model){
+    public void deleteAllMeasurementRecords()
+    {
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(DatabaseLocation, null, SQLiteDatabase.OPEN_READWRITE);
+
+        try{
+            db.delete("GlucoseMeasurement", null, null);
+            db.close();
+        }
+        catch (Exception e){
+        }
+    }
+    public boolean addGlucoseMeasurement(BloodMeasurementModel model){
         boolean retval = false;
         String tableName = "GlucoseMeasurement";
         String col_1 = "GlucoseMeasurement";

@@ -12,26 +12,29 @@
             android:defaultValue="1"
 
             android:key="PREF_GLUCOSE_UNITS"
-            android:summary="test"
+
             android:title="Default glucose measurement unit" />
         <ListPreference
             android:defaultValue="1"
 
             android:key="PREF_CORRECTIVE_DRUG"
-            android:summary="test"
+
             android:title="Default Corrective Drug" />
         <ListPreference
             android:defaultValue="1"
 
             android:key="PREF_BASELINE_DRUG"
-            android:summary="test"
+
             android:title="Default Baseline Drug" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="PREF_LAST_ENTRY_DEFAULT"
+            android:title="Use last entry as defaults" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="Data Import/Export">
-
     </PreferenceCategory>
 
 

@@ -18,14 +18,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="When:" />
+                android:text="When:"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/addMeasurementTimeLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:text="2018-05-15 20:52:45" />
+                android:text="2018-05-15 20:52:45"
+                android:textSize="18sp" />
 
         </TableRow>
 
@@ -46,7 +48,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"
+
+                android:focusedByDefault="true"/>
 
             <Spinner
                 android:id="@+id/measurementUnitsDropDown"
@@ -148,7 +153,7 @@
                 android:layout_height="wrap_content"
 
                 android:layout_weight="1"
-                android:background="#4CAF50"
+                android:background="?android:attr/colorPrimary"
                 android:text="Save" />
 
         </TableRow>

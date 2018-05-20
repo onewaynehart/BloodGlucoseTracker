@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -96,9 +95,9 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
 
     private void SetInitialValues() {
 
-        int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.defaultBaselineDrugID), 1);
-        int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.defaultCorrectiveDrugID), 1);
-        int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.defaultMeasuremntUnitID), 1);
+        int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.pref_defaultBaselineDrugID), 1);
+        int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
+        int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.pref_defaultMeasurementUnitID), 1);
 
         //Use defaults
         if (!mIsEditMode) {
@@ -209,14 +208,17 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
                     mNotesTB.getText().toString());
 
 
-            retval = mDbHelper.AddGlucoseMeasurement(dataModel);
+            retval = mDbHelper.addGlucoseMeasurement(dataModel);
 
-            SharedPreferences.Editor editor = _sharedPref.edit();
-            editor.putInt(getString(R.string.defaultMeasuremntUnitID), dataModel.getGlucoseMeasurementUnitID());
-            editor.putInt(getString(R.string.defaultBaselineDrugID), dataModel.getBaselineDoseType());
-            editor.putInt(getString(R.string.defaultCorrectiveDrugID), dataModel.getCorrectiveDoseType());
-            editor.apply();
-            editor.commit();
+            boolean useLastAsDefault = _sharedPref.getBoolean(getString(R.string.pref_use_last_as_default), false);
+            if(useLastAsDefault) {
+                SharedPreferences.Editor editor = _sharedPref.edit();
+                editor.putInt(getString(R.string.pref_defaultMeasurementUnitID), dataModel.getGlucoseMeasurementUnitID());
+                editor.putInt(getString(R.string.pref_defaultBaselineDrugID), dataModel.getBaselineDoseType());
+                editor.putInt(getString(R.string.pref_defaultCorrectiveDrugID), dataModel.getCorrectiveDoseType());
+                editor.apply();
+                editor.commit();
+            }
 
         } catch (Exception e) {
             retval = false;

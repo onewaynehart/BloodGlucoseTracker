@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
