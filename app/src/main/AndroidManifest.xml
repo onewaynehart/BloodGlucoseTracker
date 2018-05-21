@@ -23,7 +23,8 @@
             android:name=".AddMeasurementActivity"
             android:label="@string/title_activity_add_measurement"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.yourharts.www.Database.DBHelper;
@@ -25,6 +26,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
     @NonNull
     private List<BloodMeasurementModel> mDataset;
     private MainActivity mActivity;
+    private TableRow _notesRow;
     public GlucoseMeasurementAdapter(List<BloodMeasurementModel> dataSet){
         mDataset = dataSet;
     }
@@ -39,6 +41,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         holder.getmNotes().setText(model.getNotes());
 
         DBHelper dbHelper = mActivity.getmDbHelper();
+
 
         List<DataModelInterface> measurementUnits = dbHelper.getMeasurementUnits();
         List<DataModelInterface> correctiveDrugTypes = dbHelper.getShortLastingDrugs();
@@ -72,6 +75,10 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         {
             holder.getmWarningImage().setVisibility(View.INVISIBLE);
         }
+
+        holder.getNotesRow().setVisibility((model.getNotes().isEmpty() || model.getNotes().trim().isEmpty()) ? View.INVISIBLE : View.VISIBLE);
+
+
     }
 
     @Override
@@ -112,6 +119,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         private ImageView mWarningImage;
         private ImageView mdeleteImage;
         private ImageView mEditImage;
+        private TableRow _notesRow;
         private DBHelper mDBHelper;
         public GlucosemeasurementViewHolder(View view) {
             super(view);
@@ -128,6 +136,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             mWarningImage = mView.findViewById(R.id.bloodMeasurementWarning);
             mdeleteImage = mView.findViewById(R.id.bloodGlucoseMeasurementDeleteButton);
             mEditImage = mView.findViewById(R.id.bloodGlucoseMeasurementEditButton);
+            _notesRow = mView.findViewById(R.id._notesRow);
             View.OnClickListener clickListener = new View.OnClickListener() {
                 public void onClick(View v) {
                     if (v.equals(mdeleteImage)) {
@@ -220,6 +229,10 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         public void addAt(int position, BloodMeasurementModel model){
             mDataset.add(position,model);
             notifyDataSetChanged();
+        }
+
+        public TableRow getNotesRow() {
+            return _notesRow;
         }
     }
 }
