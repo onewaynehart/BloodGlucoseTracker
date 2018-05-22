@@ -33,9 +33,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:icon="@drawable/ic_sync_black_24dp"
+        android:icon="@drawable/ic_alert"
 
-        android:title="Data Import/Export">
+        android:title="Danger Zone">
+
     </PreferenceCategory>
 
 

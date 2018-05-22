@@ -1,5 +1,6 @@
 package com.yourharts.www.bloodglucosetracker;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -29,7 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class AddMeasurementActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class AddMeasurementActivity extends Activity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private DBHelper mDbHelper;
     private DateFormat dbDateFormat;
     private Spinner mMeasurementUnitsDropdown;
@@ -55,7 +56,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_glucose_measurement);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+
         mMeasurementUnitsDropdown = findViewById(R.id.measurementUnitsDropDown);
         mCorrectiveDoseDrugDropdown = findViewById(R.id.correctiveDoseDrugDropdown);
         mbaselineDoseDrugDropdown = findViewById(R.id.baselineDoseDrugDropdown);
@@ -64,7 +65,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
         mbaselineDrugAmountTB = findViewById(R.id.addMeasurementBaselineDrugAmountTB);
         mNotesTB = findViewById(R.id.addMeasurementNotesTB);
         mDateLbl = findViewById(R.id.addMeasurementTimeLabel);
-        setSupportActionBar(toolbar);
+
 
         dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         mDbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());

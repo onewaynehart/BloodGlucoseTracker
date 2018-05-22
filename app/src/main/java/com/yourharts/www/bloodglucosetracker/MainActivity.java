@@ -1,5 +1,6 @@
 package com.yourharts.www.bloodglucosetracker;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private RecyclerView mMeasurementView;
     private GlucoseMeasurementAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -53,17 +54,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+/*        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
        //     @Override
            public void onClick(View view) {
                Intent intent = new Intent(MainActivity.this, AddMeasurementActivity.class);
                startActivity(intent);
            }
-        });
+        });*/
 
         LoadMeasurements();
     }

@@ -5,14 +5,14 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="All measurements"
+        android:label="Blood Glucose Companion"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/BloodGlucoseAppTheme">
         <activity
             android:name=".MainActivity"
             android:label="All Measurements"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/BloodGlucoseAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +23,7 @@
             android:name=".AddMeasurementActivity"
             android:label="@string/title_activity_add_measurement"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/BloodGlucoseAppTheme"
             android:windowSoftInputMode="stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -32,7 +32,8 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/BloodGlucoseAppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />

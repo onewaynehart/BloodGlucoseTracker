@@ -76,7 +76,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             holder.getmWarningImage().setVisibility(View.INVISIBLE);
         }
 
-        holder.getNotesRow().setVisibility((model.getNotes().isEmpty() || model.getNotes().trim().isEmpty()) ? View.INVISIBLE : View.VISIBLE);
+        holder.getNotesRow().setVisibility((model.getNotes().isEmpty() || model.getNotes().trim().isEmpty()) ? View.GONE : View.VISIBLE);
 
 
     }
