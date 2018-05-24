@@ -30,6 +30,7 @@
             android:defaultValue="false"
             android:key="PREF_LAST_ENTRY_DEFAULT"
             android:title="Use last entry as defaults" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

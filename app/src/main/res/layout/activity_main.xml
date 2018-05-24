@@ -4,27 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".MainActivity">
 
-    <android.support.design.widget.FloatingActionButton
+    <Button
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal|end"
-        android:layout_margin="3dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/ic_add_white_24px"
-        app:backgroundTint="@color/colorPrimary"
-        app:elevation="13dp"
-        app:fabSize="auto"
-        app:rippleColor="@color/colorPrimary"
-        tools:clickable="true" />
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        android:background="@drawable/ic_add_circle_black_24dp"
+        android:backgroundTint="@color/colorSecondaryVariant"
+        android:elevation="3dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="5dp">
 
         <include
             layout="@layout/content_main"

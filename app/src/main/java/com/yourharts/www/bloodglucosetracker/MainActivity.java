@@ -2,31 +2,32 @@ package com.yourharts.www.bloodglucosetracker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
 
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
-import com.yourharts.www.Models.LongLastingDrugModel;
-import com.yourharts.www.Models.ShortLastingDrugModel;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
-public class MainActivity extends Activity {
+import static android.support.v4.content.FileProvider.getUriForFile;
+
+public class MainActivity extends Activity  {
     private RecyclerView mMeasurementView;
     private GlucoseMeasurementAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -45,7 +46,14 @@ public class MainActivity extends Activity {
         mMeasurementView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mMeasurementView.setLayoutManager(mLayoutManager);
-
+        Button fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, AddMeasurementActivity.class);
+                startActivity(intent);
+            }
+        });
 
         try {
             mDbHelper.prepareDatabase();
@@ -53,33 +61,20 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
-/*        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-       //     @Override
-           public void onClick(View view) {
-               Intent intent = new Intent(MainActivity.this, AddMeasurementActivity.class);
-               startActivity(intent);
-           }
-        });*/
-
         LoadMeasurements();
     }
 
+
+
     private void LoadMeasurements() {
-
-
         List<BloodMeasurementModel> measurements = getmDbHelper().getBloodMeasurements();
-
         mAdapter = new GlucoseMeasurementAdapter(measurements);
         mAdapter.setmActivity(this);
         mMeasurementView.setAdapter(mAdapter);
     }
+
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         LoadMeasurements();
     }
@@ -104,7 +99,31 @@ public class MainActivity extends Activity {
             startActivity(intent);
             return true;
         }
+        if(id== R.id.menu_item_share){
+            String csv = mDbHelper.GetMeasurementsCSVText();
+            File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
+            csvFilePath.mkdirs();
+            File newFile = new File(csvFilePath, UUID.randomUUID().toString()+".csv");
+            try {
+                FileWriter writer = new FileWriter(newFile);
+                writer.write(csv);
+                writer.flush();
+                writer.close();
 
+                Uri contentUri = getUriForFile(MainActivity.this, "com.yourharts.www.bloodglucosetracker.fileprovider", newFile);
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,"Blood glucose measurements.");
+                sendIntent.setDataAndType(null, getContentResolver().getType(contentUri));
+
+                startActivity(sendIntent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
         return super.onOptionsItemSelected(item);
     }
 

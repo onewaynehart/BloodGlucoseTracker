@@ -148,7 +148,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
             public void onClick(View v) {
                 Calendar cal = Calendar.getInstance();
                 _year = cal.get(Calendar.YEAR);
-                _month = cal.get(Calendar.MONTH) + 1;
+                _month = cal.get(Calendar.MONTH) ;
                 _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 
                 if (mIsEditMode && mDataModel != null) {
@@ -156,7 +156,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
                         Date modelDate = dbDateFormat.parse(mDataModel.getGlucoseMeasurementDate());
                         cal.setTime(modelDate);
                         _year = cal.get(Calendar.YEAR);
-                        _month = cal.get(Calendar.MONTH) + 1;
+                        _month = cal.get(Calendar.MONTH) ;
                         _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
                     } catch (ParseException e) {
                         e.printStackTrace();

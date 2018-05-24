@@ -1,6 +1,10 @@
 package com.yourharts.www.Models;
 
+import com.yourharts.www.bloodglucosetracker.R;
+
 import java.util.Date;
+
+import static android.app.PendingIntent.getActivity;
 
 public class BloodMeasurementModel extends DataModelInterface {
     private int ID;
@@ -12,7 +16,7 @@ public class BloodMeasurementModel extends DataModelInterface {
     private int BaselineDoseType;
     private String GlucoseMeasurementDate;
     private String Notes;
-
+    private final String DELIMITER = "||";
     public BloodMeasurementModel(int id,
                                  double glucoseMeasurement,
                                  int glucoseMeasurementUnitID,
@@ -39,7 +43,26 @@ public class BloodMeasurementModel extends DataModelInterface {
 
     @Override
     public String getString() {
-        return null;
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(ID);
+        buffer.append(DELIMITER);
+        buffer.append(GlucoseMeasurement);
+        buffer.append(DELIMITER);
+        buffer.append(GlucoseMeasurementUnitID);
+        buffer.append(DELIMITER);
+        buffer.append(GlucoseMeasurementDate);
+        buffer.append(DELIMITER);
+        buffer.append(CorrectiveDoseAmount);
+        buffer.append(DELIMITER);
+        buffer.append(CorrectiveDoseType);
+        buffer.append(DELIMITER);
+        buffer.append(BaselineDoseAmount);
+        buffer.append(DELIMITER);
+        buffer.append(BaselineDoseType);
+        buffer.append(DELIMITER);
+        buffer.append(Notes);
+        buffer.append("\n");
+        return buffer.toString();
     }
 
     public double getGlucoseMeasurement() {

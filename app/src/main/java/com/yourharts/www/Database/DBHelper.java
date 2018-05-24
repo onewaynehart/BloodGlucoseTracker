@@ -13,6 +13,7 @@ import com.yourharts.www.Models.DataModelInterface;
 import com.yourharts.www.Models.LongLastingDrugModel;
 import com.yourharts.www.Models.MeasurementUnitModel;
 import com.yourharts.www.Models.ShortLastingDrugModel;
+import com.yourharts.www.bloodglucosetracker.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -172,6 +173,37 @@ public class DBHelper  extends SQLiteOpenHelper {
         }
         db.close();
         return retval;
+    }
+    public String GetMeasurementsCSVText(){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("ID");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("GlucoseMeasurement");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("GlucoseMeasurementUnitID");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("GlucoseMeasurementDate");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("CorrectiveDoseAmount");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("CorrectiveDoseTypeID");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("BaselineDoseAmount");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("BaselineDoseTypeID");
+        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append("Notes");
+        buffer.append("\n");
+
+        List<BloodMeasurementModel> measurements = getBloodMeasurements();
+
+        for(BloodMeasurementModel model : measurements)
+        {
+            buffer.append(model.getString());
+        }
+
+
+        return buffer.toString();
     }
     public boolean deleteMeasurementRecord(int ID)
     {

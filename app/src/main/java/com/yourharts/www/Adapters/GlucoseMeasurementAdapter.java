@@ -19,7 +19,11 @@ import com.yourharts.www.bloodglucosetracker.AddMeasurementActivity;
 import com.yourharts.www.bloodglucosetracker.MainActivity;
 import com.yourharts.www.bloodglucosetracker.R;
 
+import java.sql.Time;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasurementAdapter.GlucosemeasurementViewHolder>{
@@ -76,9 +80,29 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             holder.getmWarningImage().setVisibility(View.INVISIBLE);
         }
 
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date measurementTime = sdf.parse(model.getGlucoseMeasurementDate());
+            int hour = measurementTime.getHours();
+            if(hour < 10){
+                holder.getTimeImageView().setImageResource(R.drawable.ic_coffee);
+            }
+            else if(hour < 16 && hour >= 10){
+                holder.getTimeImageView().setImageResource(R.drawable.ic_baseline_fastfood_24px);
+            }
+            else if(hour < 21 && hour >= 16){
+                holder.getTimeImageView().setImageResource(R.drawable.ic_baseline_local_bar_24px);
+            }
+            else if(hour >= 21 ){
+                holder.getTimeImageView().setImageResource(R.drawable.ic_brightness_3_black_24dp);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         holder.getNotesRow().setVisibility((model.getNotes().isEmpty() || model.getNotes().trim().isEmpty()) ? View.GONE : View.VISIBLE);
-
-
+        holder.getBaselineAmountRow().setVisibility((model.getBaselineDoseAmount() == 0 ? View.GONE : View.VISIBLE));
+        holder.getCorrectiveAmountRow().setVisibility((model.getCorrectiveDoseAmount() == 0 ? View.GONE : View.VISIBLE));
     }
 
     @Override
@@ -119,7 +143,10 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         private ImageView mWarningImage;
         private ImageView mdeleteImage;
         private ImageView mEditImage;
+        private ImageView mTimeImageView;
         private TableRow _notesRow;
+        private TableRow _correctiveAmountRow;
+        private TableRow _baselineAmountRow;
         private DBHelper mDBHelper;
         public GlucosemeasurementViewHolder(View view) {
             super(view);
@@ -136,11 +163,14 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             mWarningImage = mView.findViewById(R.id.bloodMeasurementWarning);
             mdeleteImage = mView.findViewById(R.id.bloodGlucoseMeasurementDeleteButton);
             mEditImage = mView.findViewById(R.id.bloodGlucoseMeasurementEditButton);
+            mTimeImageView = mView.findViewById(R.id.timeImageView);
             _notesRow = mView.findViewById(R.id._notesRow);
+            _correctiveAmountRow = mView.findViewById(R.id._correctiveAmountRow);
+            _baselineAmountRow = mView.findViewById(R.id._baselineAmountRow);
             View.OnClickListener clickListener = new View.OnClickListener() {
                 public void onClick(View v) {
                     if (v.equals(mdeleteImage)) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(mView.getContext(), R.style.MyAlertDialogStyle);
+                        AlertDialog.Builder alert = new AlertDialog.Builder(mView.getContext(), R.style.Elegant);
 
                         alert.setTitle("Delete entry");
                         alert.setMessage("Are you sure you want to delete this measurement? It cannot be undone!");
@@ -233,6 +263,18 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
 
         public TableRow getNotesRow() {
             return _notesRow;
+        }
+
+        public ImageView getTimeImageView() {
+            return mTimeImageView;
+        }
+
+        public TableRow getCorrectiveAmountRow() {
+            return _correctiveAmountRow;
+        }
+
+        public TableRow getBaselineAmountRow() {
+            return _baselineAmountRow;
         }
     }
 }

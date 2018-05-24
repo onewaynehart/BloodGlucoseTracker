@@ -7,12 +7,20 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Blood Glucose Companion"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/BloodGlucoseAppTheme">
+        android:supportsRtl="true">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.yourharts.www.bloodglucosetracker.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths" />
+        </provider>
         <activity
             android:name=".MainActivity"
             android:label="All Measurements"
-            android:theme="@style/BloodGlucoseAppTheme">
+            android:theme="@style/Elegant">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +31,7 @@
             android:name=".AddMeasurementActivity"
             android:label="@string/title_activity_add_measurement"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/BloodGlucoseAppTheme"
+            android:theme="@style/Elegant"
             android:windowSoftInputMode="stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -33,7 +41,7 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/BloodGlucoseAppTheme">
+            android:theme="@style/Elegant">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
