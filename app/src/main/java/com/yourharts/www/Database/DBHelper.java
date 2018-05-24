@@ -174,24 +174,24 @@ public class DBHelper  extends SQLiteOpenHelper {
         db.close();
         return retval;
     }
-    public String GetMeasurementsCSVText(){
+    public String GetMeasurementsCSVText(String delimiter){
         StringBuffer buffer = new StringBuffer();
         buffer.append("ID");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("GlucoseMeasurement");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("GlucoseMeasurementUnitID");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("GlucoseMeasurementDate");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("CorrectiveDoseAmount");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("CorrectiveDoseTypeID");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("BaselineDoseAmount");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("BaselineDoseTypeID");
-        buffer.append(mContext.getString(R.string.csv_delimiter));
+        buffer.append(delimiter);
         buffer.append("Notes");
         buffer.append("\n");
 
@@ -199,7 +199,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
         for(BloodMeasurementModel model : measurements)
         {
-            buffer.append(model.getString());
+            buffer.append(model.getString(delimiter));
         }
 
 

@@ -64,7 +64,28 @@ public class BloodMeasurementModel extends DataModelInterface {
         buffer.append("\n");
         return buffer.toString();
     }
-
+    public String getString(String delimiter){
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(ID);
+        buffer.append(delimiter);
+        buffer.append(GlucoseMeasurement);
+        buffer.append(delimiter);
+        buffer.append(GlucoseMeasurementUnitID);
+        buffer.append(delimiter);
+        buffer.append(GlucoseMeasurementDate);
+        buffer.append(delimiter);
+        buffer.append(CorrectiveDoseAmount);
+        buffer.append(delimiter);
+        buffer.append(CorrectiveDoseType);
+        buffer.append(delimiter);
+        buffer.append(BaselineDoseAmount);
+        buffer.append(delimiter);
+        buffer.append(BaselineDoseType);
+        buffer.append(delimiter);
+        buffer.append(Notes);
+        buffer.append("\n");
+        return buffer.toString();
+    }
     public double getGlucoseMeasurement() {
         return GlucoseMeasurement;
     }

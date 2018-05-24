@@ -7,6 +7,6 @@
     <color name="colorSecondaryVariant">#018786</color>
     <color name="colorBackground">#ffffff</color>
     <color name="colorSurface">#ffffff</color>
-    <color name="colorError">#B00020</color>
+    <color name="colorError">#b00020</color>
     <color name="colorText">#000000</color>
 </resources>

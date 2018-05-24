@@ -15,8 +15,7 @@
     android:padding="5dp"
 
     app:cardBackgroundColor="@android:color/holo_orange_dark"
-    app:cardCornerRadius="7dp"
-    app:cardElevation="6dp">
+    app:cardCornerRadius="10dp">
 
     <TableLayout
         android:layout_width="match_parent"

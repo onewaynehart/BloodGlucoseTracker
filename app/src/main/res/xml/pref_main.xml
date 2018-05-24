@@ -29,18 +29,24 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="PREF_LAST_ENTRY_DEFAULT"
-            android:title="Use last entry as defaults" />
+            android:title="Use Last Entry As Defaults" />
+        <EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:key="PREF_DEFAULT_THRESHOLD"
+            android:numeric="integer"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Glucose Level Warning Threshold" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/csv_delimiters"
+            android:entryValues="@array/csv_delimiters"
+            android:key="PREF_DEFAULT_CSVDELIMITER"
+            android:persistent="true"
+            android:title="CSV Delimiter" />
 
     </PreferenceCategory>
-
-    <PreferenceCategory
-        android:icon="@drawable/ic_alert"
-
-        android:title="Danger Zone">
-
-    </PreferenceCategory>
-
-
 
 
 </PreferenceScreen>

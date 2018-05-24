@@ -12,4 +12,13 @@
     <string name="pref_file_key">ALL_PREFERENCES</string>
     <string name="export_delimiter">||</string>
     <string name="csv_delimiter">||</string>
+    <string-array name="csv_delimiters">
+        <item>|</item>
+        <item>||</item>
+        <item>~</item>
+        <item>#</item>
+        <item>!</item>
+        <item>,</item>
+        <item>^</item>
+    </string-array>
 </resources>

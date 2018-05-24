@@ -3,17 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.yourharts.www.bloodglucosetracker.MainActivity">
 
+
     <item
         android:id="@+id/menu_item_share"
-        android:title="Share"
         android:icon="@drawable/ic_baseline_share_24px"
+        android:title="Share"
+        android:orderInCategory="1"
 
-        android:showAsAction="ifRoom"
-        />
+        android:showAsAction="always" />
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:orderInCategory="100"
+        android:orderInCategory="2"
         android:title="@string/action_settings"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
+    <item
+        android:id="@+id/menu_item_filter"
+        android:icon="@drawable/ic_filter_list_black_24dp"
+        android:orderInCategory="3"
+        android:title="Filters"
+
+        android:showAsAction="always" />
+
 </menu>

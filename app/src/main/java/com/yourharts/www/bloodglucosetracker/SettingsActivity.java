@@ -1,19 +1,30 @@
 package com.yourharts.www.bloodglucosetracker;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import android.view.View;
+import android.widget.Button;
+
 import com.yourharts.www.Database.DBHelper;
+import com.yourharts.www.Models.BloodMeasurementModel;
 import com.yourharts.www.Models.DataModelInterface;
+
+import java.security.Key;
 import java.util.List;
 
 
 public class SettingsActivity extends PreferenceActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +34,11 @@ public class SettingsActivity extends PreferenceActivity {
         private ListPreference _glucoseUnitsLP;
         private ListPreference _correctiveDrugTypeLP;
         private ListPreference _baselineDrugTypeLP;
+        private ListPreference _defaultCSVLP;
+        private EditTextPreference _defaultThresholdETP;
         private SwitchPreference _useLastAsDefaultSw;
+
+        private Preference _deleteAllDataButton;
         private DBHelper _dbHelper;
         private SharedPreferences _sharedPref;
         @Override
@@ -32,12 +47,16 @@ public class SettingsActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.pref_main);
             _sharedPref = getActivity().getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
             _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath());
-
+            _deleteAllDataButton = findPreference("DELETE_ALL_DATA_BTN");
             _glucoseUnitsLP = (ListPreference) findPreference(getString(R.string.pref_defaultMeasurementUnitID));
             _correctiveDrugTypeLP = (ListPreference) findPreference(getString(R.string.pref_defaultCorrectiveDrugID));
             _baselineDrugTypeLP = (ListPreference) findPreference(getString(R.string.pref_defaultBaselineDrugID)) ;
             _useLastAsDefaultSw = (SwitchPreference)findPreference(getString(R.string.pref_use_last_as_default));
+            _defaultThresholdETP = (EditTextPreference)findPreference("PREF_DEFAULT_THRESHOLD");
+            _defaultCSVLP = (ListPreference) findPreference("PREF_DEFAULT_CSVDELIMITER");
             setDefaults();
+
+
         }
         private void setDefaults() {
             if(_dbHelper == null){
@@ -58,6 +77,8 @@ public class SettingsActivity extends PreferenceActivity {
             int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.pref_defaultMeasurementUnitID), 1);
             int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
             int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.pref_defaultBaselineDrugID), 1);
+            int defaultThreshold = _sharedPref.getInt("PREF_DEFAULT_THRESHOLD", 10);
+            String csvDelimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER","||");
             int count = 0;
             for(DataModelInterface dmi : glucoseMeasurementTypes)
             {
@@ -92,7 +113,11 @@ public class SettingsActivity extends PreferenceActivity {
             _baselineDrugTypeLP.setEntries(baselineDrugNames);
             _baselineDrugTypeLP.setEntryValues(baselineDrugIDs);
             _baselineDrugTypeLP.setValueIndex(_dbHelper.getPosition(baselineDrugs, defaultBaselineDrugID));
+            _defaultThresholdETP.setText(Integer.toString(defaultThreshold));
+            _defaultCSVLP.setValue(csvDelimiter);
+            _defaultThresholdETP.setSummary("Current value: "+defaultThreshold);
 
+            updateListPrefSummary_PREF_LIST(_defaultCSVLP);
             updateListPrefSummary_PREF_LIST(_correctiveDrugTypeLP);
             updateListPrefSummary_PREF_LIST(_glucoseUnitsLP);
             updateListPrefSummary_PREF_LIST(_baselineDrugTypeLP);
@@ -120,6 +145,35 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if(key.equals("PREF_DEFAULT_CSVDELIMITER")){
+                SharedPreferences.Editor editor = _sharedPref.edit();
+                String defaultcsvDelimiter = "||";
+                try {
+                    defaultcsvDelimiter = _defaultCSVLP.getValue();
+                    editor.putString("PREF_DEFAULT_CSVDELIMITER", defaultcsvDelimiter);
+                    editor.apply();
+                    editor.commit();
+                    updateListPrefSummary_PREF_LIST(_defaultCSVLP);
+                }
+                catch(Exception e){
+
+                }
+
+            }
+            if(key.equals("PREF_DEFAULT_THRESHOLD")){
+                SharedPreferences.Editor editor = _sharedPref.edit();
+                int defaultThreshold = 10;
+                try {
+                    defaultThreshold = Integer.parseInt(_defaultThresholdETP.getText());
+                    editor.putInt("PREF_DEFAULT_THRESHOLD", defaultThreshold);
+                    editor.apply();
+                    editor.commit();
+                    _defaultThresholdETP.setSummary("Current value: "+defaultThreshold);
+                }
+                catch(Exception e){
+
+                }
+            }
             if(key.equals(getString(R.string.pref_defaultMeasurementUnitID))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 int measurementTypeID = 0;

@@ -1,8 +1,10 @@
 package com.yourharts.www.Adapters;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ import java.util.List;
 public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasurementAdapter.GlucosemeasurementViewHolder>{
     @NonNull
     private List<BloodMeasurementModel> mDataset;
+    private SharedPreferences _sharedPref;
     private MainActivity mActivity;
     private TableRow _notesRow;
     public GlucoseMeasurementAdapter(List<BloodMeasurementModel> dataSet){
@@ -45,7 +48,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         holder.getmNotes().setText(model.getNotes());
 
         DBHelper dbHelper = mActivity.getmDbHelper();
-
+        _sharedPref = mActivity.getSharedPreferences(mActivity.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
         List<DataModelInterface> measurementUnits = dbHelper.getMeasurementUnits();
         List<DataModelInterface> correctiveDrugTypes = dbHelper.getShortLastingDrugs();
@@ -71,7 +74,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         }
 
 
-        if(model.getGlucoseMeasurement()> 9.9)
+        if(model.getGlucoseMeasurement()> _sharedPref.getInt("PREF_DEFAULT_THRESHOLD", 10))
         {
             holder.getmWarningImage().setVisibility(View.VISIBLE);
         }

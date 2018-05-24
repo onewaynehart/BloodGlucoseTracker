@@ -1,16 +1,23 @@
 package com.yourharts.www.bloodglucosetracker;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
@@ -27,19 +34,19 @@ import java.util.UUID;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity {
     private RecyclerView mMeasurementView;
     private GlucoseMeasurementAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private DBHelper mDbHelper;
     private DateFormat dbDateFormat;
-
+    private SharedPreferences _sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         mDbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
         mMeasurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
@@ -63,7 +70,6 @@ public class MainActivity extends Activity  {
 
         LoadMeasurements();
     }
-
 
 
     private void LoadMeasurements() {
@@ -99,11 +105,12 @@ public class MainActivity extends Activity  {
             startActivity(intent);
             return true;
         }
-        if(id== R.id.menu_item_share){
-            String csv = mDbHelper.GetMeasurementsCSVText();
+        if (id == R.id.menu_item_share) {
+            String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "||");
+            String csv = mDbHelper.GetMeasurementsCSVText(delimiter);
             File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
             csvFilePath.mkdirs();
-            File newFile = new File(csvFilePath, UUID.randomUUID().toString()+".csv");
+            File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
             try {
                 FileWriter writer = new FileWriter(newFile);
                 writer.write(csv);
@@ -115,7 +122,7 @@ public class MainActivity extends Activity  {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,"Blood glucose measurements.");
+                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements.");
                 sendIntent.setDataAndType(null, getContentResolver().getType(contentUri));
 
                 startActivity(sendIntent);
@@ -123,6 +130,25 @@ public class MainActivity extends Activity  {
                 e.printStackTrace();
             }
 
+        }
+        if (id == R.id.menu_item_filter) {
+
+
+            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View popupView = layoutInflater.inflate(R.layout.drop_down_filters, null);
+            PopupWindow dropDownMenu = new PopupWindow(
+                    popupView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            dropDownMenu.setOutsideTouchable(true);
+            dropDownMenu.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    //TODO do sth here on dismiss
+                }
+            });
+
+            dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
         }
         return super.onOptionsItemSelected(item);
     }
