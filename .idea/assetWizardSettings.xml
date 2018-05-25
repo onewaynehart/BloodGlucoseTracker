@@ -94,10 +94,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="020202" />
-                            <entry key="outputName" value="ic_filter_list_black_24dp" />
-                            <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="C:\Users\Wayne\Desktop\icons\add.svg" />
+                            <entry key="outputName" value="ic_hospital" />
+                            <entry key="sourceFile" value="C:\Users\Wayne\Desktop\icons\hospital.svg" />
                           </map>
                         </option>
                       </PersistentState>

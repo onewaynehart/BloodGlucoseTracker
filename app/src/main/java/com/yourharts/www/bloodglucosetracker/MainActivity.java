@@ -15,8 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,10 +74,42 @@ public class MainActivity extends Activity {
         LoadMeasurements();
     }
 
-
     private void LoadMeasurements() {
+
+        LoadMeasurements(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY",false),
+                _sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST",true),
+                _sharedPref.getBoolean("PREF_FILTER_SHOW_LUNCH",true),
+                _sharedPref.getBoolean("PREF_FILTER_SHOW_DINNER",true),
+                _sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME",true)
+                );
+    }
+
+    private void LoadMeasurements(boolean showHigh, boolean showBreakfast, boolean showLunch, boolean showDinner, boolean showBedtime) {
         List<BloodMeasurementModel> measurements = getmDbHelper().getBloodMeasurements();
-        mAdapter = new GlucoseMeasurementAdapter(measurements);
+
+        List<BloodMeasurementModel> filteredMeasurements = new ArrayList<BloodMeasurementModel>();
+        for (BloodMeasurementModel bmm : measurements) {
+            if (showHigh) {
+                if(bmm.isHigh())
+                    filteredMeasurements.add(bmm);
+            } else {
+                if (bmm.isBreakfast() && showBreakfast) {
+                    filteredMeasurements.add(bmm);
+                }
+                if (bmm.isLunch() && showLunch) {
+                    filteredMeasurements.add(bmm);
+                }
+                if (bmm.isDinner() && showDinner) {
+                    filteredMeasurements.add(bmm);
+                }
+                if (bmm.isBedtime() && showBedtime) {
+                    filteredMeasurements.add(bmm);
+                }
+            }
+        }
+
+
+        mAdapter = new GlucoseMeasurementAdapter(filteredMeasurements);
         mAdapter.setmActivity(this);
         mMeasurementView.setAdapter(mAdapter);
     }
@@ -140,17 +175,60 @@ public class MainActivity extends Activity {
                     popupView,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            final Switch highOnly = popupView.findViewById(R.id.filter_switch_show_high_only);
+            final Switch showBreakfast = popupView.findViewById(R.id.filter_switch_show_breakfast);
+            final Switch showLunch = popupView.findViewById(R.id.filter_switch_show_lunch);
+            final Switch showDinner = popupView.findViewById(R.id.filter_switch_show_dinner);
+            final Switch showBedtime = popupView.findViewById(R.id.filter_switch_show_bedtime);
+
+            highOnly.setChecked(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY",false));
+            setFiltersDefault(highOnly, showBreakfast, showLunch, showDinner, showBedtime);
+
+            CompoundButton.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(buttonView.getId() == highOnly.getId()) {
+                        setFiltersDefault(highOnly, showBreakfast, showLunch, showDinner, showBedtime);
+                    }
+                    LoadMeasurements(highOnly.isChecked(), showBreakfast.isChecked(), showLunch.isChecked(), showDinner.isChecked(), showBedtime.isChecked());
+
+                }
+            };
+            highOnly.setOnCheckedChangeListener(checkedChangeListener);
+            showBreakfast.setOnCheckedChangeListener(checkedChangeListener);
+            showLunch.setOnCheckedChangeListener(checkedChangeListener);
+            showDinner.setOnCheckedChangeListener(checkedChangeListener);
+            showBedtime.setOnCheckedChangeListener(checkedChangeListener);
             dropDownMenu.setOutsideTouchable(true);
             dropDownMenu.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
                 public void onDismiss() {
                     //TODO do sth here on dismiss
+                    SharedPreferences.Editor editor = _sharedPref.edit();
+                    editor.putBoolean("PREF_FILTER_HIGH_ONLY", highOnly.isChecked());
+                    editor.putBoolean("PREF_FILTER_SHOW_BREAKFAST", showBreakfast.isChecked());
+                    editor.putBoolean("PREF_FILTER_SHOW_LUNCH", showLunch.isChecked());
+                    editor.putBoolean("PREF_FILTER_SHOW_DINNER", showDinner.isChecked());
+                    editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", showBedtime.isChecked());
+                    editor.apply();
+                    editor.commit();
                 }
             });
 
             dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setFiltersDefault(Switch highOnly, Switch showBreakfast, Switch showLunch, Switch showDinner, Switch showBedtime) {
+        showBreakfast.setChecked(!highOnly.isChecked());
+        showLunch.setChecked(!highOnly.isChecked());
+        showDinner.setChecked(!highOnly.isChecked());
+        showBedtime.setChecked(!highOnly.isChecked());
+        showBreakfast.setEnabled(!highOnly.isChecked());
+        showLunch.setEnabled(!highOnly.isChecked());
+        showDinner.setEnabled(!highOnly.isChecked());
+        showBedtime.setEnabled(!highOnly.isChecked());
     }
 
     public DBHelper getmDbHelper() {

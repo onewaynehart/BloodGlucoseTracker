@@ -206,7 +206,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
                     ((DataModelInterface) mCorrectiveDoseDrugDropdown.getSelectedItem()).getID(),
                     baselineDoseAmount,
                     ((DataModelInterface) mbaselineDoseDrugDropdown.getSelectedItem()).getID(),
-                    mNotesTB.getText().toString());
+                    mNotesTB.getText().toString(), _sharedPref);
 
 
             retval = mDbHelper.addGlucoseMeasurement(dataModel);

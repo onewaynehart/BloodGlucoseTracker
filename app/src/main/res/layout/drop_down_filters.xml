@@ -13,31 +13,31 @@
     tools:context=".MainActivity">
 
     <Switch
-        android:id="@+id/switch2"
+        android:id="@+id/filter_switch_show_high_only"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show High Readings Only" />
 
     <Switch
-        android:id="@+id/switch3"
+        android:id="@+id/filter_switch_show_breakfast"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show Breakfast Readings" />
 
     <Switch
-        android:id="@+id/switch4"
+        android:id="@+id/filter_switch_show_lunch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show Lunch Readings" />
 
     <Switch
-        android:id="@+id/switch5"
+        android:id="@+id/filter_switch_show_dinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show Dinner Readings" />
 
     <Switch
-        android:id="@+id/switch6"
+        android:id="@+id/filter_switch_show_bedtime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show Bed Time Readings" />

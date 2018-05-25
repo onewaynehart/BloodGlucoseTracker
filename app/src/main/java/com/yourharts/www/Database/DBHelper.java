@@ -2,6 +2,7 @@ package com.yourharts.www.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -33,11 +34,12 @@ public class DBHelper  extends SQLiteOpenHelper {
     private String DatabaseLocation;
     private final static String TAG = "DatabaseHelper";
     private Context mContext;
-
+    private SharedPreferences _sharedPreferences;
     public DBHelper(Context context, String filePath) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
         DatabaseLocation = new StringBuffer(filePath).append("/").append(DATABASE_NAME).toString();
+        _sharedPreferences  = context.getSharedPreferences(context.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
     }
     public void prepareDatabase() throws IOException {
@@ -167,7 +169,7 @@ public class DBHelper  extends SQLiteOpenHelper {
                     cursor.getInt(5),
                     cursor.getDouble(6),
                     cursor.getInt(7),
-                    cursor.getString(8) );
+                    cursor.getString(8), _sharedPreferences );
 
             retval.add(measurement);
         }
@@ -285,7 +287,7 @@ public class DBHelper  extends SQLiteOpenHelper {
                     cursor.getInt(5),
                     cursor.getDouble(6),
                     cursor.getInt(7),
-                    cursor.getString(8) );
+                    cursor.getString(8) , _sharedPreferences);
 
             retval.add(measurement);
         }

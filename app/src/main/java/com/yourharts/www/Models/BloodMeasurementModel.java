@@ -1,7 +1,12 @@
 package com.yourharts.www.Models;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.yourharts.www.bloodglucosetracker.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static android.app.PendingIntent.getActivity;
@@ -17,6 +22,8 @@ public class BloodMeasurementModel extends DataModelInterface {
     private String GlucoseMeasurementDate;
     private String Notes;
     private final String DELIMITER = "||";
+    private Date _measurementDate;
+    private SharedPreferences _sharedPreferences;
     public BloodMeasurementModel(int id,
                                  double glucoseMeasurement,
                                  int glucoseMeasurementUnitID,
@@ -25,7 +32,8 @@ public class BloodMeasurementModel extends DataModelInterface {
                                  int correctiveDoseType,
                                  double baselineDoseAmount,
                                  int baselineDoseType,
-                                 String notes){
+                                 String notes,
+                                 SharedPreferences sharedPreferences){
         ID = id;
         GlucoseMeasurement = glucoseMeasurement;
         GlucoseMeasurementUnitID = glucoseMeasurementUnitID;
@@ -35,6 +43,13 @@ public class BloodMeasurementModel extends DataModelInterface {
         BaselineDoseType = baselineDoseType;
         GlucoseMeasurementDate = glucoseMeasurementDate;
         Notes = notes;
+        _sharedPreferences =  sharedPreferences;
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            _measurementDate = parser.parse(glucoseMeasurementDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public int getID() {
@@ -138,9 +153,7 @@ public class BloodMeasurementModel extends DataModelInterface {
         return GlucoseMeasurementDate;
     }
 
-    public void setGlucoseMeasurementDate(String glucoseMeasurementDate) {
-        GlucoseMeasurementDate = glucoseMeasurementDate;
-    }
+
 
     public String getNotes() {
         return Notes;
@@ -149,4 +162,48 @@ public class BloodMeasurementModel extends DataModelInterface {
     public void setNotes(String notes) {
         this.Notes = notes;
     }
+
+    public boolean isHigh() {
+        boolean retval = false;
+        if(_sharedPreferences != null)
+        {
+            int defaultThreshold = _sharedPreferences.getInt("PREF_DEFAULT_THRESHOLD", 10);
+            retval = this.GlucoseMeasurement > defaultThreshold;
+        }
+        return retval;
+    }
+
+    public boolean isBreakfast() {
+        boolean retval = false;
+        if(_measurementDate != null)
+        {
+            retval = _measurementDate.getHours() < 10;
+        }
+        return retval;
+    }
+    public boolean isLunch() {
+        boolean retval = false;
+        if(_measurementDate != null)
+        {
+            retval = _measurementDate.getHours() >= 10 && _measurementDate.getHours() < 16;
+        }
+        return retval;
+    }
+    public boolean isDinner() {
+        boolean retval = false;
+        if(_measurementDate != null)
+        {
+            retval = _measurementDate.getHours() < 21 && _measurementDate.getHours() >= 16;
+        }
+        return retval;
+    }
+    public boolean isBedtime() {
+        boolean retval = false;
+        if(_measurementDate != null)
+        {
+            retval = _measurementDate.getHours() >= 21;
+        }
+        return retval;
+    }
+
 }

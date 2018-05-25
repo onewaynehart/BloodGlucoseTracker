@@ -4,9 +4,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_hospital"
         android:label="Blood Glucose Companion"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_hospital"
         android:supportsRtl="true">
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -19,7 +19,7 @@
         </provider>
         <activity
             android:name=".MainActivity"
-            android:label="All Measurements"
+            android:label="Blood Glucose Companion"
             android:theme="@style/Elegant">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
