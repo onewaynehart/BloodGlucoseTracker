@@ -3,19 +3,19 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bloodGlucoseMeasurementItem"
+    android:id="@+id/summary_card"
 
     android:layout_width="match_parent"
 
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_margin="10dp"
 
 
     android:elevation="6dp"
     android:padding="5dp"
 
     app:cardBackgroundColor="@android:color/holo_orange_dark"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="5dp">
 
     <TableLayout
         android:layout_width="match_parent"
@@ -27,207 +27,119 @@
             android:background="?android:attr/colorPressedHighlight"
             android:backgroundTint="?android:attr/colorPressedHighlight">
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_assignment_ind_black_24dp"
+                app:srcCompat="@drawable/ic_assignment_ind_black_24dp" />
+
             <TextView
                 android:id="@+id/textView2"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="5"
+                android:paddingLeft="3dp"
                 android:text="Summary"
                 android:textAppearance="@android:style/TextAppearance.Large" />
 
-            <ImageView
-                android:id="@+id/bloodGlucoseMeasurementEditButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-
-                android:layout_weight="1"
-                android:clickable="true"
-
-                android:src="@drawable/ic_baseline_edit_24px" />
-
-            <ImageView
-                android:id="@+id/bloodGlucoseMeasurementDeleteButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-
-                android:layout_weight="1"
-                android:clickable="true"
-                android:src="@drawable/ic_baseline_delete_24px" />
-
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/imageView2"
-
-
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_access_time_24px" />
+                android:text="Your highest ever blood glucose reading was " />
 
             <TextView
-                android:id="@+id/bloodGlucoseMeasurementdateLabel"
-                android:layout_width="0dp"
+                android:id="@+id/summary_highest_TV"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:paddingStart="5dp"
-                android:textAllCaps="true"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
-
+                android:text="18 mmol/L" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/imageView3"
-
-
+            <TextView
+                android:id="@+id/textView8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_bar_chart_24px" />
+                android:layout_weight="2"
+                android:text="This measurement was taken on" />
 
             <TextView
-                android:id="@+id/bloodGlucoseMeasurementAmountLabel"
+                android:id="@+id/summary_highest_date_TV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAllCaps="true"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/bloodGlucoseMeasurementAmountUnitsLabel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="5dp"
-                android:text="mmol/L"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/bloodMeasurementWarning"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_priority_high_24px" />
-
+                android:layout_weight="1.6"
+                android:text="2018-05-23 14:50" />
         </TableRow>
 
         <TableRow
-            android:id="@+id/_correctiveAmountRow"
+
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_colorize_24px" />
+                android:text="Your lowest ever blood glucose reading was " />
 
             <TextView
-                android:id="@+id/bloodGlucoseMeasurementCorrectiveDoseAmount"
-                android:layout_width="0dp"
+                android:id="@+id/summary_lowest_TV"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
-
-            <TextView
-
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="5dp"
-                android:text="units"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/bloodGlucoseMeasurementCorrectiveDoseDrugName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="5dp"
-                android:text="Humalog"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
+                android:text="3.2mmo/L" />
         </TableRow>
 
         <TableRow
-            android:id="@+id/_baselineAmountRow"
+
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/imageView6"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_flask_outline"
-                android:textColor="@color/cardview_dark_background" />
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
             <TextView
-                android:id="@+id/bloodGlucoseMeasurementBaselineDoseAmount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
+                android:text="On average you take " />
 
             <TextView
-
+                android:id="@+id/summary_average_corrective_TV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="5dp"
-                android:text="units"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
+                android:layout_weight="2"
+                android:text="32 units of Humolog" />
 
-            <TextView
-                android:id="@+id/bloodGlucoseMeasurementBaselineDoseDrugName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="5dp"
-                android:text="Lantus"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
         </TableRow>
 
         <TableRow
-            android:id="@+id/_notesRow"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/imageView7"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_description_24px" />
+            android:visibility="visible">
 
             <TextView
-                android:id="@+id/bloodGlucoseMeasurementNotes"
+                android:id="@+id/textView16"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:paddingStart="5dp"
-                android:text="TextView"
-                android:textColor="@color/cardview_dark_background"
-                android:textSize="18sp" />
+                android:text="Your highest readings are usually around " />
+
+            <TextView
+                android:id="@+id/summary_highest_time_of_day_TV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="Lunch" />
         </TableRow>
 
     </TableLayout>

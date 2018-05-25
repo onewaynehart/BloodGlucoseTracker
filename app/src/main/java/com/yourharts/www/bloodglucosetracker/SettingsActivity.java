@@ -37,6 +37,7 @@ public class SettingsActivity extends PreferenceActivity {
         private ListPreference _defaultCSVLP;
         private EditTextPreference _defaultThresholdETP;
         private SwitchPreference _useLastAsDefaultSw;
+        private SwitchPreference _showSummaryCard;
 
         private Preference _deleteAllDataButton;
         private DBHelper _dbHelper;
@@ -54,6 +55,7 @@ public class SettingsActivity extends PreferenceActivity {
             _useLastAsDefaultSw = (SwitchPreference)findPreference(getString(R.string.pref_use_last_as_default));
             _defaultThresholdETP = (EditTextPreference)findPreference("PREF_DEFAULT_THRESHOLD");
             _defaultCSVLP = (ListPreference) findPreference("PREF_DEFAULT_CSVDELIMITER");
+            _showSummaryCard = (SwitchPreference) findPreference("PREF_SHOW_SUMMARY_CARD");
             setDefaults();
 
 
@@ -222,6 +224,19 @@ public class SettingsActivity extends PreferenceActivity {
                 try {
                     useLastAsDefault = _useLastAsDefaultSw.isChecked();
                     editor.putBoolean(getString(R.string.pref_use_last_as_default), useLastAsDefault);
+                    editor.apply();
+                    editor.commit();
+                }
+                catch(Exception e){
+
+                }
+            }
+            if(key.equals(("PREF_SHOW_SUMMARY_CARD"))){
+                SharedPreferences.Editor editor = _sharedPref.edit();
+                boolean showSummary = false;
+                try {
+                    showSummary = _showSummaryCard.isChecked();
+                    editor.putBoolean("PREF_SHOW_SUMMARY_CARD", showSummary);
                     editor.apply();
                     editor.commit();
                 }
