@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         _listener = new Listener(MainActivity.this, _sharedPref);
         _popupFilterView = layoutInflater.inflate(R.layout.drop_down_filters, null);
-        _filterMenuItem = findViewById(R.id.menu_item_filter);
+
         _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         _dropDownMenu.setOutsideTouchable(true);
@@ -110,12 +110,12 @@ public class MainActivity extends Activity {
         if(_adapter.getItemCount() == 0) {
 
             _gettingStartedCard.setVisibility(View.VISIBLE);
-            _filterMenuItem.setVisible(false);
+
         }
         else
         {
             _gettingStartedCard.setVisibility(View.GONE);
-            _filterMenuItem.setVisible(true);
+
         }
 
     }
@@ -304,13 +304,13 @@ public class MainActivity extends Activity {
             LineData lineData = new LineData();
 
 
-            if (_showBreakfastSW.isChecked())
+            if (_showBreakfastSW.isChecked() && breakfastEntries.size() > 0 )
                 lineData.addDataSet(breakfastDataSet);
-            if (_showLunchSW.isChecked())
+            if (_showLunchSW.isChecked() && lunchEntries.size() > 0)
                 lineData.addDataSet(lunchDataSet);
-            if (_showDinnerSW.isChecked())
+            if (_showDinnerSW.isChecked() && dinnerEntries.size() > 0 )
                 lineData.addDataSet(dinnerDataSet);
-            if (_showBedtimeSW.isChecked())
+            if (_showBedtimeSW.isChecked() && bedtimeEntries.size() > 0 )
                 lineData.addDataSet(bedtimeDataSet);
             graph.getXAxis().setGranularity(1.0f);
             graph.getXAxis().setTextColor(getResources().getColor(R.color.colorSurface));
@@ -364,19 +364,22 @@ public class MainActivity extends Activity {
         if(_adapter.getItemCount() == 0) {
 
             _gettingStartedCard.setVisibility(View.VISIBLE);
-            _filterMenuItem.setVisible(false);
+
         }
         else
         {
             _gettingStartedCard.setVisibility(View.GONE);
-            _filterMenuItem.setVisible(true);
+
         }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        _filterMenuItem = menu.findItem(R.id.menu_item_filter);
+        _filterMenuItem.setVisible(_adapter.getItemCount() > 0);
         return true;
     }
 
