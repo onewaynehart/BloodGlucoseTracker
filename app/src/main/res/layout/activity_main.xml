@@ -7,15 +7,17 @@
     android:background="@color/colorBackground"
     tools:context=".MainActivity">
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="bottom|end"
-
-        android:background="@drawable/ic_add"
-        android:backgroundTint="?android:attr/textColorLinkInverse"
-        android:elevation="3dp" />
+        android:layout_margin="10dp"
+        android:background="@color/colorPrimary"
+        android:clickable="true"
+        android:src="@drawable/ic_add_white_24px"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorPrimary" />
 
     <LinearLayout
         android:layout_width="match_parent"

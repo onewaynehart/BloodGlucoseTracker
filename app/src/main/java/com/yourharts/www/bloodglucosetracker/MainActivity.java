@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,7 +61,7 @@ public class MainActivity extends Activity {
     private SharedPreferences _sharedPref;
     private CardView _summaryCard;
     private CardView _gettingStartedCard;
-    private Button _fab;
+    private FloatingActionButton _fab;
     private Switch _showHighOnlySW;
     private Switch _showBreakfastSW;
     private Switch _showLunchSW;
@@ -68,6 +69,7 @@ public class MainActivity extends Activity {
     private Switch _showBedtimeSW;
     private Switch _showSummarySW;
     private View _popupFilterView;
+    private TextView _summaryTextView;
     private Listener _listener;
     private MenuItem _filterMenuItem;
     PopupWindow _dropDownMenu;
@@ -80,7 +82,7 @@ public class MainActivity extends Activity {
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         _listener = new Listener(MainActivity.this, _sharedPref);
         _popupFilterView = layoutInflater.inflate(R.layout.drop_down_filters, null);
-
+        _summaryTextView = findViewById(R.id._summaryTV);
         _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         _dropDownMenu.setOutsideTouchable(true);
@@ -156,22 +158,26 @@ public class MainActivity extends Activity {
             _summaryCard.setVisibility(View.GONE);
             return;
         }
-
         List<DataModelInterface> measurementUnits = _dbHelper.getMeasurementUnits();
-        TextView highestRecorded = findViewById(R.id.summary_highest_TV);
-        TextView lowestRecorded = findViewById(R.id.summary_lowest_TV);
-        TextView averageCorrective = findViewById(R.id.summary_average_corrective_TV);
-        TextView highestRecordedDate = findViewById(R.id.summary_highest_date_TV);
-        TextView highestTimeOfDay = findViewById(R.id.summary_highest_time_of_day_TV);
+        double highestRecorded = 0.0;
+        double lowestRecorded = 0.0;
+        String lowestUnits = "";
+        double averageCorrective = 0.0;
+        String highestUnits ="";
+        String highestRecordedDate = "";
+        String highestTimeOfDay = "";
+        String lowestRecordedDate = "";
+        if(measurements.size() ==0 )
+            return;
         BloodMeasurementModel inUse = measurements.get(0);
         for (BloodMeasurementModel bmm : measurements) {
             if (bmm.get_glucoseMeasurement() >= inUse.get_glucoseMeasurement())
                 inUse = bmm;
         }
         if (inUse != null) {
-            String highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
-            highestRecorded.setText(Double.toString(inUse.get_glucoseMeasurement()) + " " + highestUnits);
-            highestRecordedDate.setText(inUse.get_glucoseMeasurementDate());
+            highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
+            highestRecorded = inUse.get_glucoseMeasurement();
+            highestRecordedDate = inUse.get_glucoseMeasurementDate();
         }
         inUse = measurements.get(0);
         for (BloodMeasurementModel bmm : measurements) {
@@ -179,9 +185,9 @@ public class MainActivity extends Activity {
                 inUse = bmm;
         }
         if (inUse != null) {
-            String lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
-            lowestRecorded.setText(Double.toString(inUse.get_glucoseMeasurement()) + " " + lowestUnits);
-            highestRecordedDate.setText(inUse.get_glucoseMeasurementDate());
+            lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
+            lowestRecorded = inUse.get_glucoseMeasurement();
+            lowestRecordedDate = inUse.get_glucoseMeasurementDate();
         }
         Map<String, ArrayList<Double>> correctiveMap = new HashMap<String, ArrayList<Double>>();
         for (BloodMeasurementModel bmm : measurements) {
@@ -209,7 +215,7 @@ public class MainActivity extends Activity {
             }
         }
         double dailyAverage = (amount / (float) correctiveMap.keySet().size());
-        averageCorrective.setText(String.format("%2.2f", dailyAverage) + " corrective drug units daily.");
+        averageCorrective = dailyAverage;
 
 
         Map<String, Double> timeofday = new HashMap<>();
@@ -252,7 +258,26 @@ public class MainActivity extends Activity {
                 highestKey = key;
             }
         }
-        highestTimeOfDay.setText(highestKey + ".");
+        highestTimeOfDay = highestKey;
+        List<DataModelInterface>correctiveDrugs = _dbHelper.getShortLastingDrugs();
+
+        int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
+        int correctiveDrugPos = (_dbHelper.getPosition(correctiveDrugs, defaultCorrectiveDrugID));
+        String correctiveDrugName = correctiveDrugs.get(correctiveDrugPos).getString();
+
+        String summary = String.format("Your highest ever blood glucose reading was %.2f %s taken on %s.\nYour lowest ever blood glucose reading was %.2f %s taken on %s.\nOn average you take %.2f units of %s a day to correct your levels.\nYour highest readings are usually around %s.",
+                highestRecorded,
+                highestUnits,
+                highestRecordedDate,
+                lowestRecorded,
+                lowestUnits,
+                lowestRecordedDate,
+                averageCorrective,
+                correctiveDrugName,
+                highestTimeOfDay);
+        _summaryTextView.setText(summary);
+
+
 
         LineChart graph = findViewById(R.id.summary_card_graphView);
         graph.invalidate();

@@ -17,8 +17,9 @@
         <item name="android:layout_gravity">center_horizontal|center_vertical</item>
     </style>
 
-    <style name="Elegant" parent="android:Theme.Material.Light" >
-
+    <style name="Elegant" parent="Theme.AppCompat.Light" >
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">true</item>
 
     </style>
 

@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:padding="3dp"
-                android:text="It appears you haven't recorded any measurements yet. Let's get started! Press the add button in the lower right hand corner to record your first measurement! You can also check out the settings by pressing the gear icon up top.
+                android:text="It appears you haven't recorded any measurements yet. Let's get started! Press the add button in the lower right hand corner to record your first measurement!
 I think you're ready now. Hope you enjoy using this application."
                 android:textSize="18sp" />
 
