@@ -169,37 +169,31 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             _notesRow = mView.findViewById(R.id._notesRow);
             _correctiveAmountRow = mView.findViewById(R.id._correctiveAmountRow);
             _baselineAmountRow = mView.findViewById(R.id._baselineAmountRow);
-            View.OnClickListener clickListener = new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (v.equals(mdeleteImage)) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(mView.getContext(), R.style.Elegant);
-
-                        alert.setTitle("Delete entry");
-                        alert.setMessage("Are you sure you want to delete this measurement? It cannot be undone!");
-                        alert.setPositiveButton(R.string.deleteYesBtn, new DialogInterface.OnClickListener() {
 
 
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
-                                BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                                if(mActivity.getDBHelper().deleteMeasurementRecord(model.get_id())==true)
-                                    removeAt(getAdapterPosition());
-                            }
-                        });
-                        alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // close dialog
-                                dialog.cancel();
-                            }
-                        });
-                        alert.show();
-                    }
-                    if (v.equals(mEditImage)) {
+            View.OnClickListener clickListener = v -> {
+                if (v.equals(mdeleteImage)) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(mView.getContext(), R.style.MyAlertDialogStyle);
+
+                    alert.setTitle("Delete entry");
+                    alert.setMessage("Are you sure you want to delete this measurement? It cannot be undone!");
+                    alert.setPositiveButton(R.string.deleteYesBtn, (dialog, which) -> {
+                        // continue with delete
                         BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                        Intent intent = new Intent(mActivity, AddMeasurementActivity.class);
-                        intent.putExtra("ID", model.get_id());
-                        mActivity.startActivity(intent);
-                    }
+                        if(mActivity.getDBHelper().deleteMeasurementRecord(model.get_id())==true)
+                            removeAt(getAdapterPosition());
+                    });
+                    alert.setNegativeButton(android.R.string.no, (dialog, which) -> {
+                        // close dialog
+                        dialog.cancel();
+                    });
+                    alert.show();
+                }
+                if (v.equals(mEditImage)) {
+                    BloodMeasurementModel model = mDataset.get(getAdapterPosition());
+                    Intent intent = new Intent(mActivity, AddMeasurementActivity.class);
+                    intent.putExtra("ID", model.get_id());
+                    mActivity.startActivity(intent);
                 }
             };
             mEditImage.setOnClickListener(clickListener);

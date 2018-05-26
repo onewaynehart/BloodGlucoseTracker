@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/getting_started_card"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+
+
+    android:elevation="6dp"
+    android:padding="5dp"
+
+    app:cardBackgroundColor="@android:color/holo_orange_dark"
+    app:cardCornerRadius="5dp">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/colorPressedHighlight"
+            android:backgroundTint="?android:attr/colorPressedHighlight">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_baseline_transfer_within_a_station_24px"
+                app:srcCompat="@drawable/ic_baseline_transfer_within_a_station_24px" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:paddingLeft="3dp"
+                android:text="Lets get started!"
+                android:textAppearance="@android:style/TextAppearance.Large" />
+
+        </TableRow>
+
+        <TableRow
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:padding="3dp"
+                android:text="It appears you haven't recorded any measurements yet. Let's get started! Press the add button in the lower right hand corner to record your first measurement! You can also check out the settings by pressing the gear icon up top.
+I think you're ready now. Hope you enjoy using this application."
+                android:textSize="18sp" />
+
+        </TableRow>
+
+    </TableLayout>
+</android.support.v7.widget.CardView>

@@ -38,9 +38,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public class MainActivity extends Activity {
     private DateFormat _dbDateFormat;
     private SharedPreferences _sharedPref;
     private CardView _summaryCard;
+    private CardView _gettingStartedCard;
     private Button _fab;
     private Switch _showHighOnlySW;
     private Switch _showBreakfastSW;
@@ -67,6 +69,7 @@ public class MainActivity extends Activity {
     private Switch _showSummarySW;
     private View _popupFilterView;
     private Listener _listener;
+    private MenuItem _filterMenuItem;
     PopupWindow _dropDownMenu;
 
     @Override
@@ -77,9 +80,47 @@ public class MainActivity extends Activity {
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         _listener = new Listener(MainActivity.this, _sharedPref);
         _popupFilterView = layoutInflater.inflate(R.layout.drop_down_filters, null);
+        _filterMenuItem = findViewById(R.id.menu_item_filter);
         _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         _dropDownMenu.setOutsideTouchable(true);
+        setupListeners();
+        _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
+        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
+        _measurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
+        _summaryCard = findViewById(R.id.summary_card);
+        _gettingStartedCard = findViewById(R.id.getting_started_card);
+        _measurementView.setHasFixedSize(true);
+        _layoutManager = new LinearLayoutManager(this);
+        _measurementView.setLayoutManager(_layoutManager);
+
+        _fab = findViewById(R.id.fab);
+        _fab.setOnClickListener(_listener);
+
+        try {
+            _dbHelper.prepareDatabase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        loadUserPreferences();
+
+
+        loadMeasurements();
+        loadSummary();
+        if(_adapter.getItemCount() == 0) {
+
+            _gettingStartedCard.setVisibility(View.VISIBLE);
+            _filterMenuItem.setVisible(false);
+        }
+        else
+        {
+            _gettingStartedCard.setVisibility(View.GONE);
+            _filterMenuItem.setVisible(true);
+        }
+
+    }
+
+    private void setupListeners() {
         _dropDownMenu.setOnDismissListener(_listener);
         _showHighOnlySW = _popupFilterView.findViewById(R.id.filter_switch_show_high_only);
         _showHighOnlySW.setOnCheckedChangeListener(_listener);
@@ -93,29 +134,9 @@ public class MainActivity extends Activity {
         _showBedtimeSW.setOnCheckedChangeListener(_listener);
         _showSummarySW = _popupFilterView.findViewById(R.id.filter_switch_show_summary);
         _showSummarySW.setOnCheckedChangeListener(_listener);
-        _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
-        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
-        _measurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
-        _summaryCard = findViewById(R.id.summary_card);
-        _measurementView.setHasFixedSize(true);
-        _layoutManager = new LinearLayoutManager(this);
-        _measurementView.setLayoutManager(_layoutManager);
-
-        _fab = findViewById(R.id.fab);
-        _fab.setOnClickListener(_listener);
-
-        try {
-            _dbHelper.prepareDatabase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        LoadUserPreferences();
-
-
-        LoadMeasurements();
     }
 
-    private void LoadUserPreferences() {
+    private void loadUserPreferences() {
         _showSummarySW.setChecked(_sharedPref.getBoolean("PREF_SHOW_SUMMARY_CARD", true));
         _showHighOnlySW.setChecked(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY", false));
         _showBreakfastSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST", true));
@@ -125,13 +146,17 @@ public class MainActivity extends Activity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void LoadSummary() {
-
-        _summaryCard.setVisibility(get_showSummarySW().isChecked() ? View.VISIBLE : View.GONE);
-
+    private void loadSummary() {
+        _summaryCard.setVisibility(_showSummarySW.isChecked() ? View.VISIBLE : View.GONE);
         if (_showSummarySW.isChecked() == false)
             return;
+
         List<BloodMeasurementModel> measurements = _dbHelper.getBloodMeasurements();
+        if(measurements.size() == 0){
+            _summaryCard.setVisibility(View.GONE);
+            return;
+        }
+
         List<DataModelInterface> measurementUnits = _dbHelper.getMeasurementUnits();
         TextView highestRecorded = findViewById(R.id.summary_highest_TV);
         TextView lowestRecorded = findViewById(R.id.summary_lowest_TV);
@@ -238,24 +263,32 @@ public class MainActivity extends Activity {
         List<Entry> bedtimeEntries = new ArrayList<>();
 
 
-        count = 0;
+
+        measurements.sort(Comparator.comparing(BloodMeasurementModel::get_glucoseMeasurementDate));
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.database_date_format));
+
+
         for (BloodMeasurementModel bmm : measurements) {
 
-
+            try {
+                cal.setTime(sdf.parse(bmm.get_glucoseMeasurementDate()));// all done
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             if (bmm.isBreakfast()) {
-                breakfastEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+                breakfastEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
             }
             if (bmm.isLunch()) {
-                lunchEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+                lunchEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
             }
             if (bmm.isDinner()) {
-                dinnerEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+                dinnerEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
             }
             if (bmm.isBedtime()) {
-                bedtimeEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+                bedtimeEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
             }
-
-            count++;
         }
         try {
             LineDataSet breakfastDataSet = new LineDataSet(breakfastEntries, "breakfast");
@@ -271,14 +304,16 @@ public class MainActivity extends Activity {
             LineData lineData = new LineData();
 
 
-            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST", true))
+            if (_showBreakfastSW.isChecked())
                 lineData.addDataSet(breakfastDataSet);
-            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_LUNCH", true))
+            if (_showLunchSW.isChecked())
                 lineData.addDataSet(lunchDataSet);
-            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_DINNER", true))
+            if (_showDinnerSW.isChecked())
                 lineData.addDataSet(dinnerDataSet);
-            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME", true))
+            if (_showBedtimeSW.isChecked())
                 lineData.addDataSet(bedtimeDataSet);
+            graph.getXAxis().setGranularity(1.0f);
+            graph.getXAxis().setTextColor(getResources().getColor(R.color.colorSurface));
             graph.getDescription().setText("Measurements over time.");
             graph.setData(lineData);
             graph.invalidate();
@@ -291,25 +326,25 @@ public class MainActivity extends Activity {
 
     }
 
-    private void LoadMeasurements() {
+    private void loadMeasurements() {
         List<BloodMeasurementModel> measurements = getDBHelper().getBloodMeasurements();
 
-        List<BloodMeasurementModel> filteredMeasurements = new ArrayList<BloodMeasurementModel>();
+        List<BloodMeasurementModel> filteredMeasurements = new ArrayList<>();
         for (BloodMeasurementModel bmm : measurements) {
-            if (get_showHighOnlySW().isChecked()) {
+            if (_showHighOnlySW.isChecked()) {
                 if (bmm.isHigh())
                     filteredMeasurements.add(bmm);
             } else {
-                if (bmm.isBreakfast() && get_showBreakfastSW().isChecked()) {
+                if (bmm.isBreakfast() && _showBreakfastSW.isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
-                if (bmm.isLunch() && get_showLunchSW().isChecked()) {
+                if (bmm.isLunch() && _showLunchSW.isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
-                if (bmm.isDinner() && get_showDinnerSW().isChecked()) {
+                if (bmm.isDinner() && _showDinnerSW.isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
-                if (bmm.isBedtime() && get_showBedtimeSW().isChecked()) {
+                if (bmm.isBedtime() && _showBedtimeSW.isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
             }
@@ -324,16 +359,18 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        LoadMeasurements();
+        loadMeasurements();
+        loadSummary();
+        if(_adapter.getItemCount() == 0) {
 
-        if (get_showSummarySW().isChecked()) {
-            try {
-                LoadSummary();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            _gettingStartedCard.setVisibility(View.VISIBLE);
+            _filterMenuItem.setVisible(false);
         }
-        _summaryCard.setVisibility(get_showSummarySW().isChecked() ? View.VISIBLE : View.GONE);
+        else
+        {
+            _gettingStartedCard.setVisibility(View.GONE);
+            _filterMenuItem.setVisible(true);
+        }
     }
 
     @Override
@@ -395,41 +432,23 @@ public class MainActivity extends Activity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void notifyPreferencesChanged() {
+
+        loadSummary();
+        loadMeasurements();
+    }
+
+
+
+    public void savePreferences() {
         SharedPreferences.Editor editor = _sharedPref.edit();
-        editor.putBoolean("PREF_FILTER_HIGH_ONLY", get_showHighOnlySW().isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_BREAKFAST", get_showBreakfastSW().isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_LUNCH", get_showLunchSW().isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_DINNER", get_showDinnerSW().isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", get_showBedtimeSW().isChecked());
-        editor.putBoolean("PREF_SHOW_SUMMARY_CARD", get_showSummarySW().isChecked());
+        editor.putBoolean("PREF_FILTER_HIGH_ONLY", _showHighOnlySW.isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_BREAKFAST", _showBreakfastSW.isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_LUNCH", _showLunchSW.isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_DINNER", _showDinnerSW.isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", _showBedtimeSW.isChecked());
+        editor.putBoolean("PREF_SHOW_SUMMARY_CARD",_showSummarySW.isChecked());
         editor.apply();
         editor.commit();
-        LoadSummary();
-        LoadMeasurements();
-    }
-
-    public Switch get_showHighOnlySW() {
-        return _showHighOnlySW;
-    }
-
-    public Switch get_showBreakfastSW() {
-        return _showBreakfastSW;
-    }
-
-    public Switch get_showLunchSW() {
-        return _showLunchSW;
-    }
-
-    public Switch get_showDinnerSW() {
-        return _showDinnerSW;
-    }
-
-    public Switch get_showBedtimeSW() {
-        return _showBedtimeSW;
-    }
-
-    public Switch get_showSummarySW() {
-        return _showSummarySW;
     }
 }
 
@@ -452,12 +471,13 @@ class Listener implements View.OnClickListener, CompoundButton.OnCheckedChangeLi
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        //_activity.notifyPreferencesChanged();
+        _activity.notifyPreferencesChanged();
 
     }
 
     @Override
     public void onDismiss() {
         _activity.notifyPreferencesChanged();
+        _activity.savePreferences();
     }
 }

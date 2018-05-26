@@ -4,18 +4,22 @@
 
 
 
-    <style name="MyAlertDialogStyle">
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!-- Used for the buttons -->
-        <item name="android:colorAccent">#FFC107</item>
+        <item name="android:colorAccent">#ff7707</item>
         <!-- Used for the title and text -->
-        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorPrimary">#ffffff</item>
         <!-- Used for the background -->
-        <item name="android:background">#b1dbe9</item>
+        <item name="android:background">#022e3e</item>
+
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal|center_vertical</item>
     </style>
 
     <style name="Elegant" parent="android:Theme.Material.Light" >
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:windowActionBar">true</item>
+
+
     </style>
 
 
