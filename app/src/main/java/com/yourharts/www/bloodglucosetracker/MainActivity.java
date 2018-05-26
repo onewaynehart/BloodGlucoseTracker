@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,12 +18,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
@@ -32,106 +35,139 @@ import com.yourharts.www.Models.DataModelInterface;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class MainActivity extends Activity {
-    private RecyclerView mMeasurementView;
-    private GlucoseMeasurementAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private DBHelper mDbHelper;
-    private DateFormat dbDateFormat;
+    private RecyclerView _measurementView;
+    private GlucoseMeasurementAdapter _adapter;
+    private RecyclerView.LayoutManager _layoutManager;
+    private DBHelper _dbHelper;
+    private DateFormat _dbDateFormat;
     private SharedPreferences _sharedPref;
     private CardView _summaryCard;
+    private Button _fab;
+    private Switch _showHighOnlySW;
+    private Switch _showBreakfastSW;
+    private Switch _showLunchSW;
+    private Switch _showDinnerSW;
+    private Switch _showBedtimeSW;
+    private Switch _showSummarySW;
+    private View _popupFilterView;
+    private Listener _listener;
+    PopupWindow _dropDownMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
-        dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
-        mDbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
-        mMeasurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
+        _listener = new Listener(MainActivity.this, _sharedPref);
+        _popupFilterView = layoutInflater.inflate(R.layout.drop_down_filters, null);
+        _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        _dropDownMenu.setOutsideTouchable(true);
+        _dropDownMenu.setOnDismissListener(_listener);
+        _showHighOnlySW = _popupFilterView.findViewById(R.id.filter_switch_show_high_only);
+        _showHighOnlySW.setOnCheckedChangeListener(_listener);
+        _showBreakfastSW = _popupFilterView.findViewById(R.id.filter_switch_show_breakfast);
+        _showBreakfastSW.setOnCheckedChangeListener(_listener);
+        _showLunchSW = _popupFilterView.findViewById(R.id.filter_switch_show_lunch);
+        _showLunchSW.setOnCheckedChangeListener(_listener);
+        _showDinnerSW = _popupFilterView.findViewById(R.id.filter_switch_show_dinner);
+        _showDinnerSW.setOnCheckedChangeListener(_listener);
+        _showBedtimeSW = _popupFilterView.findViewById(R.id.filter_switch_show_bedtime);
+        _showBedtimeSW.setOnCheckedChangeListener(_listener);
+        _showSummarySW = _popupFilterView.findViewById(R.id.filter_switch_show_summary);
+        _showSummarySW.setOnCheckedChangeListener(_listener);
+        _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
+        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
+        _measurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
         _summaryCard = findViewById(R.id.summary_card);
-        mMeasurementView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mMeasurementView.setLayoutManager(mLayoutManager);
-        Button fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddMeasurementActivity.class);
-                startActivity(intent);
-            }
-        });
+        _measurementView.setHasFixedSize(true);
+        _layoutManager = new LinearLayoutManager(this);
+        _measurementView.setLayoutManager(_layoutManager);
+
+        _fab = findViewById(R.id.fab);
+        _fab.setOnClickListener(_listener);
 
         try {
-            mDbHelper.prepareDatabase();
+            _dbHelper.prepareDatabase();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        LoadUserPreferences();
+
 
         LoadMeasurements();
-        boolean showSummary = _sharedPref.getBoolean("PREF_SHOW_SUMMARY_CARD",true);
-        if(showSummary)
-            LoadSummary();
-        _summaryCard.setVisibility(showSummary?View.VISIBLE : View.GONE);
     }
 
+    private void LoadUserPreferences() {
+        _showSummarySW.setChecked(_sharedPref.getBoolean("PREF_SHOW_SUMMARY_CARD", true));
+        _showHighOnlySW.setChecked(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY", false));
+        _showBreakfastSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST", true));
+        _showLunchSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_LUNCH", true));
+        _showDinnerSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_DINNER", true));
+        _showBedtimeSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME", true));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void LoadSummary() {
-        List<BloodMeasurementModel> measurements = getmDbHelper().getBloodMeasurements();
-        List<DataModelInterface> measurementUnits = getmDbHelper().getMeasurementUnits();
+
+        _summaryCard.setVisibility(get_showSummarySW().isChecked() ? View.VISIBLE : View.GONE);
+
+        if (_showSummarySW.isChecked() == false)
+            return;
+        List<BloodMeasurementModel> measurements = _dbHelper.getBloodMeasurements();
+        List<DataModelInterface> measurementUnits = _dbHelper.getMeasurementUnits();
         TextView highestRecorded = findViewById(R.id.summary_highest_TV);
         TextView lowestRecorded = findViewById(R.id.summary_lowest_TV);
         TextView averageCorrective = findViewById(R.id.summary_average_corrective_TV);
         TextView highestRecordedDate = findViewById(R.id.summary_highest_date_TV);
         TextView highestTimeOfDay = findViewById(R.id.summary_highest_time_of_day_TV);
         BloodMeasurementModel inUse = measurements.get(0);
-        for(BloodMeasurementModel bmm : measurements){
-            if(bmm.getGlucoseMeasurement() >= inUse.getGlucoseMeasurement())
+        for (BloodMeasurementModel bmm : measurements) {
+            if (bmm.get_glucoseMeasurement() >= inUse.get_glucoseMeasurement())
                 inUse = bmm;
         }
-        if(inUse!=null)
-        {
-            String highestUnits = measurementUnits.get(mDbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
-            highestRecorded.setText(Double.toString(inUse.getGlucoseMeasurement()) + " "+highestUnits);
-            highestRecordedDate.setText(inUse.getGlucoseMeasurementDate());
+        if (inUse != null) {
+            String highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
+            highestRecorded.setText(Double.toString(inUse.get_glucoseMeasurement()) + " " + highestUnits);
+            highestRecordedDate.setText(inUse.get_glucoseMeasurementDate());
         }
         inUse = measurements.get(0);
-        for(BloodMeasurementModel bmm : measurements){
-            if(bmm.getGlucoseMeasurement() <= inUse.getGlucoseMeasurement())
+        for (BloodMeasurementModel bmm : measurements) {
+            if (bmm.get_glucoseMeasurement() <= inUse.get_glucoseMeasurement())
                 inUse = bmm;
         }
-        if(inUse!=null)
-        {
-            String lowestUnits = measurementUnits.get(mDbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
-            lowestRecorded.setText(Double.toString(inUse.getGlucoseMeasurement()) + " "+lowestUnits);
-            highestRecordedDate.setText(inUse.getGlucoseMeasurementDate());
+        if (inUse != null) {
+            String lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
+            lowestRecorded.setText(Double.toString(inUse.get_glucoseMeasurement()) + " " + lowestUnits);
+            highestRecordedDate.setText(inUse.get_glucoseMeasurementDate());
         }
         Map<String, ArrayList<Double>> correctiveMap = new HashMap<String, ArrayList<Double>>();
-        for(BloodMeasurementModel bmm : measurements){
+        for (BloodMeasurementModel bmm : measurements) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                Date date = sdf.parse(bmm.getGlucoseMeasurementDate());
-                if(correctiveMap.containsKey(date.toString())){
-                    correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
-                }
-                else
-                {
+                Date date = sdf.parse(bmm.get_glucoseMeasurementDate());
+                if (correctiveMap.containsKey(date.toString())) {
+                    correctiveMap.get(date.toString()).add(bmm.get_correctiveDoseAmount());
+                } else {
                     correctiveMap.put(date.toString(), new ArrayList<Double>());
-                    correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
+                    correctiveMap.get(date.toString()).add(bmm.get_correctiveDoseAmount());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -139,115 +175,165 @@ public class MainActivity extends Activity {
         }
         int count = 0;
         Double amount = 0.0;
-        for(String key : correctiveMap.keySet()){
+        for (String key : correctiveMap.keySet()) {
             count = 0;
             ArrayList<Double> doses = correctiveMap.get(key);
-            for(Double dose : doses) {
+            for (Double dose : doses) {
                 amount += dose;
                 count++;
             }
         }
         double dailyAverage = (amount / (float) correctiveMap.keySet().size());
-        averageCorrective.setText(String.format("%2.2f",dailyAverage) + " corrective drug units daily.");
+        averageCorrective.setText(String.format("%2.2f", dailyAverage) + " corrective drug units daily.");
 
 
-        Map<String, Double> timeofday = new HashMap<String, Double>();
-        for(BloodMeasurementModel bmm : measurements){
-            if(bmm.isBreakfast()) {
-                if(timeofday.containsKey("breakfast")){
-                    timeofday.put("breakfast", timeofday.get("breakfast")+bmm.getGlucoseMeasurement());
-                }
-                else{
-                    timeofday.put("breakfast",bmm.getGlucoseMeasurement());
+        Map<String, Double> timeofday = new HashMap<>();
+        for (BloodMeasurementModel bmm : measurements) {
+            if (bmm.isBreakfast()) {
+                if (timeofday.containsKey("breakfast")) {
+                    timeofday.put("breakfast", timeofday.get("breakfast") + bmm.get_glucoseMeasurement());
+                } else {
+                    timeofday.put("breakfast", bmm.get_glucoseMeasurement());
                 }
             }
-            if(bmm.isLunch()) {
+            if (bmm.isLunch()) {
                 if (timeofday.containsKey("lunch")) {
-                    timeofday.put("lunch", timeofday.get("lunch") + bmm.getGlucoseMeasurement());
+                    timeofday.put("lunch", timeofday.get("lunch") + bmm.get_glucoseMeasurement());
                 } else {
-                    timeofday.put("lunch", bmm.getGlucoseMeasurement());
+                    timeofday.put("lunch", bmm.get_glucoseMeasurement());
                 }
             }
-            if(bmm.isDinner())
-            {
+            if (bmm.isDinner()) {
                 if (timeofday.containsKey("dinner")) {
-                    timeofday.put("dinner", timeofday.get("dinner") + bmm.getGlucoseMeasurement());
+                    timeofday.put("dinner", timeofday.get("dinner") + bmm.get_glucoseMeasurement());
                 } else {
-                    timeofday.put("dinner", bmm.getGlucoseMeasurement());
+                    timeofday.put("dinner", bmm.get_glucoseMeasurement());
                 }
             }
-            if(bmm.isBedtime())
-            {
+            if (bmm.isBedtime()) {
                 if (timeofday.containsKey("bedtime")) {
-                    timeofday.put("bedtime", timeofday.get("bedtime") + bmm.getGlucoseMeasurement());
+                    timeofday.put("bedtime", timeofday.get("bedtime") + bmm.get_glucoseMeasurement());
                 } else {
-                    timeofday.put("bedtime", bmm.getGlucoseMeasurement());
+                    timeofday.put("bedtime", bmm.get_glucoseMeasurement());
                 }
             }
         }
-        String highestKey =null;
+        String highestKey = null;
         Double highestValue = 0.0;
 
-        for(String key : timeofday.keySet()){
-            if(timeofday.get(key) >= highestValue)
-            {
+        for (String key : timeofday.keySet()) {
+            if (timeofday.get(key) >= highestValue) {
                 highestValue = timeofday.get(key);
                 highestKey = key;
             }
         }
-        highestTimeOfDay.setText(highestKey+".");
+        highestTimeOfDay.setText(highestKey + ".");
+
+        LineChart graph = findViewById(R.id.summary_card_graphView);
+        graph.invalidate();
+        graph.clear();
+        List<Entry> breakfastEntries = new ArrayList<>();
+        List<Entry> lunchEntries = new ArrayList<>();
+        List<Entry> dinnerEntries = new ArrayList<>();
+        List<Entry> bedtimeEntries = new ArrayList<>();
+
+
+        count = 0;
+        for (BloodMeasurementModel bmm : measurements) {
+
+
+            if (bmm.isBreakfast()) {
+                breakfastEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+            }
+            if (bmm.isLunch()) {
+                lunchEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+            }
+            if (bmm.isDinner()) {
+                dinnerEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+            }
+            if (bmm.isBedtime()) {
+                bedtimeEntries.add(new Entry(count, (float) bmm.get_glucoseMeasurement()));
+            }
+
+            count++;
+        }
+        try {
+            LineDataSet breakfastDataSet = new LineDataSet(breakfastEntries, "breakfast");
+            LineDataSet lunchDataSet = new LineDataSet(lunchEntries, "lunch");
+            LineDataSet dinnerDataSet = new LineDataSet(dinnerEntries, "dinner");
+            LineDataSet bedtimeDataSet = new LineDataSet(bedtimeEntries, "bedtime");
+            breakfastDataSet.setColor(getResources().getColor(R.color.colorPrimaryVariant));
+            lunchDataSet.setColor(getResources().getColor(R.color.colorPrimaryVariant2));
+            dinnerDataSet.setColor(getResources().getColor(R.color.colorSecondary));
+            bedtimeDataSet.setColor(getResources().getColor(R.color.colorSecondaryVariant));
+
+
+            LineData lineData = new LineData();
+
+
+            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST", true))
+                lineData.addDataSet(breakfastDataSet);
+            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_LUNCH", true))
+                lineData.addDataSet(lunchDataSet);
+            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_DINNER", true))
+                lineData.addDataSet(dinnerDataSet);
+            if (_sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME", true))
+                lineData.addDataSet(bedtimeDataSet);
+            graph.getDescription().setText("Measurements over time.");
+            graph.setData(lineData);
+            graph.invalidate();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
 
     private void LoadMeasurements() {
-
-        LoadMeasurements(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY",false),
-                _sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST",true),
-                _sharedPref.getBoolean("PREF_FILTER_SHOW_LUNCH",true),
-                _sharedPref.getBoolean("PREF_FILTER_SHOW_DINNER",true),
-                _sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME",true)
-                );
-    }
-
-    private void LoadMeasurements(boolean showHigh, boolean showBreakfast, boolean showLunch, boolean showDinner, boolean showBedtime) {
-        List<BloodMeasurementModel> measurements = getmDbHelper().getBloodMeasurements();
+        List<BloodMeasurementModel> measurements = getDBHelper().getBloodMeasurements();
 
         List<BloodMeasurementModel> filteredMeasurements = new ArrayList<BloodMeasurementModel>();
         for (BloodMeasurementModel bmm : measurements) {
-            if (showHigh) {
-                if(bmm.isHigh())
+            if (get_showHighOnlySW().isChecked()) {
+                if (bmm.isHigh())
                     filteredMeasurements.add(bmm);
             } else {
-                if (bmm.isBreakfast() && showBreakfast) {
+                if (bmm.isBreakfast() && get_showBreakfastSW().isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
-                if (bmm.isLunch() && showLunch) {
+                if (bmm.isLunch() && get_showLunchSW().isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
-                if (bmm.isDinner() && showDinner) {
+                if (bmm.isDinner() && get_showDinnerSW().isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
-                if (bmm.isBedtime() && showBedtime) {
+                if (bmm.isBedtime() && get_showBedtimeSW().isChecked()) {
                     filteredMeasurements.add(bmm);
                 }
             }
         }
 
 
-        mAdapter = new GlucoseMeasurementAdapter(filteredMeasurements);
-        mAdapter.setmActivity(this);
-        mMeasurementView.setAdapter(mAdapter);
+        _adapter = new GlucoseMeasurementAdapter(filteredMeasurements);
+        _adapter.setmActivity(this);
+        _measurementView.setAdapter(_adapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         LoadMeasurements();
-        boolean showSummary = _sharedPref.getBoolean("PREF_SHOW_SUMMARY_CARD",true);
-        if(showSummary)
-            LoadSummary();
-        _summaryCard.setVisibility(showSummary?View.VISIBLE : View.GONE);
+
+        if (get_showSummarySW().isChecked()) {
+            try {
+                LoadSummary();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        _summaryCard.setVisibility(get_showSummarySW().isChecked() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -272,7 +358,7 @@ public class MainActivity extends Activity {
         }
         if (id == R.id.menu_item_share) {
             String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "||");
-            String csv = mDbHelper.GetMeasurementsCSVText(delimiter);
+            String csv = _dbHelper.GetMeasurementsCSVText(delimiter);
             File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
             csvFilePath.mkdirs();
             File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
@@ -297,77 +383,81 @@ public class MainActivity extends Activity {
 
         }
         if (id == R.id.menu_item_filter) {
-
-
-            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View popupView = layoutInflater.inflate(R.layout.drop_down_filters, null);
-            PopupWindow dropDownMenu = new PopupWindow(
-                    popupView,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-
-            final Switch highOnly = popupView.findViewById(R.id.filter_switch_show_high_only);
-            final Switch showBreakfast = popupView.findViewById(R.id.filter_switch_show_breakfast);
-            final Switch showLunch = popupView.findViewById(R.id.filter_switch_show_lunch);
-            final Switch showDinner = popupView.findViewById(R.id.filter_switch_show_dinner);
-            final Switch showBedtime = popupView.findViewById(R.id.filter_switch_show_bedtime);
-            final Switch showSummary = popupView.findViewById(R.id.filter_switch_show_summary);
-            highOnly.setChecked(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY",false));
-            showSummary.setChecked(_sharedPref.getBoolean("PREF_SHOW_SUMMARY_CARD", true));
-            setFiltersDefault(highOnly, showBreakfast, showLunch, showDinner, showBedtime);
-
-            CompoundButton.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(buttonView.getId() == highOnly.getId()) {
-                        setFiltersDefault(highOnly, showBreakfast, showLunch, showDinner, showBedtime);
-                    }
-                    LoadMeasurements(highOnly.isChecked(), showBreakfast.isChecked(), showLunch.isChecked(), showDinner.isChecked(), showBedtime.isChecked());
-                    if(showSummary.isChecked())
-                        LoadSummary();
-                    _summaryCard.setVisibility(showSummary.isChecked()?View.VISIBLE : View.GONE);
-
-                }
-            };
-            highOnly.setOnCheckedChangeListener(checkedChangeListener);
-            showBreakfast.setOnCheckedChangeListener(checkedChangeListener);
-            showLunch.setOnCheckedChangeListener(checkedChangeListener);
-            showDinner.setOnCheckedChangeListener(checkedChangeListener);
-            showBedtime.setOnCheckedChangeListener(checkedChangeListener);
-            showSummary.setOnCheckedChangeListener(checkedChangeListener);
-            dropDownMenu.setOutsideTouchable(true);
-            dropDownMenu.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    //TODO do sth here on dismiss
-                    SharedPreferences.Editor editor = _sharedPref.edit();
-                    editor.putBoolean("PREF_FILTER_HIGH_ONLY", highOnly.isChecked());
-                    editor.putBoolean("PREF_FILTER_SHOW_BREAKFAST", showBreakfast.isChecked());
-                    editor.putBoolean("PREF_FILTER_SHOW_LUNCH", showLunch.isChecked());
-                    editor.putBoolean("PREF_FILTER_SHOW_DINNER", showDinner.isChecked());
-                    editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", showBedtime.isChecked());
-                    editor.putBoolean("PREF_SHOW_SUMMARY_CARD", showSummary.isChecked());
-                    editor.apply();
-                    editor.commit();
-                }
-            });
-
-            dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
+            _dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setFiltersDefault(Switch highOnly, Switch showBreakfast, Switch showLunch, Switch showDinner, Switch showBedtime) {
-        showBreakfast.setChecked(!highOnly.isChecked());
-        showLunch.setChecked(!highOnly.isChecked());
-        showDinner.setChecked(!highOnly.isChecked());
-        showBedtime.setChecked(!highOnly.isChecked());
-        showBreakfast.setEnabled(!highOnly.isChecked());
-        showLunch.setEnabled(!highOnly.isChecked());
-        showDinner.setEnabled(!highOnly.isChecked());
-        showBedtime.setEnabled(!highOnly.isChecked());
+
+    public DBHelper getDBHelper() {
+        return _dbHelper;
     }
 
-    public DBHelper getmDbHelper() {
-        return mDbHelper;
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void notifyPreferencesChanged() {
+        SharedPreferences.Editor editor = _sharedPref.edit();
+        editor.putBoolean("PREF_FILTER_HIGH_ONLY", get_showHighOnlySW().isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_BREAKFAST", get_showBreakfastSW().isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_LUNCH", get_showLunchSW().isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_DINNER", get_showDinnerSW().isChecked());
+        editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", get_showBedtimeSW().isChecked());
+        editor.putBoolean("PREF_SHOW_SUMMARY_CARD", get_showSummarySW().isChecked());
+        editor.apply();
+        editor.commit();
+        LoadSummary();
+        LoadMeasurements();
+    }
+
+    public Switch get_showHighOnlySW() {
+        return _showHighOnlySW;
+    }
+
+    public Switch get_showBreakfastSW() {
+        return _showBreakfastSW;
+    }
+
+    public Switch get_showLunchSW() {
+        return _showLunchSW;
+    }
+
+    public Switch get_showDinnerSW() {
+        return _showDinnerSW;
+    }
+
+    public Switch get_showBedtimeSW() {
+        return _showBedtimeSW;
+    }
+
+    public Switch get_showSummarySW() {
+        return _showSummarySW;
+    }
+}
+
+class Listener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, PopupWindow.OnDismissListener {
+    MainActivity _activity;
+    SharedPreferences _sharedPreferences;
+
+    public Listener(MainActivity activity, SharedPreferences preferences) {
+        _activity = activity;
+        _sharedPreferences = preferences;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == _activity.findViewById(R.id.fab).getId()) {
+            Intent intent = new Intent(_activity, AddMeasurementActivity.class);
+            _activity.startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        //_activity.notifyPreferencesChanged();
+
+    }
+
+    @Override
+    public void onDismiss() {
+        _activity.notifyPreferencesChanged();
     }
 }

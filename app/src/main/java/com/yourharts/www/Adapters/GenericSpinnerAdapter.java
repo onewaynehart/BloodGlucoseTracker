@@ -38,7 +38,7 @@ public class GenericSpinnerAdapter  extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return mDataset.get(position).getID();
+        return mDataset.get(position).get_id();
     }
 
     @Override

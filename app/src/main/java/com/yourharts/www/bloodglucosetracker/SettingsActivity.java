@@ -1,7 +1,5 @@
 package com.yourharts.www.bloodglucosetracker;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -12,14 +10,10 @@ import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
-import android.view.View;
-import android.widget.Button;
 
 import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
 import com.yourharts.www.Models.DataModelInterface;
 
-import java.security.Key;
 import java.util.List;
 
 
@@ -85,7 +79,7 @@ public class SettingsActivity extends PreferenceActivity {
             for(DataModelInterface dmi : glucoseMeasurementTypes)
             {
                 glucoseMeasurementNames[count] = dmi.getString();
-                glucoseMeasurementIDs[count] = Integer.toString(dmi.getID());
+                glucoseMeasurementIDs[count] = Integer.toString(dmi.get_id());
                 count++;
             }
             _glucoseUnitsLP.setEntries(glucoseMeasurementNames);
@@ -97,7 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
             for(DataModelInterface dmi : correctiveDrugs)
             {
                 correctiveDrugNames[count] = dmi.getString();
-                correctiveDrugIDs[count] = Integer.toString(dmi.getID());
+                correctiveDrugIDs[count] = Integer.toString(dmi.get_id());
                 count++;
             }
             _correctiveDrugTypeLP.setEntries(correctiveDrugNames);
@@ -109,7 +103,7 @@ public class SettingsActivity extends PreferenceActivity {
             for(DataModelInterface dmi : baselineDrugs)
             {
                 baselineDrugNames[count] = dmi.getString();
-                baselineDrugIDs[count] = Integer.toString(dmi.getID());
+                baselineDrugIDs[count] = Integer.toString(dmi.get_id());
                 count++;
             }
             _baselineDrugTypeLP.setEntries(baselineDrugNames);

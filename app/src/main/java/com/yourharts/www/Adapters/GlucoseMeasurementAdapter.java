@@ -21,7 +21,6 @@ import com.yourharts.www.bloodglucosetracker.AddMeasurementActivity;
 import com.yourharts.www.bloodglucosetracker.MainActivity;
 import com.yourharts.www.bloodglucosetracker.R;
 
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,13 +40,13 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
     public void onBindViewHolder(@NonNull GlucosemeasurementViewHolder holder, int position) {
         DecimalFormat df = new DecimalFormat("#.00");
         BloodMeasurementModel model = mDataset.get(position);
-        holder.getmMeasurementDateTime().setText(model.getGlucoseMeasurementDate());
-        holder.getmMeasurementAmount().setText(String.format("%.1f",model.getGlucoseMeasurement()));
-        holder.getmCorrectiveDoseAmount().setText(String.format("%.1f",model.getCorrectiveDoseAmount()));
-        holder.getmBaselineDoseAmount().setText(String.format("%.1f",model.getBaselineDoseAmount()));
-        holder.getmNotes().setText(model.getNotes());
+        holder.getmMeasurementDateTime().setText(model.get_glucoseMeasurementDate());
+        holder.getmMeasurementAmount().setText(String.format("%.1f",model.get_glucoseMeasurement()));
+        holder.getmCorrectiveDoseAmount().setText(String.format("%.1f",model.get_correctiveDoseAmount()));
+        holder.getmBaselineDoseAmount().setText(String.format("%.1f",model.get_baselineDoseAmount()));
+        holder.getmNotes().setText(model.get_notes());
 
-        DBHelper dbHelper = mActivity.getmDbHelper();
+        DBHelper dbHelper = mActivity.getDBHelper();
         _sharedPref = mActivity.getSharedPreferences(mActivity.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
         List<DataModelInterface> measurementUnits = dbHelper.getMeasurementUnits();
@@ -55,26 +54,26 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         List<DataModelInterface> baselineDrugTypes = dbHelper.getLongLastingDrugs();
 
         for(DataModelInterface dmi : measurementUnits){
-            if(dmi.getID() == model.getGlucoseMeasurementUnitID()){
+            if(dmi.get_id() == model.get_glucoseMeasurementUnitID()){
                 holder.getmMeasurementUnits().setText(dmi.getString());
                 break;
             }
         }
         for(DataModelInterface dmi : correctiveDrugTypes){
-            if(dmi.getID() == model.getCorrectiveDoseType()){
+            if(dmi.get_id() == model.get_correctiveDoseTypeID()){
                 holder.getmCorrectiveDoseDrugName().setText(dmi.getString());
                 break;
             }
         }
         for(DataModelInterface dmi : baselineDrugTypes){
-            if(dmi.getID() == model.getBaselineDoseType()){
+            if(dmi.get_id() == model.get_baselineDoseTypeID()){
                 holder.getmBaselineDoseDrugName().setText(dmi.getString());
                 break;
             }
         }
 
 
-        if(model.getGlucoseMeasurement()> _sharedPref.getInt("PREF_DEFAULT_THRESHOLD", 10))
+        if(model.get_glucoseMeasurement()> _sharedPref.getInt("PREF_DEFAULT_THRESHOLD", 10))
         {
             holder.getmWarningImage().setVisibility(View.VISIBLE);
         }
@@ -85,7 +84,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            Date measurementTime = sdf.parse(model.getGlucoseMeasurementDate());
+            Date measurementTime = sdf.parse(model.get_glucoseMeasurementDate());
             int hour = measurementTime.getHours();
             if(hour < 10){
                 holder.getTimeImageView().setImageResource(R.drawable.ic_coffee);
@@ -103,9 +102,9 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             e.printStackTrace();
         }
 
-        holder.getNotesRow().setVisibility((model.getNotes().isEmpty() || model.getNotes().trim().isEmpty()) ? View.GONE : View.VISIBLE);
-        holder.getBaselineAmountRow().setVisibility((model.getBaselineDoseAmount() == 0 ? View.GONE : View.VISIBLE));
-        holder.getCorrectiveAmountRow().setVisibility((model.getCorrectiveDoseAmount() == 0 ? View.GONE : View.VISIBLE));
+        holder.getNotesRow().setVisibility((model.get_notes().isEmpty() || model.get_notes().trim().isEmpty()) ? View.GONE : View.VISIBLE);
+        holder.getBaselineAmountRow().setVisibility((model.get_baselineDoseAmount() == 0 ? View.GONE : View.VISIBLE));
+        holder.getCorrectiveAmountRow().setVisibility((model.get_correctiveDoseAmount() == 0 ? View.GONE : View.VISIBLE));
     }
 
     @Override
@@ -183,7 +182,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
                             public void onClick(DialogInterface dialog, int which) {
                                 // continue with delete
                                 BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                                if(mActivity.getmDbHelper().deleteMeasurementRecord(model.getID())==true)
+                                if(mActivity.getDBHelper().deleteMeasurementRecord(model.get_id())==true)
                                     removeAt(getAdapterPosition());
                             }
                         });
@@ -198,7 +197,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
                     if (v.equals(mEditImage)) {
                         BloodMeasurementModel model = mDataset.get(getAdapterPosition());
                         Intent intent = new Intent(mActivity, AddMeasurementActivity.class);
-                        intent.putExtra("ID", model.getID());
+                        intent.putExtra("ID", model.get_id());
                         mActivity.startActivity(intent);
                     }
                 }

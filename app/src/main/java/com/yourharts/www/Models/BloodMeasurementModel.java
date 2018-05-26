@@ -1,9 +1,6 @@
 package com.yourharts.www.Models;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.yourharts.www.bloodglucosetracker.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,16 +9,16 @@ import java.util.Date;
 import static android.app.PendingIntent.getActivity;
 
 public class BloodMeasurementModel extends DataModelInterface {
-    private int ID;
-    private double GlucoseMeasurement;
-    private int GlucoseMeasurementUnitID;
-    private double BaselineDoseAmount;
-    private double CorrectiveDoseAmount;
-    private int CorrectiveDoseType;
-    private int BaselineDoseType;
-    private String GlucoseMeasurementDate;
-    private String Notes;
-    private final String DELIMITER = "||";
+    private int _id;
+    private double _glucoseMeasurement;
+    private int _glucoseMeasurementUnitID;
+    private double _baselineDoseAmount;
+    private double _correctiveDoseAmount;
+    private int _correctiveDoseTypeID;
+    private int _baselineDoseTypeID;
+    private String _glucoseMeasurementDate;
+    private String _notes;
+
     private Date _measurementDate;
     private SharedPreferences _sharedPreferences;
     public BloodMeasurementModel(int id,
@@ -29,20 +26,20 @@ public class BloodMeasurementModel extends DataModelInterface {
                                  int glucoseMeasurementUnitID,
                                  String glucoseMeasurementDate,
                                  double correctiveDoseAmount,
-                                 int correctiveDoseType,
+                                 int correctiveDoseTypeID,
                                  double baselineDoseAmount,
-                                 int baselineDoseType,
+                                 int baselineDoseTypeID,
                                  String notes,
                                  SharedPreferences sharedPreferences){
-        ID = id;
-        GlucoseMeasurement = glucoseMeasurement;
-        GlucoseMeasurementUnitID = glucoseMeasurementUnitID;
-        BaselineDoseAmount = baselineDoseAmount;
-        CorrectiveDoseAmount = correctiveDoseAmount;
-        CorrectiveDoseType = correctiveDoseType;
-        BaselineDoseType = baselineDoseType;
-        GlucoseMeasurementDate = glucoseMeasurementDate;
-        Notes = notes;
+        _id = id;
+        _glucoseMeasurement = glucoseMeasurement;
+        _glucoseMeasurementUnitID = glucoseMeasurementUnitID;
+        _baselineDoseAmount = baselineDoseAmount;
+        _correctiveDoseAmount = correctiveDoseAmount;
+        _correctiveDoseTypeID = correctiveDoseTypeID;
+        _baselineDoseTypeID = baselineDoseTypeID;
+        _glucoseMeasurementDate = glucoseMeasurementDate;
+        _notes = notes;
         _sharedPreferences =  sharedPreferences;
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
@@ -52,115 +49,115 @@ public class BloodMeasurementModel extends DataModelInterface {
         }
     }
 
-    public int getID() {
-        return ID;
+    public int get_id() {
+        return _id;
     }
 
     @Override
     public String getString() {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(ID);
-        buffer.append(DELIMITER);
-        buffer.append(GlucoseMeasurement);
-        buffer.append(DELIMITER);
-        buffer.append(GlucoseMeasurementUnitID);
-        buffer.append(DELIMITER);
-        buffer.append(GlucoseMeasurementDate);
-        buffer.append(DELIMITER);
-        buffer.append(CorrectiveDoseAmount);
-        buffer.append(DELIMITER);
-        buffer.append(CorrectiveDoseType);
-        buffer.append(DELIMITER);
-        buffer.append(BaselineDoseAmount);
-        buffer.append(DELIMITER);
-        buffer.append(BaselineDoseType);
-        buffer.append(DELIMITER);
-        buffer.append(Notes);
+        buffer.append(_id);
+        buffer.append(" ");
+        buffer.append(_glucoseMeasurement);
+        buffer.append(" ");
+        buffer.append(_glucoseMeasurementUnitID);
+        buffer.append(" ");
+        buffer.append(_glucoseMeasurementDate);
+        buffer.append(" ");
+        buffer.append(_correctiveDoseAmount);
+        buffer.append(" ");
+        buffer.append(_correctiveDoseTypeID);
+        buffer.append(" ");
+        buffer.append(_baselineDoseAmount);
+        buffer.append(" ");
+        buffer.append(_baselineDoseTypeID);
+        buffer.append(" ");
+        buffer.append(_notes);
         buffer.append("\n");
         return buffer.toString();
     }
     public String getString(String delimiter){
         StringBuilder buffer = new StringBuilder();
-        buffer.append(ID);
+        buffer.append(_id);
         buffer.append(delimiter);
-        buffer.append(GlucoseMeasurement);
+        buffer.append(_glucoseMeasurement);
         buffer.append(delimiter);
-        buffer.append(GlucoseMeasurementUnitID);
+        buffer.append(_glucoseMeasurementUnitID);
         buffer.append(delimiter);
-        buffer.append(GlucoseMeasurementDate);
+        buffer.append(_glucoseMeasurementDate);
         buffer.append(delimiter);
-        buffer.append(CorrectiveDoseAmount);
+        buffer.append(_correctiveDoseAmount);
         buffer.append(delimiter);
-        buffer.append(CorrectiveDoseType);
+        buffer.append(_correctiveDoseTypeID);
         buffer.append(delimiter);
-        buffer.append(BaselineDoseAmount);
+        buffer.append(_baselineDoseAmount);
         buffer.append(delimiter);
-        buffer.append(BaselineDoseType);
+        buffer.append(_baselineDoseTypeID);
         buffer.append(delimiter);
-        buffer.append(Notes);
+        buffer.append(_notes);
         buffer.append("\n");
         return buffer.toString();
     }
-    public double getGlucoseMeasurement() {
-        return GlucoseMeasurement;
+    public double get_glucoseMeasurement() {
+        return _glucoseMeasurement;
     }
 
-    public void setGlucoseMeasurement(double glucoseMeasurement) {
-        GlucoseMeasurement = glucoseMeasurement;
+    public void set_glucoseMeasurement(double _glucoseMeasurement) {
+        this._glucoseMeasurement = _glucoseMeasurement;
     }
 
-    public int getGlucoseMeasurementUnitID() {
-        return GlucoseMeasurementUnitID;
+    public int get_glucoseMeasurementUnitID() {
+        return _glucoseMeasurementUnitID;
     }
 
-    public void setGlucoseMeasurementUnitID(int glucoseMeasurementUnitID) {
-        GlucoseMeasurementUnitID = glucoseMeasurementUnitID;
+    public void set_glucoseMeasurementUnitID(int _glucoseMeasurementUnitID) {
+        this._glucoseMeasurementUnitID = _glucoseMeasurementUnitID;
     }
 
-    public double getBaselineDoseAmount() {
-        return BaselineDoseAmount;
+    public double get_baselineDoseAmount() {
+        return _baselineDoseAmount;
     }
 
-    public void setBaselineDoseAmount(double baselineDoseAmount) {
-        BaselineDoseAmount = baselineDoseAmount;
+    public void set_baselineDoseAmount(double _baselineDoseAmount) {
+        this._baselineDoseAmount = _baselineDoseAmount;
     }
 
-    public double getCorrectiveDoseAmount() {
-        return CorrectiveDoseAmount;
+    public double get_correctiveDoseAmount() {
+        return _correctiveDoseAmount;
     }
 
-    public void setCorrectiveDoseAmount(double correctiveDoseAmount) {
-        CorrectiveDoseAmount = correctiveDoseAmount;
+    public void set_correctiveDoseAmount(double _correctiveDoseAmount) {
+        this._correctiveDoseAmount = _correctiveDoseAmount;
     }
 
-    public int getCorrectiveDoseType() {
-        return CorrectiveDoseType;
+    public int get_correctiveDoseTypeID() {
+        return _correctiveDoseTypeID;
     }
 
-    public void setCorrectiveDoseType(int correctiveDoseType) {
-        CorrectiveDoseType = correctiveDoseType;
+    public void set_correctiveDoseTypeID(int _correctiveDoseTypeID) {
+        this._correctiveDoseTypeID = _correctiveDoseTypeID;
     }
 
-    public int getBaselineDoseType() {
-        return BaselineDoseType;
+    public int get_baselineDoseTypeID() {
+        return _baselineDoseTypeID;
     }
 
-    public void setBaselineDoseType(int baselineDoseType) {
-        BaselineDoseType = baselineDoseType;
+    public void set_baselineDoseTypeID(int _baselineDoseTypeID) {
+        this._baselineDoseTypeID = _baselineDoseTypeID;
     }
 
-    public String getGlucoseMeasurementDate() {
-        return GlucoseMeasurementDate;
+    public String get_glucoseMeasurementDate() {
+        return _glucoseMeasurementDate;
     }
 
 
 
-    public String getNotes() {
-        return Notes;
+    public String get_notes() {
+        return _notes;
     }
 
-    public void setNotes(String notes) {
-        this.Notes = notes;
+    public void set_notes(String _notes) {
+        this._notes = _notes;
     }
 
     public boolean isHigh() {
@@ -168,7 +165,7 @@ public class BloodMeasurementModel extends DataModelInterface {
         if(_sharedPreferences != null)
         {
             int defaultThreshold = _sharedPreferences.getInt("PREF_DEFAULT_THRESHOLD", 10);
-            retval = this.GlucoseMeasurement > defaultThreshold;
+            retval = this._glucoseMeasurement >= defaultThreshold;
         }
         return retval;
     }

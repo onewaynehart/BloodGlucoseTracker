@@ -10,7 +10,7 @@ public class MeasurementUnitModel extends DataModelInterface{
         mUnitName = unitname;
     }
 
-    public int getID() {
+    public int get_id() {
         return ID;
     }
 

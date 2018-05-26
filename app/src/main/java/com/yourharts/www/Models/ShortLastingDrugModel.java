@@ -8,7 +8,7 @@ public class ShortLastingDrugModel extends DataModelInterface{
         mID = ID;
         mName = Name;
     }
-    public int getID() {
+    public int get_id() {
         return mID;
     }
 

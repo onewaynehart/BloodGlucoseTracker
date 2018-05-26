@@ -52,14 +52,16 @@
 
             <TextView
                 android:id="@+id/textView6"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="3"
                 android:text="Your highest ever blood glucose reading was " />
 
             <TextView
                 android:id="@+id/summary_highest_TV"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="18 mmol/L" />
         </TableRow>
 
@@ -71,14 +73,14 @@
                 android:id="@+id/textView8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:text="This measurement was taken on" />
 
             <TextView
                 android:id="@+id/summary_highest_date_TV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.6"
+                android:layout_weight="1.5"
                 android:text="2018-05-23 14:50" />
         </TableRow>
 
@@ -89,14 +91,16 @@
 
             <TextView
                 android:id="@+id/textView10"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="3"
                 android:text="Your lowest ever blood glucose reading was " />
 
             <TextView
                 android:id="@+id/summary_lowest_TV"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="3.2mmo/L" />
         </TableRow>
 
@@ -131,18 +135,32 @@
                 android:id="@+id/textView16"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="4"
                 android:text="Your highest readings are usually around " />
 
             <TextView
                 android:id="@+id/summary_highest_time_of_day_TV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.5"
+                android:layout_weight="2"
                 android:text="Lunch" />
         </TableRow>
 
-    </TableLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
 
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/summary_card_graphView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_weight="2"
+
+                android:background="@android:color/white" />
+
+        </TableRow>
+
+    </TableLayout>
 </android.support.v7.widget.CardView>
 
