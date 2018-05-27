@@ -420,7 +420,7 @@ public class MainActivity extends Activity {
             return true;
         }
         if (id == R.id.menu_item_share) {
-            String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "||");
+            String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "~");
             String csv = _dbHelper.GetMeasurementsCSVText(delimiter);
             File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
             csvFilePath.mkdirs();

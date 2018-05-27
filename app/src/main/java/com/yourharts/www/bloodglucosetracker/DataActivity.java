@@ -1,6 +1,7 @@
 package com.yourharts.www.bloodglucosetracker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,19 +18,25 @@ import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.transform.Result;
 
+import static android.support.v4.content.FileProvider.getUriForFile;
 import static android.widget.Toast.LENGTH_SHORT;
 
 public class DataActivity extends Activity {
-    private ImageButton _importDataBtn;
+    private Button _importDataBtn;
+    private Button _exportDataBtn;
+    private Button _deleteDaaBtn;
     private DataActivityListener _listener;
     private SharedPreferences _sharedPref;
     private DBHelper _dbHelper;
@@ -38,11 +45,16 @@ public class DataActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_data_management);
-        _importDataBtn = findViewById(R.id.importDataBtn);
-        _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
-        _listener = new DataActivityListener(this, _sharedPref);
-        _importDataBtn.setOnClickListener(_listener);
         _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
+        _importDataBtn = findViewById(R.id.importDataBtn);
+        _exportDataBtn = findViewById(R.id.exportDataBtn);
+        _deleteDaaBtn = findViewById(R.id.deleteAllDataBtn);
+        _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
+        _listener = new DataActivityListener(this, _sharedPref , _dbHelper);
+        _importDataBtn.setOnClickListener(_listener);
+        _exportDataBtn.setOnClickListener(_listener);
+        _deleteDaaBtn.setOnClickListener(_listener);
+
     }
 
     @Override
@@ -61,7 +73,7 @@ public class DataActivity extends Activity {
                     List<BloodMeasurementModel> currentMeasurements = _dbHelper.getBloodMeasurements();
                     boolean printedColumns = false;
                     while ((line = mBufferedReader.readLine()) != null) {
-                        String[] columns = line.split("~");
+                        String[] columns = line.split(_sharedPref.getString("PREF_DEFAULT_CSVDELIMITER","~"));
 
                         try {
                             double measurement = Double.parseDouble(columns[1]);
@@ -98,6 +110,7 @@ public class DataActivity extends Activity {
                     mBufferedReader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+
                 }
             }
 
@@ -111,10 +124,12 @@ public class DataActivity extends Activity {
 class DataActivityListener implements OnClickListener {
     private DataActivity _dataActivity;
     private SharedPreferences _sharedPreferences;
+    private DBHelper _dbHelper;
 
-    public DataActivityListener(DataActivity dataActivity, SharedPreferences sharedPreferences) {
+    public DataActivityListener(DataActivity dataActivity, SharedPreferences sharedPreferences, DBHelper dbHelper) {
         _dataActivity = dataActivity;
         _sharedPreferences = sharedPreferences;
+        _dbHelper = dbHelper;
     }
 
     @Override
@@ -129,6 +144,46 @@ class DataActivityListener implements OnClickListener {
                 // Potentially direct the user to the Market with a Dialog
                 Toast.makeText(_dataActivity, "Drive Not Found", LENGTH_SHORT).show();
             }
+        }
+        if(v.getId() == _dataActivity.findViewById(R.id.exportDataBtn).getId()){
+            String delimiter = _sharedPreferences.getString("PREF_DEFAULT_CSVDELIMITER", "~");
+            String csv = _dbHelper.GetMeasurementsCSVText(delimiter);
+            File csvFilePath = new File(_dataActivity.getFilesDir().getPath(), "csv");
+            csvFilePath.mkdirs();
+            File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
+            try {
+                FileWriter writer = new FileWriter(newFile);
+                writer.write(csv);
+                writer.flush();
+                writer.close();
+
+                Uri contentUri = getUriForFile(_dataActivity, "com.yourharts.www.bloodglucosetracker.fileprovider", newFile);
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements.");
+                sendIntent.setDataAndType(null, _dataActivity.getContentResolver().getType(contentUri));
+
+                _dataActivity.startActivity(sendIntent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(v.getId() == _dataActivity.findViewById(R.id.deleteAllDataBtn).getId()){
+            AlertDialog.Builder alert = new AlertDialog.Builder(_dataActivity, R.style.MyAlertDialogStyle);
+
+            alert.setTitle("Delete entry");
+            alert.setMessage("Are you sure you want to delete all measurements? It cannot be undone! Well you can always export your data first, then import it back I suppose...");
+            alert.setPositiveButton(R.string.deleteYesBtn, (dialog, which) -> {
+                // continue with delete
+                _dbHelper.deleteAllMeasurementRecords();
+            });
+            alert.setNegativeButton(android.R.string.no, (dialog, which) -> {
+                // close dialog
+                dialog.cancel();
+            });
+            alert.show();
         }
     }
 }
