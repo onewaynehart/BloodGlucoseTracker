@@ -24,5 +24,12 @@
         android:title="Filters"
 
         android:showAsAction="always" />
+    <item
+        android:id="@+id/dataManuItem"
+        android:icon="@drawable/ic_storage_black_24dp"
+        android:orderInCategory="5"
+        android:title="Data"
+        app:showAsAction="always"
+        android:showAsAction="always"/>
 
 </menu>

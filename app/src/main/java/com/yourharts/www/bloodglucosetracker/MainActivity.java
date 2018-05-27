@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.PopupWindow;
 import android.widget.Switch;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,7 +68,7 @@ public class MainActivity extends Activity {
     private Switch _showSummarySW;
     private View _popupFilterView;
     private TextView _summaryTextView;
-    private Listener _listener;
+    private MainActivityListener _mainActivitylistener;
     private MenuItem _filterMenuItem;
     PopupWindow _dropDownMenu;
 
@@ -80,7 +78,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
-        _listener = new Listener(MainActivity.this, _sharedPref);
+        _mainActivitylistener = new MainActivityListener(MainActivity.this, _sharedPref);
         _popupFilterView = layoutInflater.inflate(R.layout.drop_down_filters, null);
         _summaryTextView = findViewById(R.id._summaryTV);
         _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -97,7 +95,7 @@ public class MainActivity extends Activity {
         _measurementView.setLayoutManager(_layoutManager);
 
         _fab = findViewById(R.id.fab);
-        _fab.setOnClickListener(_listener);
+        _fab.setOnClickListener(_mainActivitylistener);
 
         try {
             _dbHelper.prepareDatabase();
@@ -123,19 +121,19 @@ public class MainActivity extends Activity {
     }
 
     private void setupListeners() {
-        _dropDownMenu.setOnDismissListener(_listener);
+        _dropDownMenu.setOnDismissListener(_mainActivitylistener);
         _showHighOnlySW = _popupFilterView.findViewById(R.id.filter_switch_show_high_only);
-        _showHighOnlySW.setOnCheckedChangeListener(_listener);
+        _showHighOnlySW.setOnCheckedChangeListener(_mainActivitylistener);
         _showBreakfastSW = _popupFilterView.findViewById(R.id.filter_switch_show_breakfast);
-        _showBreakfastSW.setOnCheckedChangeListener(_listener);
+        _showBreakfastSW.setOnCheckedChangeListener(_mainActivitylistener);
         _showLunchSW = _popupFilterView.findViewById(R.id.filter_switch_show_lunch);
-        _showLunchSW.setOnCheckedChangeListener(_listener);
+        _showLunchSW.setOnCheckedChangeListener(_mainActivitylistener);
         _showDinnerSW = _popupFilterView.findViewById(R.id.filter_switch_show_dinner);
-        _showDinnerSW.setOnCheckedChangeListener(_listener);
+        _showDinnerSW.setOnCheckedChangeListener(_mainActivitylistener);
         _showBedtimeSW = _popupFilterView.findViewById(R.id.filter_switch_show_bedtime);
-        _showBedtimeSW.setOnCheckedChangeListener(_listener);
+        _showBedtimeSW.setOnCheckedChangeListener(_mainActivitylistener);
         _showSummarySW = _popupFilterView.findViewById(R.id.filter_switch_show_summary);
-        _showSummarySW.setOnCheckedChangeListener(_listener);
+        _showSummarySW.setOnCheckedChangeListener(_mainActivitylistener);
     }
 
     private void loadUserPreferences() {
@@ -450,6 +448,11 @@ public class MainActivity extends Activity {
         if (id == R.id.menu_item_filter) {
             _dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
         }
+        if(id == R.id.dataManuItem){
+            Intent intent = new Intent(MainActivity.this, DataActivity.class);
+            startActivity(intent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -480,11 +483,11 @@ public class MainActivity extends Activity {
     }
 }
 
-class Listener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, PopupWindow.OnDismissListener {
+class MainActivityListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, PopupWindow.OnDismissListener {
     MainActivity _activity;
     SharedPreferences _sharedPreferences;
 
-    public Listener(MainActivity activity, SharedPreferences preferences) {
+    public MainActivityListener(MainActivity activity, SharedPreferences preferences) {
         _activity = activity;
         _sharedPreferences = preferences;
     }

@@ -48,6 +48,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
+        <activity android:name=".DataActivity"
+            android:label="Data Management"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Elegant">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>
