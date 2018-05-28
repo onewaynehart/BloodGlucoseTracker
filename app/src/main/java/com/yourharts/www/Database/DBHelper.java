@@ -123,6 +123,16 @@ public class DBHelper  extends SQLiteOpenHelper {
         }
         return retval;
     }
+    public int getMeasurementPositionInList(List<BloodMeasurementModel>items,int itemID){
+        int retval = -1;
+        for(int count = 0 ; count <items.size(); count++){
+            if(items.get(count).getId() == itemID){
+                retval= count;
+                break;
+            }
+        }
+        return retval;
+    }
     public List<DataModelInterface> getMeasurementUnits()
     {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);

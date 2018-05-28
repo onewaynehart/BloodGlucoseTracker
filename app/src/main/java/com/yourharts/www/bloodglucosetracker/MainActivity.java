@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,10 +40,13 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -347,21 +351,26 @@ public class MainActivity extends Activity {
         List<BloodMeasurementModel> filteredMeasurements = new ArrayList<>();
         for (BloodMeasurementModel bmm : measurements) {
             if (_showHighOnlySW.isChecked()) {
-                if (bmm.isHigh())
-                    filteredMeasurements.add(bmm);
-            } else {
-                if (bmm.isBreakfast() && _showBreakfastSW.isChecked()) {
-                    filteredMeasurements.add(bmm);
+                if (bmm.isHigh()) {
+                    if(_dbHelper.getMeasurementPositionInList(filteredMeasurements, bmm.getId())== -1)
+                        filteredMeasurements.add(bmm);
                 }
-                if (bmm.isLunch() && _showLunchSW.isChecked()) {
+            }
+            if (bmm.isBreakfast() && _showBreakfastSW.isChecked()) {
+                if(_dbHelper.getMeasurementPositionInList(filteredMeasurements, bmm.getId())== -1)
                     filteredMeasurements.add(bmm);
-                }
-                if (bmm.isDinner() && _showDinnerSW.isChecked()) {
+            }
+            if (bmm.isLunch() && _showLunchSW.isChecked()) {
+                if(_dbHelper.getMeasurementPositionInList(filteredMeasurements, bmm.getId())== -1)
                     filteredMeasurements.add(bmm);
-                }
-                if (bmm.isBedtime() && _showBedtimeSW.isChecked()) {
+            }
+            if (bmm.isDinner() && _showDinnerSW.isChecked()) {
+                if(_dbHelper.getMeasurementPositionInList(filteredMeasurements, bmm.getId())== -1)
                     filteredMeasurements.add(bmm);
-                }
+            }
+            if (bmm.isBedtime() && _showBedtimeSW.isChecked()) {
+                if(_dbHelper.getMeasurementPositionInList(filteredMeasurements, bmm.getId())== -1)
+                    filteredMeasurements.add(bmm);
             }
         }
 
