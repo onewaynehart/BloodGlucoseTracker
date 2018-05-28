@@ -26,13 +26,13 @@
         android:paddingTop="5dp">
 
         <include
-            layout="@layout/getting_started_layout"
+            layout="@layout/layout_getting_started"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp" />
 
         <include
-            layout="@layout/summary_layout"
+            layout="@layout/layout_summary_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp" />

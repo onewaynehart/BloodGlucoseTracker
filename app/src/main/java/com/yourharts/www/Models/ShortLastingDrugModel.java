@@ -1,31 +1,27 @@
 package com.yourharts.www.Models;
 public class ShortLastingDrugModel extends DataModelInterface{
-    private int mID;
-    private String mName;
+    private int _id;
+    private String _name;
 
-    public ShortLastingDrugModel(int ID, String Name)
+    public ShortLastingDrugModel(int id, String Name)
     {
-        mID = ID;
-        mName = Name;
+        _id = id;
+        _name = Name;
     }
-    public int get_id() {
-        return mID;
+    public int getId() {
+        return _id;
     }
 
     @Override
     public String getString() {
-        return mName;
-    }
-
-    public void setID(int ID) {
-        this.mID = ID;
+        return _name;
     }
 
     public String getName() {
-        return mName;
+        return _name;
     }
 
     public void setName(String Name) {
-        this.mName = Name;
+        this._name = Name;
     }
 }

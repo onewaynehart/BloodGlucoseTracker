@@ -1,4 +1,5 @@
 package com.yourharts.www.Adapters;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +18,11 @@ public class GenericSpinnerAdapter  extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private List<DataModelInterface> mDataset;
     private DBHelper _dbHelper;
-    public GenericSpinnerAdapter(Context context, List<DataModelInterface> datatset){
+    private Activity _activity;
+    public GenericSpinnerAdapter(Context context, List<DataModelInterface> datatset, Activity activity){
         mDataset = datatset;
-        _dbHelper = new DBHelper(context, context.getFilesDir().getPath());
+        _activity = activity;
+        _dbHelper = new DBHelper(context, context.getFilesDir().getPath(), _activity );
         this.mContext = context;
         layoutInflater =(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -38,7 +41,7 @@ public class GenericSpinnerAdapter  extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return mDataset.get(position).get_id();
+        return mDataset.get(position).getId();
     }
 
     @Override

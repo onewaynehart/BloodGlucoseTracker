@@ -2,17 +2,17 @@ package com.yourharts.www.bloodglucosetracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,17 +21,15 @@ import com.yourharts.www.Models.BloodMeasurementModel;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import javax.xml.transform.Result;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 import static android.widget.Toast.LENGTH_SHORT;
@@ -40,6 +38,8 @@ public class DataActivity extends Activity {
     private Button _importDataBtn;
     private Button _exportDataBtn;
     private Button _deleteDaaBtn;
+    private Button _saveDatabaseBtn;
+    private Button _saveRecordsButton;
     private TextView _databaseLocationTV;
     private TextView _databaseSizeTV;
     private TextView _databaseSummary;
@@ -51,10 +51,12 @@ public class DataActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_data_management);
-        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
-        List<BloodMeasurementModel> allMeasurements = _dbHelper.getBloodMeasurements();
+        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath(), this);
+        List<BloodMeasurementModel> allMeasurements = _dbHelper.getAllBloodMeasurements();
         _importDataBtn = findViewById(R.id.importDataBtn);
         _exportDataBtn = findViewById(R.id.exportDataBtn);
+        _saveDatabaseBtn = findViewById(R.id.saveDBBtn);
+        _saveRecordsButton = findViewById(R.id.saveRecordsBtn);
         _deleteDaaBtn = findViewById(R.id.deleteAllDataBtn);
         _databaseLocationTV = findViewById(R.id.databaseLocationTV);
         _databaseSizeTV = findViewById(R.id.databaseSizeTV);
@@ -64,11 +66,13 @@ public class DataActivity extends Activity {
         _importDataBtn.setOnClickListener(_listener);
         _exportDataBtn.setOnClickListener(_listener);
         _deleteDaaBtn.setOnClickListener(_listener);
+        _saveDatabaseBtn.setOnClickListener(_listener);
+        _saveRecordsButton.setOnClickListener(_listener);;
         setSummary();
     }
 
     public void setSummary() {
-        List<BloodMeasurementModel> allMeasurements = _dbHelper.getBloodMeasurements();
+        List<BloodMeasurementModel> allMeasurements = _dbHelper.getAllBloodMeasurements();
         _databaseLocationTV.setText(String.format("Your database is located at %s", _dbHelper.getDatabaseLocation()));
         _databaseSizeTV.setText(String.format("The size of your database is %d bytes", _dbHelper.getDatabaseSize()));
         _databaseSummary.setText(String.format("You currently have %d record(s) with the latest taken on %s and the earliest on %s.", allMeasurements.size(), allMeasurements.size()> 0? allMeasurements.get(0).get_glucoseMeasurementDate(): "never", allMeasurements.size()> 0? allMeasurements.get(allMeasurements.size() - 1).get_glucoseMeasurementDate() : "never"));
@@ -87,7 +91,7 @@ public class DataActivity extends Activity {
                     int added = 0;
                     InputStream inputStream = getContentResolver().openInputStream(uri);
                     mBufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    List<BloodMeasurementModel> currentMeasurements = _dbHelper.getBloodMeasurements();
+                    List<BloodMeasurementModel> currentMeasurements = _dbHelper.getAllBloodMeasurements();
                     boolean printedColumns = false;
                     while ((line = mBufferedReader.readLine()) != null) {
                         String[] columns = line.split(_sharedPref.getString("PREF_DEFAULT_CSVDELIMITER","~"));
@@ -101,7 +105,7 @@ public class DataActivity extends Activity {
                             double baselineAmt =columns[6].isEmpty() == false ?  Double.parseDouble(columns[6]) : 0;
                             int baselineType =columns[7].isEmpty() == false ?  Integer.parseInt(columns[7]) : 1;
                             String notes = columns.length == 9 ? columns[8] : "";
-                            BloodMeasurementModel newModel = new BloodMeasurementModel(0, measurement, measurementType, measurementDate, correctiveAmount, correctiveType, baselineAmt, baselineType, notes, _sharedPref);
+                            BloodMeasurementModel newModel = new BloodMeasurementModel(0, measurement, measurementType, measurementDate, correctiveAmount, correctiveType, baselineAmt, baselineType, notes, _sharedPref, this);
 
 
                             boolean duplicateFound = false;
@@ -167,7 +171,7 @@ class DataActivityListener implements OnClickListener {
         }
         if(v.getId() == _dataActivity.findViewById(R.id.exportDataBtn).getId()){
             String delimiter = _sharedPreferences.getString("PREF_DEFAULT_CSVDELIMITER", "~");
-            String csv = _dbHelper.GetMeasurementsCSVText(delimiter);
+            String csv = _dbHelper.getMeasurementsCSVText(delimiter);
             File csvFilePath = new File(_dataActivity.getFilesDir().getPath(), "csv");
             csvFilePath.mkdirs();
             File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
@@ -190,6 +194,29 @@ class DataActivityListener implements OnClickListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        if(v.getId() == _dataActivity.findViewById(R.id.saveRecordsBtn).getId()){
+            String delimiter = _sharedPreferences.getString("PREF_DEFAULT_CSVDELIMITER", "~");
+            String csv = _dbHelper.getMeasurementsCSVText(delimiter);
+            String filename = "Blood_glucose_measurements_"+UUID.randomUUID().toString() + ".csv";
+            File csvFilePath =  _dataActivity.getExternalFilesDir("records");
+            csvFilePath.mkdirs();
+            File output = new File(csvFilePath, filename);
+
+            try {
+
+                FileWriter writer = new FileWriter(output);
+                writer.write(csv);
+                writer.flush();
+                writer.close();
+                Toast.makeText(this._dataActivity, "Records succesfully saved to downloads folder! ("+output.getPath()+")", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        if(v.getId() == _dataActivity.findViewById(R.id.saveDBBtn).getId()){
+            _dbHelper.exportDatabase();
         }
         if(v.getId() == _dataActivity.findViewById(R.id.deleteAllDataBtn).getId()){
             AlertDialog.Builder alert = new AlertDialog.Builder(_dataActivity, R.style.MyAlertDialogStyle);

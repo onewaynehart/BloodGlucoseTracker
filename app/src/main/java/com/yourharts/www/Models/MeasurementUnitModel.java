@@ -2,29 +2,25 @@ package com.yourharts.www.Models;
 
 public class MeasurementUnitModel extends DataModelInterface{
     private int ID;
-    private String  mUnitName;
+    private String _unitName;
 
     public MeasurementUnitModel(int id, String unitname)
     {
         ID = id;
-        mUnitName = unitname;
+        _unitName = unitname;
     }
 
-    public int get_id() {
+    public int getId() {
         return ID;
     }
 
     @Override
     public String getString() {
-        return mUnitName;
-    }
-
-    public String getmUnitName() {
-        return mUnitName;
+        return _unitName;
     }
 
     @Override
     public String toString() {
-        return mUnitName;
+        return _unitName;
     }
 }

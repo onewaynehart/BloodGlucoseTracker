@@ -1,5 +1,6 @@
 package com.yourharts.www.Database;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.yourharts.www.Models.BloodMeasurementModel;
 import com.yourharts.www.Models.DataModelInterface;
@@ -17,24 +19,29 @@ import com.yourharts.www.Models.ShortLastingDrugModel;
 import com.yourharts.www.bloodglucosetracker.R;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class DBHelper  extends SQLiteOpenHelper {
-    // If you change the database schema, you must increment the database version.
+
     public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "glucose_tracker_v2.db";
     private String DATABASE_LOCATION;
     private final static String TAG = "DatabaseHelper";
     private Context _context;
     private SharedPreferences _sharedPreferences;
-    public DBHelper(Context context, String filePath) {
+    Activity _activity;
+    public DBHelper(Context context, String filePath, Activity activity) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         _context = context;
+        _activity = activity;
         DATABASE_LOCATION = new StringBuffer(filePath).append("/").append(DATABASE_NAME).toString();
         _sharedPreferences  = context.getSharedPreferences(context.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
@@ -108,7 +115,7 @@ public class DBHelper  extends SQLiteOpenHelper {
     public int getPosition(List<DataModelInterface>items,int itemID){
         int retval = -1;
         for(int count = 0 ; count <items.size(); count++){
-            if(items.get(count).get_id() == itemID){
+            if(items.get(count).getId() == itemID){
                 retval= count;
                 break;
             }
@@ -157,7 +164,7 @@ public class DBHelper  extends SQLiteOpenHelper {
         db.close();
         return retval;
     }
-    public List<BloodMeasurementModel> getBloodMeasurements()
+    public List<BloodMeasurementModel> getAllBloodMeasurements()
     {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);
         List<BloodMeasurementModel> retval = new ArrayList<BloodMeasurementModel>();
@@ -173,14 +180,14 @@ public class DBHelper  extends SQLiteOpenHelper {
                     cursor.getInt(5),
                     cursor.getDouble(6),
                     cursor.getInt(7),
-                    cursor.getString(8), _sharedPreferences );
+                    cursor.getString(8), _sharedPreferences , _activity);
 
             retval.add(measurement);
         }
         db.close();
         return retval;
     }
-    public String GetMeasurementsCSVText(String delimiter){
+    public String getMeasurementsCSVText(String delimiter){
         StringBuffer buffer = new StringBuffer();
         buffer.append("ID");
         buffer.append(delimiter);
@@ -201,7 +208,7 @@ public class DBHelper  extends SQLiteOpenHelper {
         buffer.append("Notes");
         buffer.append("\n");
 
-        List<BloodMeasurementModel> measurements = getBloodMeasurements();
+        List<BloodMeasurementModel> measurements = getAllBloodMeasurements();
 
         for(BloodMeasurementModel model : measurements)
         {
@@ -252,19 +259,19 @@ public class DBHelper  extends SQLiteOpenHelper {
 
         try{
             ContentValues cv = new ContentValues();
-            cv.put(col_1,model.get_glucoseMeasurement());
-            cv.put(col_2,model.get_glucoseMeasurementUnitID());
+            cv.put(col_1,model.getGlucoseMeasurement());
+            cv.put(col_2,model.getGlucoseMeasurementUnitID());
             cv.put(col_3,model.get_glucoseMeasurementDate());
-            cv.put(col_4,model.get_correctiveDoseAmount());
-            cv.put(col_5,model.get_correctiveDoseTypeID());
-            cv.put(col_6,model.get_baselineDoseAmount());
-            cv.put(col_7,model.get_baselineDoseTypeID());
-            cv.put(col_8,model.get_notes());
-            if(model.get_id()==0) {
+            cv.put(col_4,model.getCorrectiveDoseAmount());
+            cv.put(col_5,model.getCorrectiveDoseTypeID());
+            cv.put(col_6,model.getBaselineDoseAmount());
+            cv.put(col_7,model.getBaselineDoseTypeID());
+            cv.put(col_8,model.getNotes());
+            if(model.getId()==0) {
                 db.insert(tableName, null, cv);
             }
             else{
-                db.update(tableName, cv, "ID = "+model.get_id(), null);
+                db.update(tableName, cv, "ID = "+model.getId(), null);
             }
             db.close();
             retval = true;
@@ -291,11 +298,33 @@ public class DBHelper  extends SQLiteOpenHelper {
                     cursor.getInt(5),
                     cursor.getDouble(6),
                     cursor.getInt(7),
-                    cursor.getString(8) , _sharedPreferences);
+                    cursor.getString(8) , _sharedPreferences, _activity);
 
             retval.add(measurement);
         }
         db.close();
         return retval.get(0);
+    }
+
+    public void exportDatabase() {
+
+        try {
+            String filename = "/Blood_glucose_measurements_"+ UUID.randomUUID().toString() + ".db";
+            File outputFilePath =  _activity.getExternalFilesDir("database_exports");
+            outputFilePath.mkdirs();
+            InputStream is = new FileInputStream(DATABASE_LOCATION);
+            OutputStream os = new FileOutputStream(outputFilePath + filename);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+            is.close();
+            os.flush();
+            os.close();
+            Toast.makeText(this._activity, "Records succesfully saved to downloads folder! ("+outputFilePath+")", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

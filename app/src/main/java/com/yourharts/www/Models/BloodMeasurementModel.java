@@ -1,6 +1,9 @@
 package com.yourharts.www.Models;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
+
+import com.yourharts.www.bloodglucosetracker.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +24,7 @@ public class BloodMeasurementModel extends DataModelInterface {
 
     private Date _measurementDate;
     private SharedPreferences _sharedPreferences;
+    private Activity _activity;
     public BloodMeasurementModel(int id,
                                  double glucoseMeasurement,
                                  int glucoseMeasurementUnitID,
@@ -30,7 +34,9 @@ public class BloodMeasurementModel extends DataModelInterface {
                                  double baselineDoseAmount,
                                  int baselineDoseTypeID,
                                  String notes,
-                                 SharedPreferences sharedPreferences){
+                                 SharedPreferences sharedPreferences,
+                                 Activity activity){
+        _activity = activity;
         _id = id;
         _glucoseMeasurement = glucoseMeasurement;
         _glucoseMeasurementUnitID = glucoseMeasurementUnitID;
@@ -41,7 +47,7 @@ public class BloodMeasurementModel extends DataModelInterface {
         _glucoseMeasurementDate = glucoseMeasurementDate;
         _notes = notes;
         _sharedPreferences =  sharedPreferences;
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat parser = new SimpleDateFormat(_activity.getString(R.string.database_date_format));
         try {
             _measurementDate = parser.parse(glucoseMeasurementDate);
         } catch (ParseException e) {
@@ -49,7 +55,7 @@ public class BloodMeasurementModel extends DataModelInterface {
         }
     }
 
-    public int get_id() {
+    public int getId() {
         return _id;
     }
 
@@ -98,53 +104,41 @@ public class BloodMeasurementModel extends DataModelInterface {
         buffer.append("\n");
         return buffer.toString();
     }
-    public double get_glucoseMeasurement() {
+    public double getGlucoseMeasurement() {
         return _glucoseMeasurement;
     }
 
-    public void set_glucoseMeasurement(double _glucoseMeasurement) {
-        this._glucoseMeasurement = _glucoseMeasurement;
-    }
 
-    public int get_glucoseMeasurementUnitID() {
+
+    public int getGlucoseMeasurementUnitID() {
         return _glucoseMeasurementUnitID;
     }
 
-    public void set_glucoseMeasurementUnitID(int _glucoseMeasurementUnitID) {
-        this._glucoseMeasurementUnitID = _glucoseMeasurementUnitID;
-    }
 
-    public double get_baselineDoseAmount() {
+
+    public double getBaselineDoseAmount() {
         return _baselineDoseAmount;
     }
 
-    public void set_baselineDoseAmount(double _baselineDoseAmount) {
-        this._baselineDoseAmount = _baselineDoseAmount;
-    }
 
-    public double get_correctiveDoseAmount() {
+
+    public double getCorrectiveDoseAmount() {
         return _correctiveDoseAmount;
     }
 
-    public void set_correctiveDoseAmount(double _correctiveDoseAmount) {
-        this._correctiveDoseAmount = _correctiveDoseAmount;
-    }
 
-    public int get_correctiveDoseTypeID() {
+
+    public int getCorrectiveDoseTypeID() {
         return _correctiveDoseTypeID;
     }
 
-    public void set_correctiveDoseTypeID(int _correctiveDoseTypeID) {
-        this._correctiveDoseTypeID = _correctiveDoseTypeID;
-    }
 
-    public int get_baselineDoseTypeID() {
+
+    public int getBaselineDoseTypeID() {
         return _baselineDoseTypeID;
     }
 
-    public void set_baselineDoseTypeID(int _baselineDoseTypeID) {
-        this._baselineDoseTypeID = _baselineDoseTypeID;
-    }
+
 
     public String get_glucoseMeasurementDate() {
         return _glucoseMeasurementDate;
@@ -152,13 +146,11 @@ public class BloodMeasurementModel extends DataModelInterface {
 
 
 
-    public String get_notes() {
+    public String getNotes() {
         return _notes;
     }
 
-    public void set_notes(String _notes) {
-        this._notes = _notes;
-    }
+
 
     public boolean isHigh() {
         boolean retval = false;

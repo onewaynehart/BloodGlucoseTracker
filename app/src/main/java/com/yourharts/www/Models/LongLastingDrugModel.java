@@ -8,7 +8,7 @@ public class LongLastingDrugModel extends DataModelInterface {
         mID = ID;
         mName = Name;
     }
-    public int get_id() {
+    public int getId() {
         return mID;
     }
 
@@ -17,9 +17,7 @@ public class LongLastingDrugModel extends DataModelInterface {
         return mName;
     }
 
-    public void setID(int ID) {
-        this.mID = ID;
-    }
+
 
     public String getName() {
         return mName;

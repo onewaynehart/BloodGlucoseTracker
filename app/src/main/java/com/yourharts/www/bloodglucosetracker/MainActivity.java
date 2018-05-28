@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,7 +40,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +84,7 @@ public class MainActivity extends Activity {
         _dropDownMenu.setOutsideTouchable(true);
         setupListeners();
         _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
-        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
+        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath(), this);
         _measurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
         _summaryCard = findViewById(R.id.summary_card);
         _gettingStartedCard = findViewById(R.id.getting_started_card);
@@ -137,13 +134,13 @@ public class MainActivity extends Activity {
         _showBedtimeSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME", true));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     private void loadSummary() {
         _summaryCard.setVisibility(_showSummarySW.isChecked() ? View.VISIBLE : View.GONE);
         if (_showSummarySW.isChecked() == false)
             return;
 
-        List<BloodMeasurementModel> measurements = _dbHelper.getBloodMeasurements();
+        List<BloodMeasurementModel> measurements = _dbHelper.getAllBloodMeasurements();
         if (measurements.size() == 0) {
             _summaryCard.setVisibility(View.GONE);
             return;
@@ -161,22 +158,22 @@ public class MainActivity extends Activity {
             return;
         BloodMeasurementModel inUse = measurements.get(0);
         for (BloodMeasurementModel bmm : measurements) {
-            if (bmm.get_glucoseMeasurement() >= inUse.get_glucoseMeasurement())
+            if (bmm.getGlucoseMeasurement() >= inUse.getGlucoseMeasurement())
                 inUse = bmm;
         }
         if (inUse != null) {
-            highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
-            highestRecorded = inUse.get_glucoseMeasurement();
+            highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
+            highestRecorded = inUse.getGlucoseMeasurement();
             highestRecordedDate = inUse.get_glucoseMeasurementDate();
         }
         inUse = measurements.get(0);
         for (BloodMeasurementModel bmm : measurements) {
-            if (bmm.get_glucoseMeasurement() <= inUse.get_glucoseMeasurement())
+            if (bmm.getGlucoseMeasurement() <= inUse.getGlucoseMeasurement())
                 inUse = bmm;
         }
         if (inUse != null) {
-            lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.get_glucoseMeasurementUnitID())).getString();
-            lowestRecorded = inUse.get_glucoseMeasurement();
+            lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
+            lowestRecorded = inUse.getGlucoseMeasurement();
             lowestRecordedDate = inUse.get_glucoseMeasurementDate();
         }
         Map<String, ArrayList<Double>> correctiveMap = new HashMap<String, ArrayList<Double>>();
@@ -185,10 +182,10 @@ public class MainActivity extends Activity {
             try {
                 Date date = sdf.parse(bmm.get_glucoseMeasurementDate());
                 if (correctiveMap.containsKey(date.toString())) {
-                    correctiveMap.get(date.toString()).add(bmm.get_correctiveDoseAmount());
+                    correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
                 } else {
                     correctiveMap.put(date.toString(), new ArrayList<Double>());
-                    correctiveMap.get(date.toString()).add(bmm.get_correctiveDoseAmount());
+                    correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -212,30 +209,30 @@ public class MainActivity extends Activity {
         for (BloodMeasurementModel bmm : measurements) {
             if (bmm.isBreakfast()) {
                 if (timeofday.containsKey("breakfast")) {
-                    timeofday.put("breakfast", timeofday.get("breakfast") + bmm.get_glucoseMeasurement());
+                    timeofday.put("breakfast", timeofday.get("breakfast") + bmm.getGlucoseMeasurement());
                 } else {
-                    timeofday.put("breakfast", bmm.get_glucoseMeasurement());
+                    timeofday.put("breakfast", bmm.getGlucoseMeasurement());
                 }
             }
             if (bmm.isLunch()) {
                 if (timeofday.containsKey("lunch")) {
-                    timeofday.put("lunch", timeofday.get("lunch") + bmm.get_glucoseMeasurement());
+                    timeofday.put("lunch", timeofday.get("lunch") + bmm.getGlucoseMeasurement());
                 } else {
-                    timeofday.put("lunch", bmm.get_glucoseMeasurement());
+                    timeofday.put("lunch", bmm.getGlucoseMeasurement());
                 }
             }
             if (bmm.isDinner()) {
                 if (timeofday.containsKey("dinner")) {
-                    timeofday.put("dinner", timeofday.get("dinner") + bmm.get_glucoseMeasurement());
+                    timeofday.put("dinner", timeofday.get("dinner") + bmm.getGlucoseMeasurement());
                 } else {
-                    timeofday.put("dinner", bmm.get_glucoseMeasurement());
+                    timeofday.put("dinner", bmm.getGlucoseMeasurement());
                 }
             }
             if (bmm.isBedtime()) {
                 if (timeofday.containsKey("bedtime")) {
-                    timeofday.put("bedtime", timeofday.get("bedtime") + bmm.get_glucoseMeasurement());
+                    timeofday.put("bedtime", timeofday.get("bedtime") + bmm.getGlucoseMeasurement());
                 } else {
-                    timeofday.put("bedtime", bmm.get_glucoseMeasurement());
+                    timeofday.put("bedtime", bmm.getGlucoseMeasurement());
                 }
             }
         }
@@ -294,16 +291,16 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
             if (bmm.isBreakfast()) {
-                breakfastEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
+                breakfastEntries.add(new Entry(index, (float) bmm.getGlucoseMeasurement()));
             }
             if (bmm.isLunch()) {
-                lunchEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
+                lunchEntries.add(new Entry(index, (float) bmm.getGlucoseMeasurement()));
             }
             if (bmm.isDinner()) {
-                dinnerEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
+                dinnerEntries.add(new Entry(index, (float) bmm.getGlucoseMeasurement()));
             }
             if (bmm.isBedtime()) {
-                bedtimeEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
+                bedtimeEntries.add(new Entry(index, (float) bmm.getGlucoseMeasurement()));
             }
         }
         try {
@@ -345,7 +342,7 @@ public class MainActivity extends Activity {
     }
 
     private void loadMeasurements() {
-        List<BloodMeasurementModel> measurements = getDBHelper().getBloodMeasurements();
+        List<BloodMeasurementModel> measurements = getDBHelper().getAllBloodMeasurements();
 
         List<BloodMeasurementModel> filteredMeasurements = new ArrayList<>();
         for (BloodMeasurementModel bmm : measurements) {
@@ -414,7 +411,7 @@ public class MainActivity extends Activity {
         }
         if (id == R.id.menu_item_share) {
             String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "~");
-            String csv = _dbHelper.GetMeasurementsCSVText(delimiter);
+            String csv = _dbHelper.getMeasurementsCSVText(delimiter);
             File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
             csvFilePath.mkdirs();
             File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
@@ -454,7 +451,7 @@ public class MainActivity extends Activity {
         return _dbHelper;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     public void notifyPreferencesChanged() {
 
 

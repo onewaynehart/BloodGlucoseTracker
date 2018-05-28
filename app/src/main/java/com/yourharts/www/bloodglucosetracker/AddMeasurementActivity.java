@@ -29,19 +29,18 @@ import java.util.Date;
 import java.util.List;
 
 public class AddMeasurementActivity extends Activity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private DBHelper mDbHelper;
+    private DBHelper _dbHelper;
     private DateFormat dbDateFormat;
-    private Spinner mMeasurementUnitsDropdown;
-    private Spinner mCorrectiveDoseDrugDropdown;
-    private Spinner mbaselineDoseDrugDropdown;
-    private EditText mGlucoseAmountTB;
-    private EditText mCorrectiveDrugAmountTB;
-    private EditText mbaselineDrugAmountTB;
-    private EditText mNotesTB;
-    private TextView mDateLbl;
-    private boolean mIsEditMode;
-    private BloodMeasurementModel mDataModel;
-    private GlucoseMeasurementAdapter mGlucoseMEasurementAdapter;
+    private Spinner _measurementUnitsDropdown;
+    private Spinner _correctiveDoseDrugDropdown;
+    private Spinner _baselineDoseDrugDropdown;
+    private EditText _glucoseAmountTB;
+    private EditText _correctiveDrugAmountTB;
+    private EditText _baselineDrugAmountTB;
+    private EditText _notesTB;
+    private TextView _dateLbl;
+    private boolean _isEditMode;
+    private BloodMeasurementModel _dataModel;
     private SharedPreferences _sharedPref;
     private int _year;
     private int _month;
@@ -53,35 +52,35 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_glucose_measurement);
+        setContentView(R.layout.layout_add_glucose_measurement);
 
-        mMeasurementUnitsDropdown = findViewById(R.id.measurementUnitsDropDown);
-        mCorrectiveDoseDrugDropdown = findViewById(R.id.correctiveDoseDrugDropdown);
-        mbaselineDoseDrugDropdown = findViewById(R.id.baselineDoseDrugDropdown);
-        mGlucoseAmountTB = findViewById(R.id.addMeasurementGlucoseAmountTB);
-        mCorrectiveDrugAmountTB = findViewById(R.id.addMeasurementCorrectiveDoseAmountTB);
-        mbaselineDrugAmountTB = findViewById(R.id.addMeasurementBaselineDrugAmountTB);
-        mNotesTB = findViewById(R.id.addMeasurementNotesTB);
-        mDateLbl = findViewById(R.id.addMeasurementTimeLabel);
+        _measurementUnitsDropdown = findViewById(R.id.measurementUnitsDropDown);
+        _correctiveDoseDrugDropdown = findViewById(R.id.correctiveDoseDrugDropdown);
+        _baselineDoseDrugDropdown = findViewById(R.id.baselineDoseDrugDropdown);
+        _glucoseAmountTB = findViewById(R.id.addMeasurementGlucoseAmountTB);
+        _correctiveDrugAmountTB = findViewById(R.id.addMeasurementCorrectiveDoseAmountTB);
+        _baselineDrugAmountTB = findViewById(R.id.addMeasurementBaselineDrugAmountTB);
+        _notesTB = findViewById(R.id.addMeasurementNotesTB);
+        _dateLbl = findViewById(R.id.addMeasurementTimeLabel);
 
 
         dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
-        mDbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
+        _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath(),  this);
 
 
-        List<DataModelInterface> units = mDbHelper.getMeasurementUnits();
-        List<DataModelInterface> correctiveDrugs = mDbHelper.getShortLastingDrugs();
-        List<DataModelInterface> baselineDrugs = mDbHelper.getLongLastingDrugs();
-        GenericSpinnerAdapter unitsAdapter = new GenericSpinnerAdapter(getApplicationContext(), units);
-        GenericSpinnerAdapter correctiveDrugsAdapter = new GenericSpinnerAdapter(getApplicationContext(), correctiveDrugs);
-        GenericSpinnerAdapter baselineDrugsAdapter = new GenericSpinnerAdapter(getApplicationContext(), baselineDrugs);
-        mCorrectiveDoseDrugDropdown.setAdapter(correctiveDrugsAdapter);
-        mbaselineDoseDrugDropdown.setAdapter(baselineDrugsAdapter);
-        mMeasurementUnitsDropdown.setAdapter(unitsAdapter);
+        List<DataModelInterface> units = _dbHelper.getMeasurementUnits();
+        List<DataModelInterface> correctiveDrugs = _dbHelper.getShortLastingDrugs();
+        List<DataModelInterface> baselineDrugs = _dbHelper.getLongLastingDrugs();
+        GenericSpinnerAdapter unitsAdapter = new GenericSpinnerAdapter(getApplicationContext(), units, this);
+        GenericSpinnerAdapter correctiveDrugsAdapter = new GenericSpinnerAdapter(getApplicationContext(), correctiveDrugs, this);
+        GenericSpinnerAdapter baselineDrugsAdapter = new GenericSpinnerAdapter(getApplicationContext(), baselineDrugs, this);
+        _correctiveDoseDrugDropdown.setAdapter(correctiveDrugsAdapter);
+        _baselineDoseDrugDropdown.setAdapter(baselineDrugsAdapter);
+        _measurementUnitsDropdown.setAdapter(unitsAdapter);
         int modelID = getIntent().getIntExtra("ID", 0);
         if (modelID > 0) {
-            mIsEditMode = true;
-            mDataModel = mDbHelper.getBloodMeasurement(modelID);
+            _isEditMode = true;
+            _dataModel = _dbHelper.getBloodMeasurement(modelID);
 
         }
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
@@ -99,23 +98,23 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
         int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.pref_defaultMeasurementUnitID), 1);
 
         //Use defaults
-        if (!mIsEditMode) {
-            mDateLbl.setText(dbDateFormat.format(Calendar.getInstance().getTime()));
-            mMeasurementUnitsDropdown.setSelection(((GenericSpinnerAdapter)mMeasurementUnitsDropdown.getAdapter()).getPosition(defaultMeasurementUnitID));
-            mCorrectiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mCorrectiveDoseDrugDropdown.getAdapter()).getPosition(defaultCorrectiveDrugID));
-            mbaselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mbaselineDoseDrugDropdown.getAdapter()).getPosition(defaultBaselineDrugID));
+        if (!_isEditMode) {
+            _dateLbl.setText(dbDateFormat.format(Calendar.getInstance().getTime()));
+            _measurementUnitsDropdown.setSelection(((GenericSpinnerAdapter) _measurementUnitsDropdown.getAdapter()).getPosition(defaultMeasurementUnitID));
+            _correctiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _correctiveDoseDrugDropdown.getAdapter()).getPosition(defaultCorrectiveDrugID));
+            _baselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _baselineDoseDrugDropdown.getAdapter()).getPosition(defaultBaselineDrugID));
         }
         //Use existing model
         else
         {
-            mGlucoseAmountTB.setText(String.format(getString(R.string.decimal_format), mDataModel.get_glucoseMeasurement()));
-            mCorrectiveDrugAmountTB.setText(String.format("%.1f", mDataModel.get_correctiveDoseAmount()));
-            mbaselineDrugAmountTB.setText(String.format("%.1f", mDataModel.get_baselineDoseAmount()));
-            mDateLbl.setText(mDataModel.get_glucoseMeasurementDate());
-            mNotesTB.setText(mDataModel.get_notes());
-            mMeasurementUnitsDropdown.setSelection(((GenericSpinnerAdapter)mMeasurementUnitsDropdown.getAdapter()).getPosition(mDataModel.get_glucoseMeasurementUnitID()));
-            mCorrectiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mCorrectiveDoseDrugDropdown.getAdapter()).getPosition(getDataModel().get_correctiveDoseTypeID()));
-            mbaselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter)mbaselineDoseDrugDropdown.getAdapter()).getPosition(mDataModel.get_baselineDoseTypeID()));
+            _glucoseAmountTB.setText(String.format(getString(R.string.decimal_format), _dataModel.getGlucoseMeasurement()));
+            _correctiveDrugAmountTB.setText(String.format("%.1f", _dataModel.getCorrectiveDoseAmount()));
+            _baselineDrugAmountTB.setText(String.format("%.1f", _dataModel.getBaselineDoseAmount()));
+            _dateLbl.setText(_dataModel.get_glucoseMeasurementDate());
+            _notesTB.setText(_dataModel.getNotes());
+            _measurementUnitsDropdown.setSelection(((GenericSpinnerAdapter) _measurementUnitsDropdown.getAdapter()).getPosition(_dataModel.getGlucoseMeasurementUnitID()));
+            _correctiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _correctiveDoseDrugDropdown.getAdapter()).getPosition(getDataModel().getCorrectiveDoseTypeID()));
+            _baselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _baselineDoseDrugDropdown.getAdapter()).getPosition(_dataModel.getBaselineDoseTypeID()));
         }
 
     }
@@ -125,44 +124,34 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
         Button cancelBtn = findViewById(R.id.addMeasuremeanCancelBtn);
         Button saveBtn = findViewById(R.id.addMeasurementsaveBtn);
 
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        cancelBtn.setOnClickListener(v -> finish());
+
+        saveBtn.setOnClickListener(v -> {
+            if (saveData()) {
+                Intent intent = new Intent(AddMeasurementActivity.this, MainActivity.class);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
+        _dateLbl.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            _year = cal.get(Calendar.YEAR);
+            _month = cal.get(Calendar.MONTH) ;
+            _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (saveData()) {
-                    Intent intent = new Intent(AddMeasurementActivity.this, MainActivity.class);
-                    setResult(RESULT_OK, intent);
-                    finish();
+            if (_isEditMode && _dataModel != null) {
+                try {
+                    Date modelDate = dbDateFormat.parse(_dataModel.get_glucoseMeasurementDate());
+                    cal.setTime(modelDate);
+                    _year = cal.get(Calendar.YEAR);
+                    _month = cal.get(Calendar.MONTH) ;
+                    _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
-        });
-        mDateLbl.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Calendar cal = Calendar.getInstance();
-                _year = cal.get(Calendar.YEAR);
-                _month = cal.get(Calendar.MONTH) ;
-                _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
-
-                if (mIsEditMode && mDataModel != null) {
-                    try {
-                        Date modelDate = dbDateFormat.parse(mDataModel.get_glucoseMeasurementDate());
-                        cal.setTime(modelDate);
-                        _year = cal.get(Calendar.YEAR);
-                        _month = cal.get(Calendar.MONTH) ;
-                        _dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                DatePickerDialog dpd = new DatePickerDialog(AddMeasurementActivity.this, AddMeasurementActivity.this, _year, _month, _dayOfMonth);
-                dpd.show();
-            }
+            DatePickerDialog dpd = new DatePickerDialog(AddMeasurementActivity.this, AddMeasurementActivity.this, _year, _month, _dayOfMonth);
+            dpd.show();
         });
     }
 
@@ -186,9 +175,9 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
     private boolean saveData() {
         boolean retval = false;
         try {
-            double glucoseMeasurement = mGlucoseAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mGlucoseAmountTB.getText().toString());
-            double correctiveDoseAmount = mCorrectiveDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mCorrectiveDrugAmountTB.getText().toString());
-            double baselineDoseAmount = mbaselineDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(mbaselineDrugAmountTB.getText().toString());
+            double glucoseMeasurement = _glucoseAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(_glucoseAmountTB.getText().toString());
+            double correctiveDoseAmount = _correctiveDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(_correctiveDrugAmountTB.getText().toString());
+            double baselineDoseAmount = _baselineDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(_baselineDrugAmountTB.getText().toString());
 
 
             if (glucoseMeasurement == 0) {
@@ -196,25 +185,25 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
             }
 
             BloodMeasurementModel dataModel = new BloodMeasurementModel(
-                    mIsEditMode ? mDataModel.get_id() : 0,
+                    _isEditMode ? _dataModel.getId() : 0,
                     glucoseMeasurement,
-                    ((DataModelInterface) mMeasurementUnitsDropdown.getSelectedItem()).get_id(),
-                    mDateLbl.getText().toString(),
+                    ((DataModelInterface) _measurementUnitsDropdown.getSelectedItem()).getId(),
+                    _dateLbl.getText().toString(),
                     correctiveDoseAmount,
-                    ((DataModelInterface) mCorrectiveDoseDrugDropdown.getSelectedItem()).get_id(),
+                    ((DataModelInterface) _correctiveDoseDrugDropdown.getSelectedItem()).getId(),
                     baselineDoseAmount,
-                    ((DataModelInterface) mbaselineDoseDrugDropdown.getSelectedItem()).get_id(),
-                    mNotesTB.getText().toString(), _sharedPref);
+                    ((DataModelInterface) _baselineDoseDrugDropdown.getSelectedItem()).getId(),
+                    _notesTB.getText().toString(), _sharedPref, this);
 
 
-            retval = mDbHelper.addGlucoseMeasurement(dataModel);
+            retval = _dbHelper.addGlucoseMeasurement(dataModel);
 
             boolean useLastAsDefault = _sharedPref.getBoolean(getString(R.string.pref_use_last_as_default), false);
             if(useLastAsDefault) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
-                editor.putInt(getString(R.string.pref_defaultMeasurementUnitID), dataModel.get_glucoseMeasurementUnitID());
-                editor.putInt(getString(R.string.pref_defaultBaselineDrugID), dataModel.get_baselineDoseTypeID());
-                editor.putInt(getString(R.string.pref_defaultCorrectiveDrugID), dataModel.get_correctiveDoseTypeID());
+                editor.putInt(getString(R.string.pref_defaultMeasurementUnitID), dataModel.getGlucoseMeasurementUnitID());
+                editor.putInt(getString(R.string.pref_defaultBaselineDrugID), dataModel.getBaselineDoseTypeID());
+                editor.putInt(getString(R.string.pref_defaultCorrectiveDrugID), dataModel.getCorrectiveDoseTypeID());
                 editor.apply();
                 editor.commit();
             }
@@ -224,28 +213,9 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
         }
         return retval;
     }
-
-
-    public void setGlucoseMEasurementAdapter(GlucoseMeasurementAdapter glucoseMEasurementAdapter) {
-        this.mGlucoseMEasurementAdapter = glucoseMEasurementAdapter;
-    }
-
-    public boolean getIsEditMode() {
-        return mIsEditMode;
-    }
-
-    public void setIsEditMode(boolean mIsEditMode) {
-        this.mIsEditMode = mIsEditMode;
-    }
-
     public BloodMeasurementModel getDataModel() {
-        return mDataModel;
+        return _dataModel;
     }
-
-    public void setDataModel(BloodMeasurementModel mDataModel) {
-        this.mDataModel = mDataModel;
-    }
-
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         _year = year;
@@ -258,9 +228,9 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
         _hour = cal.get(Calendar.HOUR);
         _seconds = cal.get(Calendar.SECOND);
 
-        if (mIsEditMode && mDataModel != null) {
+        if (_isEditMode && _dataModel != null) {
             try {
-                Date modelDate = dbDateFormat.parse(mDataModel.get_glucoseMeasurementDate());
+                Date modelDate = dbDateFormat.parse(_dataModel.get_glucoseMeasurementDate());
                 cal.setTime(modelDate);
                 _minute = cal.get(Calendar.MINUTE);
                 _hour = cal.get(Calendar.HOUR);
@@ -279,7 +249,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
         _hour = hourOfDay;
         _minute = minute;
         String output = String.format("%d-%02d-%02d %02d:%02d", _year, _month + 1, _dayOfMonth, _hour, _minute);
-        mDateLbl.setText(output);
+        _dateLbl.setText(output);
 
     }
 }

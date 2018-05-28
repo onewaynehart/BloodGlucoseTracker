@@ -41,7 +41,7 @@ public class SettingsActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_main);
             _sharedPref = getActivity().getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
-            _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath());
+            _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath(), this.getActivity());
             _deleteAllDataButton = findPreference("DELETE_ALL_DATA_BTN");
             _glucoseUnitsLP = (ListPreference) findPreference(getString(R.string.pref_defaultMeasurementUnitID));
             _correctiveDrugTypeLP = (ListPreference) findPreference(getString(R.string.pref_defaultCorrectiveDrugID));
@@ -56,7 +56,7 @@ public class SettingsActivity extends PreferenceActivity {
         }
         private void setDefaults() {
             if(_dbHelper == null){
-                _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath());
+                _dbHelper = new DBHelper(getActivity(), getActivity().getFilesDir().getPath(), this.getActivity());
             }
             List<DataModelInterface> glucoseMeasurementTypes  = _dbHelper.getMeasurementUnits();
             CharSequence[] glucoseMeasurementNames = new CharSequence[glucoseMeasurementTypes.size()];
@@ -79,7 +79,7 @@ public class SettingsActivity extends PreferenceActivity {
             for(DataModelInterface dmi : glucoseMeasurementTypes)
             {
                 glucoseMeasurementNames[count] = dmi.getString();
-                glucoseMeasurementIDs[count] = Integer.toString(dmi.get_id());
+                glucoseMeasurementIDs[count] = Integer.toString(dmi.getId());
                 count++;
             }
             _glucoseUnitsLP.setEntries(glucoseMeasurementNames);
@@ -91,7 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
             for(DataModelInterface dmi : correctiveDrugs)
             {
                 correctiveDrugNames[count] = dmi.getString();
-                correctiveDrugIDs[count] = Integer.toString(dmi.get_id());
+                correctiveDrugIDs[count] = Integer.toString(dmi.getId());
                 count++;
             }
             _correctiveDrugTypeLP.setEntries(correctiveDrugNames);
@@ -103,7 +103,7 @@ public class SettingsActivity extends PreferenceActivity {
             for(DataModelInterface dmi : baselineDrugs)
             {
                 baselineDrugNames[count] = dmi.getString();
-                baselineDrugIDs[count] = Integer.toString(dmi.get_id());
+                baselineDrugIDs[count] = Integer.toString(dmi.getId());
                 count++;
             }
             _baselineDrugTypeLP.setEntries(baselineDrugNames);
