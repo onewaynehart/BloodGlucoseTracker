@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yourharts.www.Database.DBHelper;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +40,9 @@ public class DataActivity extends Activity {
     private Button _importDataBtn;
     private Button _exportDataBtn;
     private Button _deleteDaaBtn;
+    private TextView _databaseLocationTV;
+    private TextView _databaseSizeTV;
+    private TextView _databaseSummary;
     private DataActivityListener _listener;
     private SharedPreferences _sharedPref;
     private DBHelper _dbHelper;
@@ -46,15 +52,26 @@ public class DataActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_data_management);
         _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath());
+        List<BloodMeasurementModel> allMeasurements = _dbHelper.getBloodMeasurements();
         _importDataBtn = findViewById(R.id.importDataBtn);
         _exportDataBtn = findViewById(R.id.exportDataBtn);
         _deleteDaaBtn = findViewById(R.id.deleteAllDataBtn);
+        _databaseLocationTV = findViewById(R.id.databaseLocationTV);
+        _databaseSizeTV = findViewById(R.id.databaseSizeTV);
+        _databaseSummary = findViewById(R.id.databaseSummary);
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         _listener = new DataActivityListener(this, _sharedPref , _dbHelper);
         _importDataBtn.setOnClickListener(_listener);
         _exportDataBtn.setOnClickListener(_listener);
         _deleteDaaBtn.setOnClickListener(_listener);
+        setSummary();
+    }
 
+    public void setSummary() {
+        List<BloodMeasurementModel> allMeasurements = _dbHelper.getBloodMeasurements();
+        _databaseLocationTV.setText(String.format("Your database is located at %s", _dbHelper.getDatabaseLocation()));
+        _databaseSizeTV.setText(String.format("The size of your database is %d bytes", _dbHelper.getDatabaseSize()));
+        _databaseSummary.setText(String.format("You currently have %d record(s) with the latest taken on %s and the earliest on %s.", allMeasurements.size(), allMeasurements.size()> 0? allMeasurements.get(0).get_glucoseMeasurementDate(): "never", allMeasurements.size()> 0? allMeasurements.get(allMeasurements.size() - 1).get_glucoseMeasurementDate() : "never"));
     }
 
     @Override
@@ -77,12 +94,12 @@ public class DataActivity extends Activity {
 
                         try {
                             double measurement = Double.parseDouble(columns[1]);
-                            int measurementType = Integer.parseInt(columns[2]);
+                            int measurementType = columns[2].isEmpty() == false ?  Integer.parseInt(columns[2]) : 1;
                             String measurementDate = columns[3];
-                            double correctiveAmount = Double.parseDouble(columns[4]);
-                            int correctiveType = Integer.parseInt(columns[5]);
-                            double baselineAmt = Double.parseDouble(columns[6]);
-                            int baselineType = Integer.parseInt(columns[7]);
+                            double correctiveAmount = columns[4].isEmpty() == false ? Double.parseDouble(columns[4]): 0;
+                            int correctiveType =columns[5].isEmpty() == false ?  Integer.parseInt(columns[5]) : 1;
+                            double baselineAmt =columns[6].isEmpty() == false ?  Double.parseDouble(columns[6]) : 0;
+                            int baselineType =columns[7].isEmpty() == false ?  Integer.parseInt(columns[7]) : 1;
                             String notes = columns.length == 9 ? columns[8] : "";
                             BloodMeasurementModel newModel = new BloodMeasurementModel(0, measurement, measurementType, measurementDate, correctiveAmount, correctiveType, baselineAmt, baselineType, notes, _sharedPref);
 
@@ -91,7 +108,7 @@ public class DataActivity extends Activity {
                             for(BloodMeasurementModel bmm : currentMeasurements)
                             {
 
-                                if(measurementDate.equals(bmm.get_glucoseMeasurementDate()))
+                                if(measurementDate.substring(0,13).equals(bmm.get_glucoseMeasurementDate().substring(0,13)))
                                 {
                                     duplicateFound = true;
                                     break;
@@ -107,7 +124,9 @@ public class DataActivity extends Activity {
                         }
                     }
                     Toast.makeText(this, "Imported "+added+ " records", Toast.LENGTH_SHORT).show();
+
                     mBufferedReader.close();
+                    setSummary();
                 } catch (IOException e) {
                     e.printStackTrace();
 
@@ -115,6 +134,7 @@ public class DataActivity extends Activity {
             }
 
         }
+
 
     }
 
@@ -162,7 +182,8 @@ class DataActivityListener implements OnClickListener {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements.");
+                SimpleDateFormat dbDateFormat = new SimpleDateFormat(_dataActivity.getString(R.string.database_date_time_format));
+                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements_"+ dbDateFormat.format(Calendar.getInstance().getTime()));
                 sendIntent.setDataAndType(null, _dataActivity.getContentResolver().getType(contentUri));
 
                 _dataActivity.startActivity(sendIntent);
@@ -178,6 +199,7 @@ class DataActivityListener implements OnClickListener {
             alert.setPositiveButton(R.string.deleteYesBtn, (dialog, which) -> {
                 // continue with delete
                 _dbHelper.deleteAllMeasurementRecords();
+                _dataActivity.setSummary();
             });
             alert.setNegativeButton(android.R.string.no, (dialog, which) -> {
                 // close dialog

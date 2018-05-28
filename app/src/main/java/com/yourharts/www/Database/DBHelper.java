@@ -73,7 +73,14 @@ public class DBHelper  extends SQLiteOpenHelper {
             Log.d(TAG, "Database deleted.");
         }
     }
-
+    public String getDatabaseLocation()
+    {
+        return DATABASE_LOCATION;
+    }
+    public long getDatabaseSize(){
+        File file = new File(DATABASE_LOCATION);
+        return file.length();
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
 

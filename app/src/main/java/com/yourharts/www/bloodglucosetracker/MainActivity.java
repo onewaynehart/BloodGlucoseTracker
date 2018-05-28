@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,8 +95,6 @@ public class MainActivity extends Activity {
         _layoutManager = new LinearLayoutManager(this);
         _measurementView.setLayoutManager(_layoutManager);
 
-        _fab = findViewById(R.id.fab);
-        _fab.setOnClickListener(_mainActivitylistener);
 
         try {
             _dbHelper.prepareDatabase();
@@ -107,16 +106,7 @@ public class MainActivity extends Activity {
 
         loadMeasurements();
         loadSummary();
-        if(_adapter.getItemCount() == 0) {
 
-            _gettingStartedCard.setVisibility(View.VISIBLE);
-
-        }
-        else
-        {
-            _gettingStartedCard.setVisibility(View.GONE);
-
-        }
 
     }
 
@@ -134,6 +124,8 @@ public class MainActivity extends Activity {
         _showBedtimeSW.setOnCheckedChangeListener(_mainActivitylistener);
         _showSummarySW = _popupFilterView.findViewById(R.id.filter_switch_show_summary);
         _showSummarySW.setOnCheckedChangeListener(_mainActivitylistener);
+        _fab = findViewById(R.id.fab);
+        _fab.setOnClickListener(_mainActivitylistener);
     }
 
     private void loadUserPreferences() {
@@ -152,7 +144,7 @@ public class MainActivity extends Activity {
             return;
 
         List<BloodMeasurementModel> measurements = _dbHelper.getBloodMeasurements();
-        if(measurements.size() == 0){
+        if (measurements.size() == 0) {
             _summaryCard.setVisibility(View.GONE);
             return;
         }
@@ -161,11 +153,11 @@ public class MainActivity extends Activity {
         double lowestRecorded = 0.0;
         String lowestUnits = "";
         double averageCorrective = 0.0;
-        String highestUnits ="";
+        String highestUnits = "";
         String highestRecordedDate = "";
         String highestTimeOfDay = "";
         String lowestRecordedDate = "";
-        if(measurements.size() ==0 )
+        if (measurements.size() == 0)
             return;
         BloodMeasurementModel inUse = measurements.get(0);
         for (BloodMeasurementModel bmm : measurements) {
@@ -257,7 +249,7 @@ public class MainActivity extends Activity {
             }
         }
         highestTimeOfDay = highestKey;
-        List<DataModelInterface>correctiveDrugs = _dbHelper.getShortLastingDrugs();
+        List<DataModelInterface> correctiveDrugs = _dbHelper.getShortLastingDrugs();
 
         int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
         int correctiveDrugPos = (_dbHelper.getPosition(correctiveDrugs, defaultCorrectiveDrugID));
@@ -276,7 +268,6 @@ public class MainActivity extends Activity {
         _summaryTextView.setText(summary);
 
 
-
         LineChart graph = findViewById(R.id.summary_card_graphView);
         graph.invalidate();
         graph.clear();
@@ -286,31 +277,33 @@ public class MainActivity extends Activity {
         List<Entry> bedtimeEntries = new ArrayList<>();
 
 
-
-        measurements.sort(Comparator.comparing(BloodMeasurementModel::get_glucoseMeasurementDate));
+        Collections.reverse(measurements);
 
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.database_date_format));
 
-
+        System.out.println("----------------------Start Analyzing ---------------------");
         for (BloodMeasurementModel bmm : measurements) {
-
+            long index = 0;
             try {
-                cal.setTime(sdf.parse(bmm.get_glucoseMeasurementDate()));// all done
+                cal.setTime(sdf.parse(bmm.get_glucoseMeasurementDate()));
+                index = cal.getTimeInMillis();
+
+                System.out.println(bmm.get_glucoseMeasurementDate() + " = " + index);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             if (bmm.isBreakfast()) {
-                breakfastEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
+                breakfastEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
             }
             if (bmm.isLunch()) {
-                lunchEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
+                lunchEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
             }
             if (bmm.isDinner()) {
-                dinnerEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
+                dinnerEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
             }
             if (bmm.isBedtime()) {
-                bedtimeEntries.add(new Entry(cal.get(Calendar.DAY_OF_YEAR), (float) bmm.get_glucoseMeasurement()));
+                bedtimeEntries.add(new Entry(index, (float) bmm.get_glucoseMeasurement()));
             }
         }
         try {
@@ -322,18 +315,20 @@ public class MainActivity extends Activity {
             lunchDataSet.setColor(getResources().getColor(R.color.colorPrimaryVariant2));
             dinnerDataSet.setColor(getResources().getColor(R.color.colorSecondary));
             bedtimeDataSet.setColor(getResources().getColor(R.color.colorSecondaryVariant));
-
-
+            breakfastDataSet.setDrawCircles(false);
+            lunchDataSet.setDrawCircles(false);
+            dinnerDataSet.setDrawCircles(false);
+            bedtimeDataSet.setDrawCircles(false);
             LineData lineData = new LineData();
 
 
-            if (_showBreakfastSW.isChecked() && breakfastEntries.size() > 0 )
+            if (_showBreakfastSW.isChecked() && breakfastEntries.size() > 0)
                 lineData.addDataSet(breakfastDataSet);
             if (_showLunchSW.isChecked() && lunchEntries.size() > 0)
                 lineData.addDataSet(lunchDataSet);
-            if (_showDinnerSW.isChecked() && dinnerEntries.size() > 0 )
+            if (_showDinnerSW.isChecked() && dinnerEntries.size() > 0)
                 lineData.addDataSet(dinnerDataSet);
-            if (_showBedtimeSW.isChecked() && bedtimeEntries.size() > 0 )
+            if (_showBedtimeSW.isChecked() && bedtimeEntries.size() > 0)
                 lineData.addDataSet(bedtimeDataSet);
             graph.getXAxis().setGranularity(1.0f);
             graph.getXAxis().setTextColor(getResources().getColor(R.color.colorSurface));
@@ -373,27 +368,25 @@ public class MainActivity extends Activity {
             }
         }
 
-
         _adapter = new GlucoseMeasurementAdapter(filteredMeasurements);
         _adapter.setmActivity(this);
         _measurementView.setAdapter(_adapter);
+        if (_adapter.getItemCount() == 0) {
+
+            _gettingStartedCard.setVisibility(View.VISIBLE);
+
+        } else {
+            _gettingStartedCard.setVisibility(View.GONE);
+
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         loadMeasurements();
         loadSummary();
-        if(_adapter.getItemCount() == 0) {
-
-            _gettingStartedCard.setVisibility(View.VISIBLE);
-
-        }
-        else
-        {
-            _gettingStartedCard.setVisibility(View.GONE);
-
-        }
 
     }
 
@@ -402,7 +395,7 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         _filterMenuItem = menu.findItem(R.id.menu_item_filter);
-        _filterMenuItem.setVisible(_adapter.getItemCount() > 0);
+        _filterMenuItem.setVisible(_adapter != null ? _adapter.getItemCount() > 0 : false);
         return true;
     }
 
@@ -436,7 +429,7 @@ public class MainActivity extends Activity {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements.");
+                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements_" + _dbDateFormat.format(Calendar.getInstance().getTime()));
                 sendIntent.setDataAndType(null, getContentResolver().getType(contentUri));
 
                 startActivity(sendIntent);
@@ -448,7 +441,7 @@ public class MainActivity extends Activity {
         if (id == R.id.menu_item_filter) {
             _dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
         }
-        if(id == R.id.dataManuItem){
+        if (id == R.id.menu_item_data) {
             Intent intent = new Intent(MainActivity.this, DataActivity.class);
             startActivity(intent);
             return true;
@@ -464,10 +457,12 @@ public class MainActivity extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void notifyPreferencesChanged() {
 
-        loadSummary();
-        loadMeasurements();
-    }
 
+        loadMeasurements();
+        loadSummary();
+
+
+    }
 
 
     public void savePreferences() {
@@ -477,7 +472,7 @@ public class MainActivity extends Activity {
         editor.putBoolean("PREF_FILTER_SHOW_LUNCH", _showLunchSW.isChecked());
         editor.putBoolean("PREF_FILTER_SHOW_DINNER", _showDinnerSW.isChecked());
         editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", _showBedtimeSW.isChecked());
-        editor.putBoolean("PREF_SHOW_SUMMARY_CARD",_showSummarySW.isChecked());
+        editor.putBoolean("PREF_SHOW_SUMMARY_CARD", _showSummarySW.isChecked());
         editor.apply();
         editor.commit();
     }

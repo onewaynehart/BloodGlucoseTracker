@@ -2,7 +2,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_add_measurement">Add new measurement</string>
     <string name="deleteYesBtn">Delete It!</string>
-    <string name="database_date_time_format">yyyy-MM-dd HH:mm:ss</string>
+    <string name="database_date_time_format">yyyy-MM-dd HH:mm</string>
     <string name="database_date_format">yyyy-MM-dd</string>
     <string name="decimal_format">%.1f</string>
     <string name="pref_defaultCorrectiveDrugID">PREF_CORRECTIVE_DRUG</string>
