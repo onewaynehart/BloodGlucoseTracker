@@ -48,7 +48,7 @@
                             android:id="@+id/databaseSizeTV"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="2"
                             android:text="Database Size: %s" />
                     </TableRow>
 
@@ -60,13 +60,10 @@
                             android:id="@+id/databaseSummary"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="2"
                             android:text="Database Records: %s" />
                     </TableRow>
 
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
                 </TableLayout>
             </android.support.v7.widget.CardView>
 
@@ -74,17 +71,12 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginTop="20dp">
 
             <Button
                 android:id="@+id/importDataBtn"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
@@ -98,7 +90,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
-                android:layout_weight="5"
+                android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:drawableTop="@drawable/ic_file_upload_black_24dp"
                 android:text="Export Data"
@@ -113,12 +105,13 @@
 
             <Button
                 android:id="@+id/saveDBBtn"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:drawableTop="@drawable/ic_dns_black_24dp"
-                android:text="Save your database"
+                android:text="Export Database"
                 android:textColor="@android:color/white" />
 
             <Button
@@ -126,7 +119,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
-                android:layout_weight="5"
+                android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:drawableTop="@drawable/ic_assignment_returned_black_24dp"
                 android:text="Save records"
@@ -143,7 +136,7 @@
                 android:id="@+id/deleteAllDataBtn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:background="@color/colorError"
                 android:drawableTop="@drawable/ic_delete_black_24dp"
                 android:text="DELETE EVERYTHING"
