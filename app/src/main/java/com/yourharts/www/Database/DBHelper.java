@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -310,10 +311,14 @@ public class DBHelper  extends SQLiteOpenHelper {
 
         try {
             String filename = "/Blood_glucose_measurements_"+ UUID.randomUUID().toString() + ".db";
-            File outputFilePath =  _activity.getExternalFilesDir("database_exports");
+            File outputFilePath =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Blood Glucose Measurements/Database_Exports");
             outputFilePath.mkdirs();
             InputStream is = new FileInputStream(DATABASE_LOCATION);
-            OutputStream os = new FileOutputStream(outputFilePath + filename);
+            File outputfile = new File(outputFilePath.getPath(),filename);
+
+            outputfile.createNewFile();
+            OutputStream os = new FileOutputStream(outputfile);
+
             byte[] buffer = new byte[1024];
             int length;
             while ((length = is.read(buffer)) > 0) {

@@ -21,6 +21,7 @@ import com.yourharts.www.Models.BloodMeasurementModel;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -198,11 +199,10 @@ class DataActivityListener implements OnClickListener {
         if(v.getId() == _dataActivity.findViewById(R.id.saveRecordsBtn).getId()){
             String delimiter = _sharedPreferences.getString("PREF_DEFAULT_CSVDELIMITER", "~");
             String csv = _dbHelper.getMeasurementsCSVText(delimiter);
-            String filename = "Blood_glucose_measurements_"+UUID.randomUUID().toString() + ".csv";
-            File csvFilePath =  _dataActivity.getExternalFilesDir("records");
-            csvFilePath.mkdirs();
-            File output = new File(csvFilePath, filename);
-
+            String filename = "/Blood_glucose_measurements_"+ UUID.randomUUID().toString() + ".csv";
+            File outputFilePath =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Blood Glucose Measurements/Records_Exports_CSV");
+            outputFilePath.mkdirs();
+            File output = new File(outputFilePath, filename);
             try {
 
                 FileWriter writer = new FileWriter(output);
