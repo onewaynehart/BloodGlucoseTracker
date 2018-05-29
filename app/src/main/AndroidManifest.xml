@@ -58,6 +58,14 @@
             android:name="android.support.PARENT_ACTIVITY"
             android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
+        <activity android:name=".ChartsActivity"
+            android:label="Charts"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Elegant">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
+        </activity>
 
     </application>
 

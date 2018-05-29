@@ -21,7 +21,6 @@ import com.yourharts.www.bloodglucosetracker.R;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,6 +143,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
             retval.add(drug);
         }
+        cursor.close();
         db.close();
         return retval;
     }
@@ -158,6 +158,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
             retval.add(drug);
         }
+        cursor.close();
         db.close();
         return retval;
     }
@@ -172,6 +173,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
             retval.add(drug);
         }
+        cursor.close();
         db.close();
         return retval;
     }
@@ -195,6 +197,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
             retval.add(measurement);
         }
+        cursor.close();
         db.close();
         return retval;
     }
@@ -272,7 +275,7 @@ public class DBHelper  extends SQLiteOpenHelper {
             ContentValues cv = new ContentValues();
             cv.put(col_1,model.getGlucoseMeasurement());
             cv.put(col_2,model.getGlucoseMeasurementUnitID());
-            cv.put(col_3,model.get_glucoseMeasurementDate());
+            cv.put(col_3,model.getGlucoseMeasurementDate());
             cv.put(col_4,model.getCorrectiveDoseAmount());
             cv.put(col_5,model.getCorrectiveDoseTypeID());
             cv.put(col_6,model.getBaselineDoseAmount());
@@ -313,6 +316,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
             retval.add(measurement);
         }
+        cursor.close();
         db.close();
         return retval.get(0);
     }

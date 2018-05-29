@@ -2,7 +2,6 @@ package com.yourharts.www.bloodglucosetracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,8 +20,6 @@ import com.yourharts.www.Models.BloodMeasurementModel;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +73,7 @@ public class DataActivity extends Activity {
         List<BloodMeasurementModel> allMeasurements = _dbHelper.getAllBloodMeasurements();
         _databaseLocationTV.setText(String.format("Your database is located at %s", _dbHelper.getDatabaseLocation()));
         _databaseSizeTV.setText(String.format("The size of your database is %d bytes", _dbHelper.getDatabaseSize()));
-        _databaseSummary.setText(String.format("You currently have %d record(s) with the latest taken on %s and the earliest on %s.", allMeasurements.size(), allMeasurements.size()> 0? allMeasurements.get(0).get_glucoseMeasurementDate(): "never", allMeasurements.size()> 0? allMeasurements.get(allMeasurements.size() - 1).get_glucoseMeasurementDate() : "never"));
+        _databaseSummary.setText(String.format("You currently have %d record(s) with the latest taken on %s and the earliest on %s.", allMeasurements.size(), allMeasurements.size()> 0? allMeasurements.get(0).getGlucoseMeasurementDate(): "never", allMeasurements.size()> 0? allMeasurements.get(allMeasurements.size() - 1).getGlucoseMeasurementDate() : "never"));
     }
 
     @Override
@@ -113,7 +110,7 @@ public class DataActivity extends Activity {
                             for(BloodMeasurementModel bmm : currentMeasurements)
                             {
 
-                                if(measurementDate.substring(0,13).equals(bmm.get_glucoseMeasurementDate().substring(0,13)))
+                                if(measurementDate.substring(0,13).equals(bmm.getGlucoseMeasurementDate().substring(0,13)))
                                 {
                                     duplicateFound = true;
                                     break;

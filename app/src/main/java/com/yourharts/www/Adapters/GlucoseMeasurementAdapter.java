@@ -29,7 +29,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
     @NonNull
     private List<BloodMeasurementModel> mDataset;
     private SharedPreferences _sharedPref;
-    private MainActivity mActivity;
+    private MainActivity _activity;
 
     public GlucoseMeasurementAdapter(List<BloodMeasurementModel> dataSet){
         mDataset = dataSet;
@@ -38,14 +38,14 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
     public void onBindViewHolder(@NonNull GlucosemeasurementViewHolder holder, int position) {
 
         BloodMeasurementModel model = mDataset.get(position);
-        holder.getmMeasurementDateTime().setText(model.get_glucoseMeasurementDate());
+        holder.getmMeasurementDateTime().setText(model.getGlucoseMeasurementDate());
         holder.getmMeasurementAmount().setText(String.format("%.1f",model.getGlucoseMeasurement()));
         holder.getmCorrectiveDoseAmount().setText(String.format("%.1f",model.getCorrectiveDoseAmount()));
         holder.getmBaselineDoseAmount().setText(String.format("%.1f",model.getBaselineDoseAmount()));
         holder.getmNotes().setText(model.getNotes());
 
-        DBHelper dbHelper = mActivity.getDBHelper();
-        _sharedPref = mActivity.getSharedPreferences(mActivity.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
+        DBHelper dbHelper = _activity.getDBHelper();
+        _sharedPref = _activity.getSharedPreferences(_activity.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
         List<DataModelInterface> measurementUnits = dbHelper.getMeasurementUnits();
         List<DataModelInterface> correctiveDrugTypes = dbHelper.getShortLastingDrugs();
@@ -82,7 +82,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            Date measurementTime = sdf.parse(model.get_glucoseMeasurementDate());
+            Date measurementTime = sdf.parse(model.getGlucoseMeasurementDate());
             int hour = measurementTime.getHours();
             if(hour < 10){
                 holder.getTimeImageView().setImageResource(R.drawable.ic_coffee);
@@ -120,12 +120,10 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         return vh;
     }
 
-    public MainActivity getmActivity() {
-        return mActivity;
-    }
 
-    public void setmActivity(MainActivity activity) {
-        this.mActivity = activity;
+
+    public void setActivity(MainActivity activity) {
+        this._activity = activity;
     }
 
 
@@ -178,7 +176,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
                     alert.setPositiveButton(R.string.deleteYesBtn, (dialog, which) -> {
                         // continue with delete
                         BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                        if(mActivity.getDBHelper().deleteMeasurementRecord(model.getId())==true)
+                        if(_activity.getDBHelper().deleteMeasurementRecord(model.getId())==true)
                             removeAt(getAdapterPosition());
                     });
                     alert.setNegativeButton(android.R.string.no, (dialog, which) -> {
@@ -189,9 +187,9 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
                 }
                 if (v.equals(mEditImage)) {
                     BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                    Intent intent = new Intent(mActivity, AddMeasurementActivity.class);
+                    Intent intent = new Intent(_activity, AddMeasurementActivity.class);
                     intent.putExtra("ID", model.getId());
-                    mActivity.startActivity(intent);
+                    _activity.startActivity(intent);
                 }
             };
             mEditImage.setOnClickListener(clickListener);

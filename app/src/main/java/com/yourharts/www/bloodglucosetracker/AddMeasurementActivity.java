@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.yourharts.www.Adapters.GenericSpinnerAdapter;
-import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
 import com.yourharts.www.Models.DataModelInterface;
@@ -110,7 +108,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
             _glucoseAmountTB.setText(String.format(getString(R.string.decimal_format), _dataModel.getGlucoseMeasurement()));
             _correctiveDrugAmountTB.setText(String.format("%.1f", _dataModel.getCorrectiveDoseAmount()));
             _baselineDrugAmountTB.setText(String.format("%.1f", _dataModel.getBaselineDoseAmount()));
-            _dateLbl.setText(_dataModel.get_glucoseMeasurementDate());
+            _dateLbl.setText(_dataModel.getGlucoseMeasurementDate());
             _notesTB.setText(_dataModel.getNotes());
             _measurementUnitsDropdown.setSelection(((GenericSpinnerAdapter) _measurementUnitsDropdown.getAdapter()).getPosition(_dataModel.getGlucoseMeasurementUnitID()));
             _correctiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _correctiveDoseDrugDropdown.getAdapter()).getPosition(getDataModel().getCorrectiveDoseTypeID()));
@@ -141,7 +139,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
 
             if (_isEditMode && _dataModel != null) {
                 try {
-                    Date modelDate = dbDateFormat.parse(_dataModel.get_glucoseMeasurementDate());
+                    Date modelDate = dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
                     cal.setTime(modelDate);
                     _year = cal.get(Calendar.YEAR);
                     _month = cal.get(Calendar.MONTH) ;
@@ -230,7 +228,7 @@ public class AddMeasurementActivity extends Activity implements DatePickerDialog
 
         if (_isEditMode && _dataModel != null) {
             try {
-                Date modelDate = dbDateFormat.parse(_dataModel.get_glucoseMeasurementDate());
+                Date modelDate = dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
                 cal.setTime(modelDate);
                 _minute = cal.get(Calendar.MINUTE);
                 _hour = cal.get(Calendar.HOUR);

@@ -2,34 +2,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.yourharts.www.bloodglucosetracker.MainActivity">
-
-
     <item
         android:id="@+id/menu_item_share"
         android:icon="@drawable/ic_baseline_share_24px"
         android:title="Share"
         android:orderInCategory="1"
-
         android:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_settings"
-        android:icon="@drawable/ic_settings_black_24dp"
-        android:orderInCategory="2"
-        android:title="@string/action_settings"
-        android:showAsAction="always" />
     <item
         android:id="@+id/menu_item_filter"
         android:icon="@drawable/ic_filter_list_black_24dp"
-        android:orderInCategory="4"
+        android:orderInCategory="2"
         android:title="Filters"
-
         android:showAsAction="always" />
+    <item
+        android:id="@+id/menu_item_charts"
+        android:icon="@drawable/ic_graphs_24dp"
+        android:orderInCategory="3"
+        android:title="Charts"
+        android:showAsAction="always"/>
     <item
         android:id="@+id/menu_item_data"
         android:icon="@drawable/ic_storage_black_24dp"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         android:title="Data Management"
-        app:showAsAction="always"
         android:showAsAction="ifRoom"/>
-
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:orderInCategory="5"
+        android:title="@string/action_settings"
+        android:showAsAction="ifRoom" />
 </menu>

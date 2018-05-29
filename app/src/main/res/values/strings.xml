@@ -13,6 +13,11 @@
     <string name="pref_file_key">ALL_PREFERENCES</string>
     <string name="export_delimiter">||</string>
     <string name="csv_delimiter">||</string>
+    <string name="summary_text">Your highest ever blood glucose reading was %.2f %s taken on %s.\n
+        Your lowest ever blood glucose reading was %.2f %s taken on %s.\n
+        On average you take %.2f units of %s a day to correct your levels.\n
+        Your highest readings are usually around %s.\n
+    </string>
     <string-array name="csv_delimiters">
         <item>|</item>
         <item>||</item>

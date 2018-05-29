@@ -140,7 +140,7 @@ public class BloodMeasurementModel extends DataModelInterface {
 
 
 
-    public String get_glucoseMeasurementDate() {
+    public String getGlucoseMeasurementDate() {
         return _glucoseMeasurementDate;
     }
 
