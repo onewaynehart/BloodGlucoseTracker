@@ -16,7 +16,7 @@
         android:showAsAction="always" />
     <item
         android:id="@+id/menu_item_charts"
-        android:icon="@drawable/ic_graphs_24dp"
+        android:icon="@drawable/ic_timeline_black_24dp"
         android:orderInCategory="3"
         android:title="Charts"
         android:showAsAction="always"/>

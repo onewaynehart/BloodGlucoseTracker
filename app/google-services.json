@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "901972016653",
+    "firebase_url": "https://bloodglucosecompanion-9ec8e.firebaseio.com",
+    "project_id": "bloodglucosecompanion",
+    "storage_bucket": "bloodglucosecompanion.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901972016653:android:7ded0d27d6e42947",
+        "android_client_info": {
+          "package_name": "com.yourharts.www.bloodglucosetracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901972016653-7ognk1ucq65tn93k3tocdrtip6scs83r.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "901972016653-7ognk1ucq65tn93k3tocdrtip6scs83r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwRDcGJ7JlUddqCSAu9bdx3r4dyfQS-BI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
