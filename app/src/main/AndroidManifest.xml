@@ -35,26 +35,34 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/Elegant"
             android:windowSoftInputMode="stateVisible">
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Elegant">
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
         <activity android:name=".DataActivity"
             android:label="Data Management"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Elegant">
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
         <activity android:name=".ChartsActivity"
             android:label="Charts"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Elegant">
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
 
     </application>

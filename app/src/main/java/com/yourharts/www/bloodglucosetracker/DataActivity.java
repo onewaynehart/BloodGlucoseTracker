@@ -9,6 +9,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -32,7 +37,7 @@ import java.util.UUID;
 import static android.support.v4.content.FileProvider.getUriForFile;
 import static android.widget.Toast.LENGTH_SHORT;
 
-public class DataActivity extends BaseActivity {
+public class DataActivity extends AppCompatActivity {
     private Button _importDataBtn;
     private Button _exportDataBtn;
     private Button _deleteDaaBtn;
@@ -65,12 +70,26 @@ public class DataActivity extends BaseActivity {
         _exportDataBtn.setOnClickListener(_listener);
         _deleteDaaBtn.setOnClickListener(_listener);
         _saveDatabaseBtn.setOnClickListener(_listener);
-        _saveRecordsButton.setOnClickListener(_listener);;
+        _saveRecordsButton.setOnClickListener(_listener);
         setSummary();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.getMenu().getItem(2).setChecked(true);
-    }
 
+        Toolbar toolbar = findViewById(R.id.toolbar_data);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     public void setSummary() {
         List<BloodMeasurementModel> allMeasurements = _dbHelper.getAllBloodMeasurements();
         _databaseLocationTV.setText(String.format("Your database is located at %s", _dbHelper.getDatabaseLocation()));

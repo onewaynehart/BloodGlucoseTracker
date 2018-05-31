@@ -5,7 +5,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -27,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChartsActivity extends BaseActivity {
+public class ChartsActivity extends AppCompatActivity {
     private TextView _summaryTextView;
     private DBHelper _dbHelper;
     private DateFormat _dbDateFormat;
@@ -47,11 +53,35 @@ public class ChartsActivity extends BaseActivity {
         _summaryTextView = findViewById(R.id._summaryTV);
 
         loadSummary();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.getMenu().getItem(1).setChecked(true);
+        Toolbar toolbar = findViewById(R.id.toolbar_charts);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
+
+        setTitle(R.string.chartsTitle);
+        toolbar.setTitle(R.string.chartsTitle);
+
+        actionbar.setTitle(R.string.chartsTitle);
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_charts, menu);
 
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void loadSummary() {
 

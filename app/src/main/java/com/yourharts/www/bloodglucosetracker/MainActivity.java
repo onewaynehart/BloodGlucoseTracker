@@ -9,9 +9,15 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +44,7 @@ import java.util.UUID;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
     private RecyclerView _measurementView;
     private GlucoseMeasurementAdapter _adapter;
     private RecyclerView.LayoutManager _layoutManager;
@@ -57,14 +63,15 @@ public class MainActivity extends BaseActivity {
     private MainActivityListener _mainActivitylistener;
     private List<BloodMeasurementModel> _filteredMeasurements = new ArrayList<>();
     PopupWindow _dropDownMenu;
-
-
+    private DrawerLayout _drawerLayout;
+    android.support.v7.app.ActionBarDrawerToggle _drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+        _drawerLayout = findViewById(R.id.drawer_layout);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
@@ -104,14 +111,52 @@ public class MainActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
         setupListeners();
         loadUserPreferences();
         loadMeasurements();
         setTitle(R.string.Measurements);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        setupNavDrawerAndTooldbar();
     }
 
+    private void setupNavDrawerAndTooldbar() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                menuItem -> {
+                    // set item as selected to persist highlight
+                    menuItem.setChecked(true);
+                    // close drawer when item is tapped
+                    _drawerLayout.closeDrawers();
+
+                    switch(menuItem.getItemId()) {
+                        case R.id.nav_settings: {
+                            Intent intent = new Intent(this, SettingsActivity.class);
+                            startActivity(intent);
+                            return true;
+                        }
+                        case R.id.nav_charts: {
+                            Intent intent = new Intent(this, ChartsActivity.class);
+                            startActivity(intent);
+                            return true;
+                        }
+                        case R.id.nav_data: {
+                            Intent intent = new Intent(this, DataActivity.class);
+                            startActivity(intent);
+                            return true;
+                        }
+                    }
+                    return true;
+                });
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+        _drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        _drawerLayout.setDrawerListener(_drawerToggle);
+    }
 
 
     private void setupListeners() {
@@ -172,9 +217,42 @@ public class MainActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if(_drawerToggle != null)
+            _drawerToggle.syncState();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransitionExit();
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        super.startActivity(intent);
+        overridePendingTransitionEnter();
+    }
+
+    /**
+     * Overrides the pending Activity transition by performing the "Enter" animation.
+     */
+    protected void overridePendingTransitionEnter() {
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+    }
+
+    /**
+     * Overrides the pending Activity transition by performing the "Exit" animation.
+     */
+    protected void overridePendingTransitionExit() {
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -182,54 +260,47 @@ public class MainActivity extends BaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-/*        if (id == R.id.action_settings) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }*/
-/*        if (id == R.id.menu_item_charts) {
-            Intent intent = new Intent(MainActivity.this, ChartsActivity.class);
-            startActivity(intent);
-            return true;
-        }*/
-        if (id == R.id.menu_item_share) {
-            String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "~");
-            String csv = _dbHelper.getMeasurementsCSVText(delimiter);
-            File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
-            csvFilePath.mkdirs();
-            File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
-            try {
-                FileWriter writer = new FileWriter(newFile);
-                writer.write(csv);
-                writer.flush();
-                writer.close();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                _drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.menu_item_share: {
+                String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "~");
+                String csv = _dbHelper.getMeasurementsCSVText(delimiter);
+                File csvFilePath = new File(getApplicationContext().getFilesDir().getPath(), "csv");
+                csvFilePath.mkdirs();
+                File newFile = new File(csvFilePath, UUID.randomUUID().toString() + ".csv");
+                try {
+                    FileWriter writer = new FileWriter(newFile);
+                    writer.write(csv);
+                    writer.flush();
+                    writer.close();
 
-                Uri contentUri = getUriForFile(MainActivity.this, "com.yourharts.www.bloodglucosetracker.fileprovider", newFile);
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements_" + _dbDateFormat.format(Calendar.getInstance().getTime()));
-                sendIntent.setDataAndType(null, getContentResolver().getType(contentUri));
+                    Uri contentUri = getUriForFile(MainActivity.this, "com.yourharts.www.bloodglucosetracker.fileprovider", newFile);
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    sendIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Blood glucose measurements_" + _dbDateFormat.format(Calendar.getInstance().getTime()));
+                    sendIntent.setDataAndType(null, getContentResolver().getType(contentUri));
 
-                startActivity(sendIntent);
-            } catch (IOException e) {
-                e.printStackTrace();
+                    startActivity(sendIntent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            case R.id.menu_item_filter: {
+                _dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
             }
 
-        }
-        if (id == R.id.menu_item_filter) {
-            _dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
-        }
-/*        if (id == R.id.menu_item_data) {
-            Intent intent = new Intent(MainActivity.this, DataActivity.class);
-            startActivity(intent);
-            return true;
-        }*/
 
+        }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 
 
     public DBHelper getDBHelper() {

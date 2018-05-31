@@ -22,6 +22,10 @@
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">closed</string>
     <string name="Measurements">Measurements</string>
+    <string name="chartsTitle">Charts</string>
+    <string name="data_management_title">Data Management</string>
+    <string name="settings_title">User Settings</string>
+    <string name="title_activity_add_measurementmeasurement_title">Add new measurement</string>
     <string-array name="csv_delimiters">
         <item>|</item>
         <item>||</item>
