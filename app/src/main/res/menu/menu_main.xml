@@ -5,16 +5,18 @@
     <item
         android:id="@+id/menu_item_share"
         android:icon="@drawable/ic_baseline_share_24px"
-        android:title="Share"
         android:orderInCategory="1"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always"
+        android:title="Share"
+        app:showAsAction="always" />
     <item
         android:id="@+id/menu_item_filter"
         android:icon="@drawable/ic_filter_list_black_24dp"
         android:orderInCategory="2"
+        android:showAsAction="always"
         android:title="Filters"
-        android:showAsAction="always" />
-    <item
+        app:showAsAction="always" />
+<!--    <item
         android:id="@+id/menu_item_charts"
         android:icon="@drawable/ic_timeline_black_24dp"
         android:orderInCategory="3"
@@ -31,5 +33,5 @@
         android:icon="@drawable/ic_settings_black_24dp"
         android:orderInCategory="5"
         android:title="@string/action_settings"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="ifRoom" />-->
 </menu>

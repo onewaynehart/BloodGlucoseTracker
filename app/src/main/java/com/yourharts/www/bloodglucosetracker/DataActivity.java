@@ -1,6 +1,5 @@
 package com.yourharts.www.bloodglucosetracker;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -32,7 +32,7 @@ import java.util.UUID;
 import static android.support.v4.content.FileProvider.getUriForFile;
 import static android.widget.Toast.LENGTH_SHORT;
 
-public class DataActivity extends Activity {
+public class DataActivity extends BaseActivity {
     private Button _importDataBtn;
     private Button _exportDataBtn;
     private Button _deleteDaaBtn;
@@ -67,6 +67,8 @@ public class DataActivity extends Activity {
         _saveDatabaseBtn.setOnClickListener(_listener);
         _saveRecordsButton.setOnClickListener(_listener);;
         setSummary();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(2).setChecked(true);
     }
 
     public void setSummary() {

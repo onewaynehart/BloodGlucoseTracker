@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id = "@+id/menu_navigation_drawer">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_main"
+            android:icon="@drawable/ic_format_list_numbered_black_24dp"
+            android:title="Measurements" />
+        <item
+            android:id="@+id/nav_charts"
+            android:icon="@drawable/ic_timeline_black_24dp"
+            android:title="Charts" />
+        <item
+            android:id="@+id/nav_data"
+            android:icon="@drawable/ic_database"
+            android:title="Data Management" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="Settings" />
+    </group>
+</menu>

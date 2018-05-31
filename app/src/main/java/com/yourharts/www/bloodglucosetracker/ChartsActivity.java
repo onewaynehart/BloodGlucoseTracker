@@ -1,10 +1,10 @@
 package com.yourharts.www.bloodglucosetracker;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v7.widget.CardView;
 import android.widget.TextView;
 
@@ -27,24 +27,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChartsActivity extends Activity {
+public class ChartsActivity extends BaseActivity {
     private TextView _summaryTextView;
     private DBHelper _dbHelper;
     private DateFormat _dbDateFormat;
     private SharedPreferences _sharedPref;
     private CardView _summaryCard;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_charts);
+
         _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
         _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath(), this);
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         _summaryCard = findViewById(R.id.summary_card);
         _summaryTextView = findViewById(R.id._summaryTV);
+
         loadSummary();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(1).setChecked(true);
 
     }
+
+
     private void loadSummary() {
 
         List<DataModelInterface> measurementUnits = _dbHelper.getMeasurementUnits();
@@ -275,7 +283,7 @@ public class ChartsActivity extends Activity {
                 e.printStackTrace();
             }
 
-            if(bmm.getCorrectiveDoseAmount()>0){
+            //if(bmm.getCorrectiveDoseAmount()>0){
                 boolean existing = false;
                 for(Entry entry : shortActing){
                     if(entry.getX() == index)
@@ -289,10 +297,10 @@ public class ChartsActivity extends Activity {
                     Entry newEntry = new Entry(index, (float) bmm.getCorrectiveDoseAmount());
                     shortActing.add(newEntry);
                 }
-            }
+            //}
 
-            if(bmm.getBaselineDoseAmount()>0) {
-                boolean existing = false;
+            //if(bmm.getBaselineDoseAmount()>0) {
+                existing = false;
                 for(Entry entry : longActing){
                     if(entry.getX() == index)
                     {
@@ -305,7 +313,7 @@ public class ChartsActivity extends Activity {
                     Entry newEntry = new Entry(index, (float) bmm.getBaselineDoseAmount());
                     longActing.add(newEntry);
                 }
-            }
+            //}
         }
 
 

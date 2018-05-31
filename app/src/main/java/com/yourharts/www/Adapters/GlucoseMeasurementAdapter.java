@@ -115,7 +115,7 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
         // create a new view
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        View v = inflater.inflate(R.layout.blood_glucose_measurement_item_view, parent, false);
+        View v = inflater.inflate(R.layout.layout_blood_glucose_measurement_view, parent, false);
         GlucosemeasurementViewHolder vh = new GlucosemeasurementViewHolder(v);
         return vh;
     }

@@ -1,9 +1,4 @@
 <resources>
-
-
-
-
-
     <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!-- Used for the buttons -->
         <item name="android:colorAccent">#ff7707</item>
@@ -17,12 +12,11 @@
         <item name="android:layout_gravity">center_horizontal|center_vertical</item>
     </style>
 
-    <style name="Elegant" parent="Theme.AppCompat.Light" >
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:windowActionBar">true</item>
+    <style name="Elegant" parent="Theme.AppCompat.Light.NoActionBar" >
 
     </style>
 
 
 
+    <style name="NavDrawer" parent="Theme.AppCompat.Light.DarkActionBar" />
 </resources>

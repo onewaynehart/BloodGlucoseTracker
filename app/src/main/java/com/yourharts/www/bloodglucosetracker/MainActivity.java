@@ -1,6 +1,5 @@
 package com.yourharts.www.bloodglucosetracker;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +7,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+
+import android.support.design.widget.NavigationView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,8 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.Switch;
+
 
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
@@ -37,7 +38,7 @@ import java.util.UUID;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
     private RecyclerView _measurementView;
     private GlucoseMeasurementAdapter _adapter;
     private RecyclerView.LayoutManager _layoutManager;
@@ -57,19 +58,25 @@ public class MainActivity extends Activity {
     private List<BloodMeasurementModel> _filteredMeasurements = new ArrayList<>();
     PopupWindow _dropDownMenu;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.layout_main);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
+
+
+
         _mainActivitylistener = new MainActivityListener(MainActivity.this, _sharedPref);
-        _popupFilterView = layoutInflater.inflate(R.layout.drop_down_filters, null);
-
+        _popupFilterView = layoutInflater.inflate(R.layout.layout_drop_down_filters, null);
         _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         _dropDownMenu.setOutsideTouchable(true);
-        setupListeners();
+
+
+
         _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
         _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath(), this);
         _measurementView = findViewById(R.id.bloodGlucoseMeasurementsRecyclerView);
@@ -77,6 +84,7 @@ public class MainActivity extends Activity {
         _gettingStartedCard = findViewById(R.id.getting_started_card);
 
         _measurementView.setHasFixedSize(true);
+
         _layoutManager = new LinearLayoutManager(this);
         _measurementView.setLayoutManager(_layoutManager);
         if (_sharedPref.getBoolean("IS_FIRST_RUN", true)){
@@ -96,11 +104,15 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        setupListeners();
         loadUserPreferences();
-
-
         loadMeasurements();
+        setTitle(R.string.Measurements);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
+
+
 
     private void setupListeners() {
         _dropDownMenu.setOnDismissListener(_mainActivitylistener);
@@ -114,7 +126,6 @@ public class MainActivity extends Activity {
         _showDinnerSW.setOnCheckedChangeListener(_mainActivitylistener);
         _showBedtimeSW = _popupFilterView.findViewById(R.id.filter_switch_show_bedtime);
         _showBedtimeSW.setOnCheckedChangeListener(_mainActivitylistener);
-
         _fab = findViewById(R.id.fab);
         _fab.setOnClickListener(_mainActivitylistener);
     }
@@ -172,16 +183,16 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+/*        if (id == R.id.action_settings) {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
             return true;
-        }
-        if (id == R.id.menu_item_charts) {
+        }*/
+/*        if (id == R.id.menu_item_charts) {
             Intent intent = new Intent(MainActivity.this, ChartsActivity.class);
             startActivity(intent);
             return true;
-        }
+        }*/
         if (id == R.id.menu_item_share) {
             String delimiter = _sharedPref.getString("PREF_DEFAULT_CSVDELIMITER", "~");
             String csv = _dbHelper.getMeasurementsCSVText(delimiter);
@@ -211,11 +222,12 @@ public class MainActivity extends Activity {
         if (id == R.id.menu_item_filter) {
             _dropDownMenu.showAsDropDown(findViewById(R.id.menu_item_filter));
         }
-        if (id == R.id.menu_item_data) {
+/*        if (id == R.id.menu_item_data) {
             Intent intent = new Intent(MainActivity.this, DataActivity.class);
             startActivity(intent);
             return true;
-        }
+        }*/
+
         return super.onOptionsItemSelected(item);
     }
 

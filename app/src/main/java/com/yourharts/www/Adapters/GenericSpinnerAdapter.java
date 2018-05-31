@@ -49,7 +49,7 @@ public class GenericSpinnerAdapter  extends BaseAdapter {
         ViewHolder spinnerHolder;
         if(convertView == null){
             spinnerHolder = new ViewHolder();
-            convertView = layoutInflater.inflate(R.layout.generic_spinner_list, parent, false);
+            convertView = layoutInflater.inflate(R.layout.layout_generic_spinner_list, parent, false);
             spinnerHolder.spinnerItemList = convertView.findViewById(R.id.spinner_list_item);
             convertView.setTag(spinnerHolder);
         }else{
