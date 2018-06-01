@@ -50,29 +50,109 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <include
-                    android:id="@+id/summary_card"
-                    layout="@layout/layout_summary_card"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:layout_weight="1" />
-
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/chart_glucose_over_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginTop="10dp"
-                    android:background="@android:color/white" />
+                    android:orientation="vertical">
 
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/chart_insulin_over_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="10dp"
-                    android:background="@android:color/white" />
+                    <include
+                        android:id="@+id/summary_card"
+                        layout="@layout/layout_summary_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/high_reading_pie_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:textAlignment="viewEnd" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/chart_insulin_over_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:textAlignment="viewEnd" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/chart_glucose_over_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            android:layout_weight="3"
+                            android:background="@android:color/white"
+                            android:minWidth="2dp">
+
+                        </com.github.mikephil.charting.charts.LineChart>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <Switch
+                                android:id="@+id/charts_dinnerSw"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:checked="true"
+                                android:paddingLeft="5dp"
+                                android:text="Dinner"
+                                android:textAlignment="viewEnd"
+                                android:textSize="8sp" />
+
+                            <Switch
+                                android:id="@+id/charts_lunchSw"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:checked="true"
+                                android:paddingLeft="5dp"
+                                android:text="Lunch"
+                                android:textAlignment="viewEnd"
+                                android:textSize="8sp" />
+
+                            <Switch
+                                android:id="@+id/charts_breakfastSw"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:checked="true"
+                                android:paddingLeft="5dp"
+                                android:text="Breakfast"
+                                android:textAlignment="viewEnd"
+                                android:textSize="8sp" />
+
+                            <Switch
+                                android:id="@+id/charts_bedtimeSw"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:checked="true"
+                                android:paddingLeft="5dp"
+                                android:text="Bedtime"
+                                android:textAlignment="viewEnd"
+                                android:textSize="8sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 

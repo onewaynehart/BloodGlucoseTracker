@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +11,21 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.MPPointF;
 import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
 import com.yourharts.www.Models.DataModelInterface;
@@ -39,7 +47,10 @@ public class ChartsActivity extends AppCompatActivity {
     private DateFormat _dbDateFormat;
     private SharedPreferences _sharedPref;
     private CardView _summaryCard;
-
+    private Switch _breakfastSw;
+    private Switch _lunchSw;
+    private Switch _dinnerSw;
+    private Switch _bedtimeSw;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +62,10 @@ public class ChartsActivity extends AppCompatActivity {
         _sharedPref = getSharedPreferences(getString(R.string.pref_file_key), Context.MODE_PRIVATE);
         _summaryCard = findViewById(R.id.summary_card);
         _summaryTextView = findViewById(R.id._summaryTV);
+        _breakfastSw = findViewById(R.id.charts_breakfastSw);
+        _lunchSw = findViewById(R.id.charts_lunchSw);
+        _dinnerSw = findViewById(R.id.charts_dinnerSw);
+        _bedtimeSw = findViewById(R.id.charts_bedtimeSw);
 
         loadSummary();
         Toolbar toolbar = findViewById(R.id.toolbar_charts);
@@ -63,7 +78,22 @@ public class ChartsActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.chartsTitle);
 
         actionbar.setTitle(R.string.chartsTitle);
+        setupCheckListeners();
 
+    }
+    private void setupCheckListeners(){
+        _breakfastSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+           drawGlucoseChart();
+        });
+        _lunchSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            drawGlucoseChart();
+        });
+        _dinnerSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            drawGlucoseChart();
+        });
+        _bedtimeSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            drawGlucoseChart();
+        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -219,7 +249,87 @@ public class ChartsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }).start();
+        new Thread(() -> {
+            try{
+                drawHighReadingChart();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
 
+    }private void drawHighReadingChart(){
+        PieChart pieChart = findViewById(R.id.high_reading_pie_chart);
+        pieChart.clear();
+        pieChart.invalidate();
+
+
+        List<PieEntry> entries = new ArrayList<>();
+        
+        float breakfastTotal = 0;
+        float lunchTotal= 0;
+        float dinnerTotal = 0;
+        float bedtimeTotal = 0;
+
+        for(BloodMeasurementModel bmm : _dbHelper.getAllBloodMeasurements()){
+            if(bmm.isBreakfast())
+                breakfastTotal +=bmm.getGlucoseMeasurement();
+            if(bmm.isLunch())
+                lunchTotal +=bmm.getGlucoseMeasurement();
+            if(bmm.isDinner())
+                dinnerTotal +=bmm.getGlucoseMeasurement();
+            if(bmm.isBedtime())
+                bedtimeTotal +=bmm.getGlucoseMeasurement();
+        }
+        float totalPoints = breakfastTotal + lunchTotal + dinnerTotal + bedtimeTotal;
+
+        float breakfast = (breakfastTotal / totalPoints) * 100;
+        float lunch = (lunchTotal / totalPoints) * 100;
+        float dinner = (dinnerTotal / totalPoints) * 100;
+        float bedtime = (bedtimeTotal / totalPoints) * 100;
+
+        entries.add(new PieEntry(breakfast, "breakfast"));
+        entries.add(new PieEntry(lunch, "lunch"));
+        entries.add(new PieEntry(dinner, "dinner"));
+        entries.add(new PieEntry(bedtime, "bedtime"));
+
+        PieDataSet dataSet = new PieDataSet(entries,"");
+        dataSet.setSliceSpace(3f);
+        dataSet.setIconsOffset(new MPPointF(0, 40));
+        dataSet.setSelectionShift(5f);
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        dataSet.setColors(colors);
+
+
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(11f);
+        pieChart.setData(data);
+        pieChart.setUsePercentValues(false);
+        Description description = new Description();
+        description.setText("High glucose readings");
+        pieChart.setDescription(description);
+        pieChart.invalidate(); // refresh
     }
     private void drawGlucoseChart() {
 
@@ -275,13 +385,13 @@ public class ChartsActivity extends AppCompatActivity {
         LineData lineData = new LineData();
 
 
-        if (breakfastEntries.size() > 0)
+        if (breakfastEntries.size() > 0 && _breakfastSw.isChecked())
             lineData.addDataSet(breakfastDataSet);
-        if (lunchEntries.size() > 0)
-            lineData.addDataSet(lunchDataSet);
-        if (dinnerEntries.size() > 0)
+        if (lunchEntries.size() > 0 &&_lunchSw.isChecked())
+            lineData.addDataSet(lunchDataSet );
+        if (dinnerEntries.size() > 0 && _dinnerSw.isChecked())
             lineData.addDataSet(dinnerDataSet);
-        if (bedtimeEntries.size() > 0)
+        if (bedtimeEntries.size() > 0 && _bedtimeSw.isChecked())
             lineData.addDataSet(bedtimeDataSet);
 
         lineData.setDrawValues(false);
