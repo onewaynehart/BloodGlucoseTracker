@@ -8,68 +8,68 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <include
-        layout="@layout/layout_getting_started"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp" />
-
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-            <android.support.design.widget.AppBarLayout
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/Elegant"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/Elegant">
+
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                layout="@layout/layout_getting_started"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/Elegant"
-                app:layout_scrollFlags="scroll|enterAlways">
+                android:layout_margin="10dp" />
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
-                    app:layout_scrollFlags="scroll|enterAlways"
-                    app:popupTheme="@style/Elegant" >
-
-                </android.support.v7.widget.Toolbar>
-            </android.support.design.widget.AppBarLayout>
-
-            <FrameLayout
-                android:id="@+id/content_frame"
+            <include
+                layout="@layout/layout_content_main"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent" />
 
-                <include
-                    layout="@layout/layout_content_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|right|end"
+                android:layout_margin="10dp"
+                android:background="@color/colorPrimary"
+                android:clickable="true"
+                android:src="@drawable/ic_add_white_24px"
+                app:backgroundTint="@color/colorPrimary"
+                app:rippleColor="@color/colorPrimary" />
+        </FrameLayout>
+    </LinearLayout>
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fab"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="bottom|right|end"
-                    android:layout_margin="10dp"
-                    android:background="@color/colorPrimary"
-                    android:clickable="true"
-                    android:src="@drawable/ic_add_white_24px"
-                    app:backgroundTint="@color/colorPrimary"
-                    app:rippleColor="@color/colorPrimary" />
-            </FrameLayout>
-        </LinearLayout>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
 
-        <android.support.design.widget.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
+        android:theme="@style/NavDrawer"
+        app:headerLayout="@layout/layout_navigation_drawer_header"
+        app:menu="@menu/menu_navigation_drawer" />
 
-            android:theme="@style/NavDrawer"
-            app:menu="@menu/menu_navigation_drawer"
-            app:headerLayout="@layout/layout_navigation_drawer_header"/>
-
-    </android.support.v4.widget.DrawerLayout>
+</android.support.v4.widget.DrawerLayout>

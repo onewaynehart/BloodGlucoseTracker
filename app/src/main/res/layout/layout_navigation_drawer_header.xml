@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="150dp"
 
-    android:background="@android:color/darker_gray"
+    android:background="@android:color/holo_orange_dark"
     android:gravity="bottom"
     android:orientation="vertical">
 
@@ -16,18 +16,18 @@
 
         <ImageView
             android:id="@+id/imageView4"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="4"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
             app:srcCompat="@drawable/ic_hospital" />
 
         <TextView
             android:id="@+id/textView6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right|end"
-            android:layout_weight="7"
+            android:layout_gravity="bottom|clip_vertical|clip_horizontal|end"
+            android:layout_weight="3"
             android:text="Blood Glucose Companion"
             android:textColor="@color/colorText" />
     </LinearLayout>

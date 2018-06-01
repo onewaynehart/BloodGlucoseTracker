@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
 
@@ -30,9 +32,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+
+import Helpers.AlertDialogHelper;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 import static android.widget.Toast.LENGTH_SHORT;
@@ -102,65 +107,87 @@ public class DataActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
-                Uri uri = data.getData();
-                BufferedReader mBufferedReader = null;
-                String line;
-                try
-                {
-                    int added = 0;
-                    InputStream inputStream = getContentResolver().openInputStream(uri);
-                    mBufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    List<BloodMeasurementModel> currentMeasurements = _dbHelper.getAllBloodMeasurements();
-                    boolean printedColumns = false;
-                    while ((line = mBufferedReader.readLine()) != null) {
-                        String[] columns = line.split(_sharedPref.getString("PREF_DEFAULT_CSVDELIMITER","~"));
-
-                        try {
-                            double measurement = Double.parseDouble(columns[1]);
-                            int measurementType = columns[2].isEmpty() == false ?  Integer.parseInt(columns[2]) : 1;
-                            String measurementDate = columns[3];
-                            double correctiveAmount = columns[4].isEmpty() == false ? Double.parseDouble(columns[4]): 0;
-                            int correctiveType =columns[5].isEmpty() == false ?  Integer.parseInt(columns[5]) : 1;
-                            double baselineAmt =columns[6].isEmpty() == false ?  Double.parseDouble(columns[6]) : 0;
-                            int baselineType =columns[7].isEmpty() == false ?  Integer.parseInt(columns[7]) : 1;
-                            String notes = columns.length == 9 ? columns[8] : "";
-                            BloodMeasurementModel newModel = new BloodMeasurementModel(0, measurement, measurementType, measurementDate, correctiveAmount, correctiveType, baselineAmt, baselineType, notes, _sharedPref, this);
-
-
-                            boolean duplicateFound = false;
-                            for(BloodMeasurementModel bmm : currentMeasurements)
-                            {
-
-                                if(measurementDate.substring(0,13).equals(bmm.getGlucoseMeasurementDate().substring(0,13)))
-                                {
-                                    duplicateFound = true;
-                                    break;
-                                }
-                            }
-                            if(duplicateFound == false){
-                                _dbHelper.addGlucoseMeasurement(newModel);
-                                added++;
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                new Thread(() -> {
+                    try{
+                        ImportDataAsync background = new ImportDataAsync();
+                        background.execute(data);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    Toast.makeText(this, "Imported "+added+ " records", Toast.LENGTH_SHORT).show();
-
-                    mBufferedReader.close();
-                    setSummary();
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                }
+                }).start();
             }
 
         }
 
 
     }
+    private class ImportDataAsync extends AsyncTask<Intent, Void, List<BloodMeasurementModel>> {
+        @Override
+        protected List<BloodMeasurementModel> doInBackground(Intent... intents) {
 
+            return importData(intents[0]);
+        }
+        @Override
+        protected void onPostExecute(List<BloodMeasurementModel> result) {
+            AlertDialogHelper.showDialog(DataActivity.this, "Import Completed",String.format("We managed to import %d records from this file using the delimiter \'%s\'\nIf you were expecting a different result you can change the delimiter in settings and try again!",result.size(),_sharedPref.getString("PREF_DEFAULT_CSVDELIMITER","~")));
+            setSummary();
+        }
+    }
+    public List<BloodMeasurementModel> importData(Intent data){
+        Uri uri = data.getData();
+        List<BloodMeasurementModel> retval = new ArrayList<>();
+        BufferedReader mBufferedReader = null;
+        String line;
+        try
+        {
+            int added = 0;
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            mBufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            List<BloodMeasurementModel> currentMeasurements = _dbHelper.getAllBloodMeasurements();
+            boolean printedColumns = false;
+            while ((line = mBufferedReader.readLine()) != null) {
+                String[] columns = line.split(_sharedPref.getString("PREF_DEFAULT_CSVDELIMITER","~"));
+
+                try {
+                    double measurement = Double.parseDouble(columns[1]);
+                    int measurementType = columns[2].isEmpty() == false ?  Integer.parseInt(columns[2]) : 1;
+                    String measurementDate = columns[3];
+                    double correctiveAmount = columns[4].isEmpty() == false ? Double.parseDouble(columns[4]): 0;
+                    int correctiveType =columns[5].isEmpty() == false ?  Integer.parseInt(columns[5]) : 1;
+                    double baselineAmt =columns[6].isEmpty() == false ?  Double.parseDouble(columns[6]) : 0;
+                    int baselineType =columns[7].isEmpty() == false ?  Integer.parseInt(columns[7]) : 1;
+                    String notes = columns.length == 9 ? columns[8] : "";
+                    BloodMeasurementModel newModel = new BloodMeasurementModel(0, measurement, measurementType, measurementDate, correctiveAmount, correctiveType, baselineAmt, baselineType, notes, _sharedPref, this);
+
+
+                    boolean duplicateFound = false;
+                    for(BloodMeasurementModel bmm : currentMeasurements)
+                    {
+
+                        if(measurementDate.substring(0,13).equals(bmm.getGlucoseMeasurementDate().substring(0,13)))
+                        {
+                            duplicateFound = true;
+                            break;
+                        }
+                    }
+                    if(duplicateFound == false){
+                        _dbHelper.addGlucoseMeasurement(newModel);
+                        retval.add(newModel);
+                        added++;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            mBufferedReader.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        return retval;
+    }
 
 }
 
@@ -182,10 +209,11 @@ class DataActivityListener implements OnClickListener {
             intent.setType("text/csv");   //XML file only
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             try {
+
                 _dataActivity.startActivityForResult(Intent.createChooser(intent, "Select"), 100);
             } catch (android.content.ActivityNotFoundException ex) {
                 // Potentially direct the user to the Market with a Dialog
-                Toast.makeText(_dataActivity, "Drive Not Found", LENGTH_SHORT).show();
+                Toast.makeText(_dataActivity, "Drive Not Found", Toast.LENGTH_LONG).show();
             }
         }
         if(v.getId() == _dataActivity.findViewById(R.id.exportDataBtn).getId()){
@@ -227,8 +255,9 @@ class DataActivityListener implements OnClickListener {
                 writer.write(csv);
                 writer.flush();
                 writer.close();
-                Toast.makeText(this._dataActivity, "Records succesfully saved to downloads folder! ("+output.getPath()+")", Toast.LENGTH_LONG).show();
+                AlertDialogHelper.showDialog(_dataActivity,"Hurray", "Records successfully saved to downloads folder! ("+output.getPath()+")");
             } catch (IOException e) {
+                AlertDialogHelper.showDialog(_dataActivity, "Booo", "Something went wrong and we failed.\nTry checking to see if this application has permissions to storage.\nIf it helps, this is what we know: "+e.getMessage());
                 e.printStackTrace();
             }
 
@@ -253,4 +282,6 @@ class DataActivityListener implements OnClickListener {
             alert.show();
         }
     }
+
+
 }

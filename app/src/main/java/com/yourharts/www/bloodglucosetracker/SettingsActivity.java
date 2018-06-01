@@ -5,13 +5,11 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
@@ -29,12 +27,20 @@ import java.util.List;
 
 public class SettingsActivity extends PreferenceActivity {
     private AppCompatDelegate _delegate;
+    Toolbar _toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
+
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
+        _toolbar = new Toolbar(this.getApplicationContext());
+        setSupportActionBar(_toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
+
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
 
     }
     @Override
@@ -133,7 +139,7 @@ public class SettingsActivity extends PreferenceActivity {
         private ListPreference _defaultCSVLP;
         private EditTextPreference _defaultThresholdETP;
         private SwitchPreference _useLastAsDefaultSw;
-        private SwitchPreference _showSummaryCard;
+        private SwitchPreference _showSummaryCardSw;
 
 
         private DBHelper _dbHelper;
@@ -151,7 +157,7 @@ public class SettingsActivity extends PreferenceActivity {
             _useLastAsDefaultSw = (SwitchPreference)findPreference(getString(R.string.pref_use_last_as_default));
             _defaultThresholdETP = (EditTextPreference)findPreference("PREF_DEFAULT_THRESHOLD");
             _defaultCSVLP = (ListPreference) findPreference("PREF_DEFAULT_CSVDELIMITER");
-            _showSummaryCard = (SwitchPreference) findPreference("PREF_SHOW_SUMMARY_CARD");
+            _showSummaryCardSw = (SwitchPreference) findPreference("PREF_SHOW_SUMMARY_CARD");
             setDefaults();
 
 
@@ -331,7 +337,7 @@ public class SettingsActivity extends PreferenceActivity {
                 SharedPreferences.Editor editor = _sharedPref.edit();
                 boolean showSummary = false;
                 try {
-                    showSummary = _showSummaryCard.isChecked();
+                    showSummary = _showSummaryCardSw.isChecked();
                     editor.putBoolean("PREF_SHOW_SUMMARY_CARD", showSummary);
                     editor.apply();
                     editor.commit();

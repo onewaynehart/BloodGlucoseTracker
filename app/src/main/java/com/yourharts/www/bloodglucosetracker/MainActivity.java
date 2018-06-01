@@ -124,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
-                    // set item as selected to persist highlight
-                    menuItem.setChecked(true);
+
+
                     // close drawer when item is tapped
                     _drawerLayout.closeDrawers();
 
@@ -189,10 +189,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadMeasurements() {
         LoadMeasurementsAsync backgroundWorker = new LoadMeasurementsAsync();
-        _filteredMeasurements = backgroundWorker.doInBackground();
-        _adapter = new GlucoseMeasurementAdapter(_filteredMeasurements);
-        _adapter.setActivity(MainActivity.this);
-        _measurementView.setAdapter(_adapter);
+        backgroundWorker.execute();
+
     }
 
     @Override
@@ -359,7 +357,15 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(List<BloodMeasurementModel> result) {
-
+            _adapter = new GlucoseMeasurementAdapter(result);
+            _adapter.setActivity(MainActivity.this);
+            _measurementView.setAdapter(_adapter);
+            if(result.isEmpty()){
+                _gettingStartedCard.setVisibility(View.VISIBLE);
+            }
+            else{
+                _gettingStartedCard.setVisibility(View.GONE);
+            }
         }
     }
 

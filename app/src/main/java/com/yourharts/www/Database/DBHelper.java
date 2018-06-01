@@ -1,6 +1,7 @@
 package com.yourharts.www.Database;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,6 +29,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import Helpers.AlertDialogHelper;
 
 public class DBHelper  extends SQLiteOpenHelper {
 
@@ -341,8 +344,10 @@ public class DBHelper  extends SQLiteOpenHelper {
             is.close();
             os.flush();
             os.close();
-            Toast.makeText(this._activity, "Records succesfully saved to downloads folder! ("+outputFilePath+")", Toast.LENGTH_LONG).show();
+            AlertDialogHelper.showDialog(_activity, "Hurray", "Records successfully saved to downloads folder! ("+outputFilePath+")");
+
         } catch (Exception e) {
+            AlertDialogHelper.showDialog(_activity, "Booo", "Something went wrong and we failed.\nTry checking to see if this application has permissions to storage.\nIf it helps, this is what we know: "+e.getMessage());
             e.printStackTrace();
         }
     }

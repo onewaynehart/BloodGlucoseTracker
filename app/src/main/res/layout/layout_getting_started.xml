@@ -7,14 +7,13 @@
 
     android:layout_width="match_parent"
 
-    android:layout_height="wrap_content"
+    android:layout_height="200dp"
     android:layout_margin="10dp"
 
 
     android:elevation="6dp"
     android:padding="5dp"
 
-    app:cardBackgroundColor="@android:color/holo_orange_dark"
     app:cardCornerRadius="5dp">
 
     <TableLayout
@@ -23,9 +22,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorPressedHighlight"
-            android:backgroundTint="?android:attr/colorPressedHighlight">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView"

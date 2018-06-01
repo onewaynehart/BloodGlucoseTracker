@@ -2,6 +2,7 @@ package com.yourharts.www.bloodglucosetracker;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -11,6 +12,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -51,6 +53,7 @@ public class ChartsActivity extends AppCompatActivity {
     private Switch _lunchSw;
     private Switch _dinnerSw;
     private Switch _bedtimeSw;
+    private Switch _summaryCardSw;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,34 +70,42 @@ public class ChartsActivity extends AppCompatActivity {
         _dinnerSw = findViewById(R.id.charts_dinnerSw);
         _bedtimeSw = findViewById(R.id.charts_bedtimeSw);
 
-        loadSummary();
+
         Toolbar toolbar = findViewById(R.id.toolbar_charts);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
+        _summaryCardSw = findViewById(R.id.showSummaySw);
 
-        setTitle(R.string.chartsTitle);
-        toolbar.setTitle(R.string.chartsTitle);
-
-        actionbar.setTitle(R.string.chartsTitle);
         setupCheckListeners();
 
+        loadEVERYTHING();
+
+
     }
-    private void setupCheckListeners(){
+
+    private void setupCheckListeners() {
         _breakfastSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-           drawGlucoseChart();
+            loadGlucoseMeasurementChart();
         });
         _lunchSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            drawGlucoseChart();
+            loadGlucoseMeasurementChart();
         });
         _dinnerSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            drawGlucoseChart();
+            loadGlucoseMeasurementChart();
         });
         _bedtimeSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            drawGlucoseChart();
+            loadGlucoseMeasurementChart();
         });
+        _summaryCardSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            _summaryCard.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            if(isChecked)
+                loadSummaryCard();
+        });
+
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -102,6 +113,7 @@ public class ChartsActivity extends AppCompatActivity {
 
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -113,135 +125,28 @@ public class ChartsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadSummary() {
+    private class LoadSummaryAsync extends AsyncTask<TextView, Void, String> {
 
-        List<DataModelInterface> measurementUnits = _dbHelper.getMeasurementUnits();
-        List<BloodMeasurementModel> allBloodGlucoseMeasurements = _dbHelper.getAllBloodMeasurements();
-        double highestRecorded = 0.0;
-        double lowestRecorded = 0.0;
-        String lowestUnits = "";
-        double averageCorrective = 0.0;
-        String highestUnits = "";
-        String highestRecordedDate = "";
-        String highestTimeOfDay = "";
-        String lowestRecordedDate = "";
-        if (measurementUnits.size() == 0)
-            return;
-        BloodMeasurementModel inUse = allBloodGlucoseMeasurements.get(0);
-        for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
-            if (bmm.getGlucoseMeasurement() >= inUse.getGlucoseMeasurement())
-                inUse = bmm;
+
+        @Override
+        protected String doInBackground(TextView... textViews) {
+
+            return getSummaryCardText();
         }
-        if (inUse != null) {
-            highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
-            highestRecorded = inUse.getGlucoseMeasurement();
-            highestRecordedDate = inUse.getGlucoseMeasurementDate();
+        @Override
+        protected void onPostExecute(String result) {
+            _summaryTextView.setText(result);
         }
-        inUse = allBloodGlucoseMeasurements.get(0);
-        for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
-            if (bmm.getGlucoseMeasurement() <= inUse.getGlucoseMeasurement())
-                inUse = bmm;
-        }
-        if (inUse != null) {
-            lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
-            lowestRecorded = inUse.getGlucoseMeasurement();
-            lowestRecordedDate = inUse.getGlucoseMeasurementDate();
-        }
-        Map<String, ArrayList<Double>> correctiveMap = new HashMap<>();
-        for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                Date date = sdf.parse(bmm.getGlucoseMeasurementDate());
-                if (correctiveMap.containsKey(date.toString())) {
-                    correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
-                } else {
-                    correctiveMap.put(date.toString(), new ArrayList<>());
-                    correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+    }
+
+
+    private void loadEVERYTHING() {
+        if(_summaryCardSw.isChecked()) {
+            loadSummaryCard();
         }
 
-        Double amount = 0.0;
-        for (String key : correctiveMap.keySet()) {
 
-            ArrayList<Double> doses = correctiveMap.get(key);
-            for (Double dose : doses) {
-                amount += dose;
-
-            }
-        }
-        double dailyAverage = (amount / (float) correctiveMap.keySet().size());
-        averageCorrective = dailyAverage;
-
-
-        Map<String, Double> timeofday = new HashMap<>();
-        for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
-            if (bmm.isBreakfast()) {
-                if (timeofday.containsKey("breakfast")) {
-                    timeofday.put("breakfast", timeofday.get("breakfast") + bmm.getGlucoseMeasurement());
-                } else {
-                    timeofday.put("breakfast", bmm.getGlucoseMeasurement());
-                }
-            }
-            if (bmm.isLunch()) {
-                if (timeofday.containsKey("lunch")) {
-                    timeofday.put("lunch", timeofday.get("lunch") + bmm.getGlucoseMeasurement());
-                } else {
-                    timeofday.put("lunch", bmm.getGlucoseMeasurement());
-                }
-            }
-            if (bmm.isDinner()) {
-                if (timeofday.containsKey("dinner")) {
-                    timeofday.put("dinner", timeofday.get("dinner") + bmm.getGlucoseMeasurement());
-                } else {
-                    timeofday.put("dinner", bmm.getGlucoseMeasurement());
-                }
-            }
-            if (bmm.isBedtime()) {
-                if (timeofday.containsKey("bedtime")) {
-                    timeofday.put("bedtime", timeofday.get("bedtime") + bmm.getGlucoseMeasurement());
-                } else {
-                    timeofday.put("bedtime", bmm.getGlucoseMeasurement());
-                }
-            }
-        }
-        String highestKey = null;
-        Double highestValue = 0.0;
-
-        for (String key : timeofday.keySet()) {
-            if (timeofday.get(key) >= highestValue) {
-                highestValue = timeofday.get(key);
-                highestKey = key;
-            }
-        }
-        highestTimeOfDay = highestKey;
-        List<DataModelInterface> correctiveDrugs = _dbHelper.getShortLastingDrugs();
-
-        int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
-        int correctiveDrugPos = (_dbHelper.getPosition(correctiveDrugs, defaultCorrectiveDrugID));
-        String correctiveDrugName = correctiveDrugs.get(correctiveDrugPos).getString();
-
-        String summary = String.format(getString(R.string.summary_text),
-                highestRecorded,
-                highestUnits,
-                highestRecordedDate,
-                lowestRecorded,
-                lowestUnits,
-                lowestRecordedDate,
-                averageCorrective,
-                correctiveDrugName,
-                highestTimeOfDay);
-        _summaryTextView.setText(summary);
-
-        new Thread(() -> {
-            try{
-                drawGlucoseChart();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        loadGlucoseMeasurementChart();
         new Thread(() -> {
             try{
                 drawInsulinChart();
@@ -257,7 +162,155 @@ public class ChartsActivity extends AppCompatActivity {
             }
         }).start();
 
-    }private void drawHighReadingChart(){
+    }
+
+    private void loadGlucoseMeasurementChart() {
+        new Thread(() -> {
+            try{
+                drawGlucoseChart();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void loadSummaryCard() {
+        LoadSummaryAsync backgroundWorker = new LoadSummaryAsync();
+        _summaryTextView.setText("Loading...");
+        backgroundWorker.execute(_summaryTextView);
+    }
+
+    private String getSummaryCardText() {
+        List<DataModelInterface> measurementUnits = _dbHelper.getMeasurementUnits();
+        List<BloodMeasurementModel> allBloodGlucoseMeasurements = _dbHelper.getAllBloodMeasurements();
+        double highestRecorded = 0.0;
+        double lowestRecorded = 0.0;
+        String lowestUnits = "";
+        double averageCorrective = 0.0;
+        String highestUnits = "";
+        String highestRecordedDate = "";
+        String highestTimeOfDay = "";
+        String lowestRecordedDate = "";
+
+        if(allBloodGlucoseMeasurements.size() > 0){
+            BloodMeasurementModel inUse = allBloodGlucoseMeasurements.get(0);
+            for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
+                if (bmm.getGlucoseMeasurement() >=  inUse.getGlucoseMeasurement())
+                    inUse = bmm;
+            }
+            if (inUse != null) {
+                highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
+                highestRecorded = inUse.getGlucoseMeasurement();
+                highestRecordedDate = inUse.getGlucoseMeasurementDate();
+            }
+            inUse = allBloodGlucoseMeasurements.get(0);
+            for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
+                if (bmm.getGlucoseMeasurement() <= inUse.getGlucoseMeasurement())
+                    inUse = bmm;
+            }
+            if (inUse != null) {
+                lowestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
+                lowestRecorded = inUse.getGlucoseMeasurement();
+                lowestRecordedDate = inUse.getGlucoseMeasurementDate();
+            }
+            Map<String, ArrayList<Double>> correctiveMap = new HashMap<>();
+            for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date date = sdf.parse(bmm.getGlucoseMeasurementDate());
+                    if (correctiveMap.containsKey(date.toString())) {
+                        correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
+                    } else {
+                        correctiveMap.put(date.toString(), new ArrayList<>());
+                        correctiveMap.get(date.toString()).add(bmm.getCorrectiveDoseAmount());
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Double amount = 0.0;
+            for (String key : correctiveMap.keySet()) {
+
+                ArrayList<Double> doses = correctiveMap.get(key);
+                for (Double dose : doses) {
+                    amount += dose;
+
+                }
+            }
+            double dailyAverage = (amount / (float) correctiveMap.keySet().size());
+            averageCorrective = dailyAverage;
+
+
+            Map<String, Double> timeofday = new HashMap<>();
+            for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
+                if (bmm.isBreakfast()) {
+                    if (timeofday.containsKey("breakfast")) {
+                        timeofday.put("breakfast", timeofday.get("breakfast") + bmm.getGlucoseMeasurement());
+                    } else {
+                        timeofday.put("breakfast", bmm.getGlucoseMeasurement());
+                    }
+                }
+                if (bmm.isLunch()) {
+                    if (timeofday.containsKey("lunch")) {
+                        timeofday.put("lunch", timeofday.get("lunch") + bmm.getGlucoseMeasurement());
+                    } else {
+                        timeofday.put("lunch", bmm.getGlucoseMeasurement());
+                    }
+                }
+                if (bmm.isDinner()) {
+                    if (timeofday.containsKey("dinner")) {
+                        timeofday.put("dinner", timeofday.get("dinner") + bmm.getGlucoseMeasurement());
+                    } else {
+                        timeofday.put("dinner", bmm.getGlucoseMeasurement());
+                    }
+                }
+                if (bmm.isBedtime()) {
+                    if (timeofday.containsKey("bedtime")) {
+                        timeofday.put("bedtime", timeofday.get("bedtime") + bmm.getGlucoseMeasurement());
+                    } else {
+                        timeofday.put("bedtime", bmm.getGlucoseMeasurement());
+                    }
+                }
+            }
+            String highestKey = null;
+            Double highestValue = 0.0;
+
+            for (String key : timeofday.keySet()) {
+                if (timeofday.get(key) >= highestValue) {
+                    highestValue = timeofday.get(key);
+                    highestKey = key;
+                }
+            }
+            highestTimeOfDay = highestKey;
+            List<DataModelInterface> correctiveDrugs = _dbHelper.getShortLastingDrugs();
+
+            int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
+            int correctiveDrugPos = (_dbHelper.getPosition(correctiveDrugs, defaultCorrectiveDrugID));
+            String correctiveDrugName = correctiveDrugs.get(correctiveDrugPos).getString();
+
+            String summary = String.format(getString(R.string.summary_text),
+                    highestRecorded,
+                    highestUnits,
+                    highestRecordedDate,
+                    lowestRecorded,
+                    lowestUnits,
+                    lowestRecordedDate,
+                    averageCorrective,
+                    correctiveDrugName,
+                    highestTimeOfDay);
+            return summary;
+        }
+        else{
+            return "You have no recorded measurements to analyze.";
+        }
+
+
+
+
+    }
+
+    private void drawHighReadingChart(){
         PieChart pieChart = findViewById(R.id.high_reading_pie_chart);
         pieChart.clear();
         pieChart.invalidate();

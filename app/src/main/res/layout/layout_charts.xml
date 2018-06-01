@@ -33,6 +33,15 @@
                 android:text="@string/chartsTitle"
                 android:textColor="@color/colorText"
                 android:textSize="24sp" />
+
+            <Switch
+                android:id="@+id/showSummaySw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical|end"
+                android:checked="true"
+                android:text="Summary Card"
+                android:textSize="10sp" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -50,18 +59,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <include
+                    android:id="@+id/summary_card"
+                    layout="@layout/layout_summary_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
-
-                    <include
-                        android:id="@+id/summary_card"
-                        layout="@layout/layout_summary_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
 
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/high_reading_pie_chart"
