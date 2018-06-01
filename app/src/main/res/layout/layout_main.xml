@@ -69,6 +69,7 @@
             android:fitsSystemWindows="true"
 
             android:theme="@style/NavDrawer"
-            app:menu="@menu/menu_navigation_drawer" />
+            app:menu="@menu/menu_navigation_drawer"
+            app:headerLayout="@layout/layout_navigation_drawer_header"/>
 
     </android.support.v4.widget.DrawerLayout>

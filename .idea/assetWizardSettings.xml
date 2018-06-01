@@ -33,9 +33,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_action_share" />
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="C:\Users\Wayne\Desktop\androidapp\syringe-3359627_1280.jpg" />
+                                      <entry key="outputName" value="ic_logo2" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="020202" />
+                                      <entry key="themeColor" value="ffffff" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -94,9 +96,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="020202" />
-                            <entry key="outputName" value="ic_back_black_24dp" />
-                            <entry key="sourceFile" value="C:\Users\Wayne\Desktop\icons\baseline-transfer_within_a_station-24px.svg" />
+                            <entry key="outputName" value="ic_icon_bloodchecker" />
+                            <entry key="sourceFile" value="C:\Users\Wayne\Desktop\androidapp\icon_bloodChecker.svg" />
                           </map>
                         </option>
                       </PersistentState>
