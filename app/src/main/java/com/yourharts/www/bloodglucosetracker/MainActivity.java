@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         setupListeners();
-        loadUserPreferences();
+
         loadMeasurements();
         setTitle(R.string.Measurements);
         setupNavDrawerAndTooldbar();
@@ -173,15 +173,6 @@ public class MainActivity extends AppCompatActivity {
         _showBedtimeSW.setOnCheckedChangeListener(_mainActivitylistener);
         _fab = findViewById(R.id.fab);
         _fab.setOnClickListener(_mainActivitylistener);
-    }
-
-    private void loadUserPreferences() {
-
-        _showHighOnlySW.setChecked(_sharedPref.getBoolean("PREF_FILTER_HIGH_ONLY", false));
-        _showBreakfastSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_BREAKFAST", true));
-        _showLunchSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_LUNCH", true));
-        _showDinnerSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_DINNER", true));
-        _showBedtimeSW.setChecked(_sharedPref.getBoolean("PREF_FILTER_SHOW_BEDTIME", true));
     }
 
 
@@ -311,17 +302,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void savePreferences() {
-        SharedPreferences.Editor editor = _sharedPref.edit();
-        editor.putBoolean("PREF_FILTER_HIGH_ONLY", _showHighOnlySW.isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_BREAKFAST", _showBreakfastSW.isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_LUNCH", _showLunchSW.isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_DINNER", _showDinnerSW.isChecked());
-        editor.putBoolean("PREF_FILTER_SHOW_BEDTIME", _showBedtimeSW.isChecked());
-
-        editor.apply();
-        editor.commit();
-    }
     private class LoadMeasurementsAsync extends AsyncTask<Void, Void,List< BloodMeasurementModel> >{
         @Override
         protected List<BloodMeasurementModel> doInBackground(Void... voids) {
@@ -397,7 +377,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onDismiss() {
             _activity.notifyPreferencesChanged();
-            _activity.savePreferences();
         }
     }
 

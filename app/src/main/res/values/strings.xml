@@ -22,11 +22,15 @@
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">closed</string>
     <string name="Measurements">Measurements</string>
-    <string name="chartsTitle">Charts</string>
-    <string name="data_management_title">Data Management</string>
-    <string name="settings_title">User Settings</string>
+    <string name="chartsTitle"><b>Charts</b></string>
+    <string name="data_management_title"><b>Data Management</b></string>
+    <string name="settings_title"><b>User Settings</b></string>
     <string name="title_activity_add_measurementmeasurement_title">Add new measurement</string>
     <string name="OK">Got it</string>
+    <string name="add_measurement_measurement_hint"><font size="10">Measurement</font></string>
+    <string name="add_measurement_corrective_dose_hint"><font size="10">Corrective Dose</font></string>
+    <string name="add_measurement_baseline_amount_hint"><font size="10">Baseline Amount</font></string>
+    <string name="add_measurement_notes_hint"><font size="10">Notes</font></string>
     <string-array name="csv_delimiters">
         <item>|</item>
         <item>||</item>

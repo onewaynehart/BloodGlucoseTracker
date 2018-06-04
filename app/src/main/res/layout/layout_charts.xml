@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:title="@string/chartsTitle">
@@ -28,17 +29,18 @@
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center"
+                android:layout_gravity="center_vertical"
 
+                android:layout_marginLeft="60dp"
                 android:text="@string/chartsTitle"
                 android:textColor="@color/colorText"
-                android:textSize="24sp" />
+                android:textSize="@dimen/title_size" />
 
             <Switch
                 android:id="@+id/showSummaySw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right|center_vertical|end"
+                android:layout_gravity="center_vertical|end"
                 android:checked="true"
                 android:text="Summary Card"
                 android:textSize="10sp" />
