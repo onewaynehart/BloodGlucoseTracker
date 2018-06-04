@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -135,7 +137,10 @@ public class ChartsActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String result) {
-            _summaryTextView.setText(result);
+            Spanned output = Html.fromHtml(result);
+            _summaryTextView.setText(output);
+
+
         }
     }
 

@@ -31,11 +31,6 @@
             android:defaultValue="false"
             android:key="PREF_LAST_ENTRY_DEFAULT"
             android:title="Use Last Entry As Defaults" />
-        <SwitchPreference
-            android:id="@+id/settings_show_summary_card"
-            android:defaultValue="true"
-            android:key="PREF_SHOW_SUMMARY_CARD"
-            android:title="Show summary card" />
         <EditTextPreference
             android:defaultValue="10"
             android:inputType="number"

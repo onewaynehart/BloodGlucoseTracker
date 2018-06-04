@@ -42,8 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
                 android:checked="true"
-                android:text="Summary Card"
-                android:textSize="10sp" />
+                android:text="Summary Card" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

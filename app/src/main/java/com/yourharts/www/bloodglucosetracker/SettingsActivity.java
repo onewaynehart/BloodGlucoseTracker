@@ -333,19 +333,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                 }
             }
-            if(key.equals(("PREF_SHOW_SUMMARY_CARD"))){
-                SharedPreferences.Editor editor = _sharedPref.edit();
-                boolean showSummary = false;
-                try {
-                    showSummary = _showSummaryCardSw.isChecked();
-                    editor.putBoolean("PREF_SHOW_SUMMARY_CARD", showSummary);
-                    editor.apply();
-                    editor.commit();
-                }
-                catch(Exception e){
 
-                }
-            }
         }
     }
 
