@@ -47,7 +47,7 @@ public class BloodMeasurementModel extends DataModelInterface {
         _glucoseMeasurementDate = glucoseMeasurementDate;
         _notes = notes;
         _sharedPreferences =  sharedPreferences;
-        SimpleDateFormat parser = new SimpleDateFormat(_activity.getString(R.string.database_date_time_format));
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
             _measurementDate = parser.parse(glucoseMeasurementDate);
         } catch (ParseException e) {

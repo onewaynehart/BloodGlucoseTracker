@@ -28,6 +28,7 @@ import android.widget.PopupWindow;
 import android.widget.Switch;
 
 
+import com.google.android.gms.wearable.WearableListenerService;
 import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
 import com.yourharts.www.Database.DBHelper;
 import com.yourharts.www.Models.BloodMeasurementModel;
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private Switch _showBedtimeSW;
     private View _popupFilterView;
     private MainActivityListener _mainActivitylistener;
-    private List<BloodMeasurementModel> _filteredMeasurements = new ArrayList<>();
     PopupWindow _dropDownMenu;
     private DrawerLayout _drawerLayout;
     android.support.v7.app.ActionBarDrawerToggle _drawerToggle;
@@ -175,9 +175,6 @@ public class MainActivity extends AppCompatActivity {
         _fab.setOnClickListener(_mainActivitylistener);
     }
 
-
-
-
     private void loadMeasurements() {
         LoadMeasurementsAsync backgroundWorker = new LoadMeasurementsAsync();
         backgroundWorker.execute();
@@ -227,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
     public void startActivity(Intent intent) {
         super.startActivity(intent);
         overridePendingTransitionEnter();
+        loadMeasurements();
     }
 
     /**

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:visibility="visible">
+
+    <ImageButton
+        android:id="@+id/cancelBtn"
+        android:layout_width="65dp"
+        android:layout_height="50dp"
+        android:layout_gravity="left|center_vertical"
+        android:background="@color/dismiss_close_pressed"
+        android:src="@drawable/ic_clear_white_24dp" />
+
+    <NumberPicker
+        android:id="@+id/addMeasurementNP"
+        android:layout_width="30dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginLeft="-50dp"
+        android:foregroundGravity="center_vertical|center_horizontal"
+        android:visibility="visible" />
+
+    <EditText
+        android:id="@+id/notesTB"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/decimalPointTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:text="." />
+
+    <NumberPicker
+        android:id="@+id/addMeasurementDpNP"
+        android:layout_width="30dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginRight="-50dp"
+        android:foregroundGravity="center_vertical|center_horizontal"
+        android:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/okBtn"
+        android:layout_width="65dp"
+        android:layout_height="50dp"
+        android:layout_gravity="right|center_vertical"
+        android:background="@color/green"
+        android:src="@drawable/ic_arrow_forward_white_24dp" />
+</android.support.design.widget.CoordinatorLayout>
+

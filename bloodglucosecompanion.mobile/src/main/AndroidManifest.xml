@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yourharts.www.bloodglucosetracker">
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -20,12 +22,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
         </provider>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Elegant">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -48,7 +52,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
-        <activity android:name=".DataActivity"
+        <activity
+            android:name=".DataActivity"
             android:label="Data Management"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Elegant">
@@ -56,7 +61,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
-        <activity android:name=".ChartsActivity"
+        <activity
+            android:name=".ChartsActivity"
             android:label="Charts"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Elegant">
@@ -64,7 +70,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yourharts.www.bloodglucosetracker.MainActivity" />
         </activity>
-
+        <service android:enabled="true"  android:name=".WearListener" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/glucose" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
