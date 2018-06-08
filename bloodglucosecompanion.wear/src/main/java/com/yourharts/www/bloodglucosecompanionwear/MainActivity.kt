@@ -2,8 +2,7 @@ package com.yourharts.www.bloodglucosecompanionwear
 
 import android.app.AlertDialog
 import android.content.Context
-import android.os.AsyncTask
-import android.os.Bundle
+import android.os.*
 import android.provider.SyncStateContract
 import android.support.design.widget.CoordinatorLayout
 import android.support.wearable.activity.WearableActivity
@@ -177,6 +176,13 @@ class MainActivity() : WearableActivity() {
                 })
                 val dialog = builder.create()
                 dialog.show()
+                val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    //deprecated in API 26
+                    v.vibrate(500)
+                }
             }
             else{
 
