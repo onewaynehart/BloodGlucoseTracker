@@ -1,7 +1,6 @@
-package com.yourharts.www.Database;
+package com.yourharts.www.bloodglucosetracker.Database;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,13 +10,12 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.yourharts.www.Models.BloodMeasurementModel;
-import com.yourharts.www.Models.DataModelInterface;
-import com.yourharts.www.Models.LongLastingDrugModel;
-import com.yourharts.www.Models.MeasurementUnitModel;
-import com.yourharts.www.Models.ShortLastingDrugModel;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
+import com.yourharts.www.bloodglucosetracker.Models.DataModelInterface;
+import com.yourharts.www.bloodglucosetracker.Models.LongLastingDrugModel;
+import com.yourharts.www.bloodglucosetracker.Models.MeasurementUnitModel;
+import com.yourharts.www.bloodglucosetracker.Models.ShortLastingDrugModel;
 import com.yourharts.www.bloodglucosetracker.R;
 
 import java.io.File;
@@ -30,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import Helpers.AlertDialogHelper;
+import com.yourharts.www.bloodglucosetracker.AlertDialogHelper;
 
 public class DBHelper  extends SQLiteOpenHelper {
 

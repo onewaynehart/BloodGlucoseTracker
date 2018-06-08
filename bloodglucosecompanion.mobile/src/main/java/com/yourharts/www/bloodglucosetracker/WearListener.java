@@ -1,29 +1,18 @@
 package com.yourharts.www.bloodglucosetracker;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.DataEvent;
-import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
-
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
 
 public class WearListener extends WearableListenerService {
 

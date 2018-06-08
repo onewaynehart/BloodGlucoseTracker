@@ -1,4 +1,4 @@
-package com.yourharts.www.Adapters;
+package com.yourharts.www.bloodglucosetracker.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.DataModelInterface;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.DataModelInterface;
 import com.yourharts.www.bloodglucosetracker.R;
 
 import java.util.List;

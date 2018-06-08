@@ -1,4 +1,4 @@
-package com.yourharts.www.Models;
+package com.yourharts.www.bloodglucosetracker.Models;
 
 public class MeasurementUnitModel extends DataModelInterface{
     private int ID;

@@ -1,4 +1,4 @@
-package Helpers;
+package com.yourharts.www.bloodglucosetracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;

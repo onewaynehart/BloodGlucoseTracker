@@ -1,6 +1,5 @@
 package com.yourharts.www.bloodglucosetracker;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -19,10 +18,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.yourharts.www.Adapters.GenericSpinnerAdapter;
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
-import com.yourharts.www.Models.DataModelInterface;
+import com.yourharts.www.bloodglucosetracker.Adapters.GenericSpinnerAdapter;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
+import com.yourharts.www.bloodglucosetracker.Models.DataModelInterface;
 
 import java.text.DateFormat;
 import java.text.ParseException;

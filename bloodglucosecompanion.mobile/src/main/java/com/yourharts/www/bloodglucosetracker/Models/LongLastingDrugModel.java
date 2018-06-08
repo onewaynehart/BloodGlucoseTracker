@@ -1,4 +1,4 @@
-package com.yourharts.www.Models;
+package com.yourharts.www.bloodglucosetracker.Models;
 public class LongLastingDrugModel extends DataModelInterface {
     private int mID;
     private String mName;

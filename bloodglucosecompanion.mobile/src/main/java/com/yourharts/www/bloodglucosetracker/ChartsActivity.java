@@ -30,9 +30,9 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
-import com.yourharts.www.Models.DataModelInterface;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
+import com.yourharts.www.bloodglucosetracker.Models.DataModelInterface;
 
 import java.text.DateFormat;
 import java.text.ParseException;

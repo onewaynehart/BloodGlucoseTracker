@@ -19,8 +19,8 @@ import android.support.v4.app.NavUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.DataModelInterface;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.DataModelInterface;
 
 import java.util.List;
 

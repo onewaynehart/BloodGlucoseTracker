@@ -1,4 +1,4 @@
-package com.yourharts.www.Models;
+package com.yourharts.www.bloodglucosetracker.Models;
 public class ShortLastingDrugModel extends DataModelInterface{
     private int _id;
     private String _name;

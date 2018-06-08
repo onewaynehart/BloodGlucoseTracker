@@ -1,4 +1,4 @@
-package com.yourharts.www.Models;
+package com.yourharts.www.bloodglucosetracker.Models;
 
 public abstract class DataModelInterface {
     public abstract int getId();

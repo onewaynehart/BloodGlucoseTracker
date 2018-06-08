@@ -1,4 +1,4 @@
-package com.yourharts.www.Adapters;
+package com.yourharts.www.bloodglucosetracker.Adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,9 +13,9 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
-import com.yourharts.www.Models.DataModelInterface;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
+import com.yourharts.www.bloodglucosetracker.Models.DataModelInterface;
 import com.yourharts.www.bloodglucosetracker.AddMeasurementActivity;
 import com.yourharts.www.bloodglucosetracker.MainActivity;
 import com.yourharts.www.bloodglucosetracker.R;

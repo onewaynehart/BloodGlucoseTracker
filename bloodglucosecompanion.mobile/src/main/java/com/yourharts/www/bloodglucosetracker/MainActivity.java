@@ -28,10 +28,9 @@ import android.widget.PopupWindow;
 import android.widget.Switch;
 
 
-import com.google.android.gms.wearable.WearableListenerService;
-import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
+import com.yourharts.www.bloodglucosetracker.Adapters.GlucoseMeasurementAdapter;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
 
 import java.io.File;
 import java.io.FileWriter;

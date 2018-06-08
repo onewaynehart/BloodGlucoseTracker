@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +20,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yourharts.www.Adapters.GlucoseMeasurementAdapter;
-import com.yourharts.www.Database.DBHelper;
-import com.yourharts.www.Models.BloodMeasurementModel;
+import com.yourharts.www.bloodglucosetracker.Database.DBHelper;
+import com.yourharts.www.bloodglucosetracker.Models.BloodMeasurementModel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,10 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import Helpers.AlertDialogHelper;
-
 import static android.support.v4.content.FileProvider.getUriForFile;
-import static android.widget.Toast.LENGTH_SHORT;
 
 public class DataActivity extends AppCompatActivity {
     private Button _importDataBtn;

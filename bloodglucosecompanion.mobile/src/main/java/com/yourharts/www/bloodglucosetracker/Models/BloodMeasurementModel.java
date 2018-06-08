@@ -1,9 +1,7 @@
-package com.yourharts.www.Models;
+package com.yourharts.www.bloodglucosetracker.Models;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-
-import com.yourharts.www.bloodglucosetracker.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
