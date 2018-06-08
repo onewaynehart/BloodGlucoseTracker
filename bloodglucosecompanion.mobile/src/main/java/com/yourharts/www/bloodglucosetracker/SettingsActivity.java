@@ -9,6 +9,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
@@ -57,6 +58,7 @@ public class SettingsActivity extends PreferenceActivity {
         getDelegate().setSupportActionBar(toolbar);
     }
 
+    @NonNull
     @Override
     public MenuInflater getMenuInflater() {
         return getDelegate().getMenuInflater();
@@ -251,7 +253,7 @@ public class SettingsActivity extends PreferenceActivity {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if(key.equals("PREF_DEFAULT_CSVDELIMITER")){
                 SharedPreferences.Editor editor = _sharedPref.edit();
-                String defaultcsvDelimiter = "~";
+                String defaultcsvDelimiter;
                 try {
                     defaultcsvDelimiter = _defaultCSVLP.getValue();
                     editor.putString("PREF_DEFAULT_CSVDELIMITER", defaultcsvDelimiter);
@@ -317,12 +319,12 @@ public class SettingsActivity extends PreferenceActivity {
                     updateListPrefSummary_PREF_LIST(_baselineDrugTypeLP);
                 }
                 catch(Exception e){
-
+                    e.printStackTrace();
                 }
             }
             if(key.equals(getString(R.string.pref_use_last_as_default))) {
                 SharedPreferences.Editor editor = _sharedPref.edit();
-                boolean useLastAsDefault = false;
+                boolean useLastAsDefault;
                 try {
                     useLastAsDefault = _useLastAsDefaultSw.isChecked();
                     editor.putBoolean(getString(R.string.pref_use_last_as_default), useLastAsDefault);
@@ -330,7 +332,7 @@ public class SettingsActivity extends PreferenceActivity {
                     editor.commit();
                 }
                 catch(Exception e){
-
+                    e.printStackTrace();
                 }
             }
 

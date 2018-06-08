@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     private DBHelper _dbHelper;
     private DateFormat _dbDateFormat;
     private SharedPreferences _sharedPref;
-
     private CardView _gettingStartedCard;
     private FloatingActionButton _fab;
     private Switch _showHighOnlySW;
@@ -61,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private Switch _showBedtimeSW;
     private View _popupFilterView;
     private MainActivityListener _mainActivitylistener;
-    PopupWindow _dropDownMenu;
+    private PopupWindow _dropDownMenu;
     private DrawerLayout _drawerLayout;
-    android.support.v7.app.ActionBarDrawerToggle _drawerToggle;
+    private android.support.v7.app.ActionBarDrawerToggle _drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         _mainActivitylistener = new MainActivityListener(MainActivity.this, _sharedPref);
+        assert layoutInflater != null;
         _popupFilterView = layoutInflater.inflate(R.layout.layout_drop_down_filters, null);
         _dropDownMenu = new PopupWindow(_popupFilterView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         _dropDownMenu.setOutsideTouchable(true);
@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
+        assert actionbar != null;
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
         _drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -349,10 +350,10 @@ public class MainActivity extends AppCompatActivity {
 }
 
     class MainActivityListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, PopupWindow.OnDismissListener {
-        MainActivity _activity;
-        SharedPreferences _sharedPreferences;
+        private MainActivity _activity;
+        private SharedPreferences _sharedPreferences;
 
-        public MainActivityListener(MainActivity activity, SharedPreferences preferences) {
+        MainActivityListener(MainActivity activity, SharedPreferences preferences) {
             _activity = activity;
             _sharedPreferences = preferences;
         }

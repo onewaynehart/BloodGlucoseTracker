@@ -76,6 +76,7 @@ public class ChartsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_charts);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
+        assert actionbar != null;
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
         _summaryCardSw = findViewById(R.id.showSummaySw);
@@ -88,18 +89,10 @@ public class ChartsActivity extends AppCompatActivity {
     }
 
     private void setupCheckListeners() {
-        _breakfastSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            loadGlucoseMeasurementChart();
-        });
-        _lunchSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            loadGlucoseMeasurementChart();
-        });
-        _dinnerSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            loadGlucoseMeasurementChart();
-        });
-        _bedtimeSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            loadGlucoseMeasurementChart();
-        });
+        _breakfastSw.setOnCheckedChangeListener((buttonView, isChecked) -> loadGlucoseMeasurementChart());
+        _lunchSw.setOnCheckedChangeListener((buttonView, isChecked) -> loadGlucoseMeasurementChart());
+        _dinnerSw.setOnCheckedChangeListener((buttonView, isChecked) -> loadGlucoseMeasurementChart());
+        _bedtimeSw.setOnCheckedChangeListener((buttonView, isChecked) -> loadGlucoseMeasurementChart());
         _summaryCardSw.setOnCheckedChangeListener((buttonView, isChecked) -> {
             _summaryCard.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             if(isChecked)
@@ -191,10 +184,10 @@ public class ChartsActivity extends AppCompatActivity {
         double highestRecorded = 0.0;
         double lowestRecorded = 0.0;
         String lowestUnits = "";
-        double averageCorrective = 0.0;
+        double averageCorrective;
         String highestUnits = "";
         String highestRecordedDate = "";
-        String highestTimeOfDay = "";
+        String highestTimeOfDay;
         String lowestRecordedDate = "";
 
         if(allBloodGlucoseMeasurements.size() > 0){
@@ -203,11 +196,9 @@ public class ChartsActivity extends AppCompatActivity {
                 if (bmm.getGlucoseMeasurement() >=  inUse.getGlucoseMeasurement())
                     inUse = bmm;
             }
-            if (inUse != null) {
-                highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
-                highestRecorded = inUse.getGlucoseMeasurement();
-                highestRecordedDate = inUse.getGlucoseMeasurementDate();
-            }
+            highestUnits = measurementUnits.get(_dbHelper.getPosition(measurementUnits, inUse.getGlucoseMeasurementUnitID())).getString();
+            highestRecorded = inUse.getGlucoseMeasurement();
+            highestRecordedDate = inUse.getGlucoseMeasurementDate();
             inUse = allBloodGlucoseMeasurements.get(0);
             for (BloodMeasurementModel bmm : allBloodGlucoseMeasurements) {
                 if (bmm.getGlucoseMeasurement() <= inUse.getGlucoseMeasurement())
@@ -243,8 +234,7 @@ public class ChartsActivity extends AppCompatActivity {
 
                 }
             }
-            double dailyAverage = (amount / (float) correctiveMap.keySet().size());
-            averageCorrective = dailyAverage;
+            averageCorrective = (amount / (float) correctiveMap.keySet().size());
 
 
             Map<String, Double> timeofday = new HashMap<>();
@@ -294,7 +284,7 @@ public class ChartsActivity extends AppCompatActivity {
             int correctiveDrugPos = (_dbHelper.getPosition(correctiveDrugs, defaultCorrectiveDrugID));
             String correctiveDrugName = correctiveDrugs.get(correctiveDrugPos).getString();
 
-            String summary = String.format(getString(R.string.summary_text),
+            return String.format(getString(R.string.summary_text),
                     highestRecorded,
                     highestUnits,
                     highestRecordedDate,
@@ -304,7 +294,6 @@ public class ChartsActivity extends AppCompatActivity {
                     averageCorrective,
                     correctiveDrugName,
                     highestTimeOfDay);
-            return summary;
         }
         else{
             return "You have no recorded measurements to analyze.";
@@ -357,7 +346,7 @@ public class ChartsActivity extends AppCompatActivity {
 
         // add a lot of colors
 
-        ArrayList<Integer> colors = new ArrayList<Integer>();
+        ArrayList<Integer> colors = new ArrayList<>();
 
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
             colors.add(c);

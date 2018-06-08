@@ -25,24 +25,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasurementAdapter.GlucosemeasurementViewHolder>{
+public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasurementAdapter.GlucoseMeasurementViewHolder>{
     @NonNull
-    private List<BloodMeasurementModel> mDataset;
+    private List<BloodMeasurementModel> _dataset;
     private SharedPreferences _sharedPref;
     private MainActivity _activity;
 
-    public GlucoseMeasurementAdapter(List<BloodMeasurementModel> dataSet){
-        mDataset = dataSet;
+    public GlucoseMeasurementAdapter(@NonNull List<BloodMeasurementModel> dataSet){
+        _dataset = dataSet;
     }
     @Override
-    public void onBindViewHolder(@NonNull GlucosemeasurementViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull GlucoseMeasurementViewHolder holder, int position) {
 
-        BloodMeasurementModel model = mDataset.get(position);
-        holder.getmMeasurementDateTime().setText(model.getGlucoseMeasurementDate());
-        holder.getmMeasurementAmount().setText(String.format("%.1f",model.getGlucoseMeasurement()));
-        holder.getmCorrectiveDoseAmount().setText(String.format("%.1f",model.getCorrectiveDoseAmount()));
-        holder.getmBaselineDoseAmount().setText(String.format("%.1f",model.getBaselineDoseAmount()));
-        holder.getmNotes().setText(model.getNotes());
+        BloodMeasurementModel model = _dataset.get(position);
+        holder.getMeasurementDateTime().setText(model.getGlucoseMeasurementDate());
+        holder.getMeasurementAmount().setText(String.format("%.1f",model.getGlucoseMeasurement()));
+        holder.getCorrectiveDoseAmount().setText(String.format("%.1f",model.getCorrectiveDoseAmount()));
+        holder.getBaselineDoseAmount().setText(String.format("%.1f",model.getBaselineDoseAmount()));
+        holder.getNotes().setText(model.getNotes());
 
         DBHelper dbHelper = _activity.getDBHelper();
         _sharedPref = _activity.getSharedPreferences(_activity.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
@@ -53,19 +53,19 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
 
         for(DataModelInterface dmi : measurementUnits){
             if(dmi.getId() == model.getGlucoseMeasurementUnitID()){
-                holder.getmMeasurementUnits().setText(dmi.getString());
+                holder.getMeasurementUnits().setText(dmi.getString());
                 break;
             }
         }
         for(DataModelInterface dmi : correctiveDrugTypes){
             if(dmi.getId() == model.getCorrectiveDoseTypeID()){
-                holder.getmCorrectiveDoseDrugName().setText(dmi.getString());
+                holder.getCorrectiveDoseDrugName().setText(dmi.getString());
                 break;
             }
         }
         for(DataModelInterface dmi : baselineDrugTypes){
             if(dmi.getId() == model.getBaselineDoseTypeID()){
-                holder.getmBaselineDoseDrugName().setText(dmi.getString());
+                holder.getBaselineDoseDrugName().setText(dmi.getString());
                 break;
             }
         }
@@ -73,11 +73,11 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
 
         if(model.getGlucoseMeasurement()> _sharedPref.getInt("PREF_DEFAULT_THRESHOLD", 10))
         {
-            holder.getmWarningImage().setVisibility(View.VISIBLE);
+            holder.getWarningImage().setVisibility(View.VISIBLE);
         }
         else
         {
-            holder.getmWarningImage().setVisibility(View.INVISIBLE);
+            holder.getWarningImage().setVisibility(View.INVISIBLE);
         }
 
         try {
@@ -87,13 +87,13 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
             if(hour < 10){
                 holder.getTimeImageView().setImageResource(R.drawable.ic_coffee);
             }
-            else if(hour < 16 && hour >= 10){
+            else if(hour < 16){
                 holder.getTimeImageView().setImageResource(R.drawable.ic_baseline_fastfood_24px);
             }
-            else if(hour < 21 && hour >= 16){
+            else if(hour < 21){
                 holder.getTimeImageView().setImageResource(R.drawable.ic_baseline_local_bar_24px);
             }
-            else if(hour >= 21 ){
+            else {
                 holder.getTimeImageView().setImageResource(R.drawable.ic_brightness_3_black_24dp);
             }
         } catch (ParseException e) {
@@ -107,17 +107,17 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
 
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return _dataset.size();
     }
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
-    public GlucoseMeasurementAdapter.GlucosemeasurementViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public GlucoseMeasurementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View v = inflater.inflate(R.layout.layout_blood_glucose_measurement_view, parent, false);
-        GlucosemeasurementViewHolder vh = new GlucosemeasurementViewHolder(v);
-        return vh;
+        return new GlucoseMeasurementViewHolder(v);
     }
 
 
@@ -127,56 +127,56 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
     }
 
 
-    public  class GlucosemeasurementViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public  class GlucoseMeasurementViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         private View mView;
-        private TextView mMeasurementDateTime;
-        private TextView mMeasurementAmount;
-        private TextView mMeasurementUnits;
-        private TextView mCorrectiveDoseAmount;
-        private TextView mBaselineDoseAmount;
-        private TextView mCorrectiveDoseDrugName;
-        private TextView mBaselineDoseDrugName;
-        private TextView mNotes;
-        private ImageView mWarningImage;
-        private ImageView mdeleteImage;
-        private ImageView mEditImage;
-        private ImageView mTimeImageView;
+        private TextView _measurementDateTime;
+        private TextView _measurementAmount;
+        private TextView _measurementUnits;
+        private TextView _correctiveDoseAmount;
+        private TextView _baselineDoseAmount;
+        private TextView _correctiveDoseDrugName;
+        private TextView _baselineDoseDrugName;
+        private TextView _notes;
+        private ImageView _warningImage;
+        private ImageView _deleteImage;
+        private ImageView _editImage;
+        private ImageView _timeImageView;
         private TableRow _notesRow;
         private TableRow _correctiveAmountRow;
         private TableRow _baselineAmountRow;
-        private DBHelper mDBHelper;
-        public GlucosemeasurementViewHolder(View view) {
+
+        GlucoseMeasurementViewHolder(View view) {
             super(view);
             mView = view;
-            mMeasurementDateTime = mView.findViewById(R.id.bloodGlucoseMeasurementdateLabel);
-            mMeasurementAmount = mView.findViewById(R.id.bloodGlucoseMeasurementAmountLabel);
+            _measurementDateTime = mView.findViewById(R.id.bloodGlucoseMeasurementdateLabel);
+            _measurementAmount = mView.findViewById(R.id.bloodGlucoseMeasurementAmountLabel);
 
-            mMeasurementUnits = mView.findViewById(R.id.bloodGlucoseMeasurementAmountUnitsLabel);
-            mCorrectiveDoseAmount = mView.findViewById(R.id.bloodGlucoseMeasurementCorrectiveDoseAmount);
-            mBaselineDoseAmount = mView.findViewById(R.id.bloodGlucoseMeasurementBaselineDoseAmount);
-            mBaselineDoseDrugName = mView.findViewById(R.id.bloodGlucoseMeasurementBaselineDoseDrugName);
-            mCorrectiveDoseDrugName = mView.findViewById(R.id.bloodGlucoseMeasurementCorrectiveDoseDrugName);
-            mNotes = mView.findViewById(R.id.bloodGlucoseMeasurementNotes);
-            mWarningImage = mView.findViewById(R.id.bloodMeasurementWarning);
-            mdeleteImage = mView.findViewById(R.id.bloodGlucoseMeasurementDeleteButton);
-            mEditImage = mView.findViewById(R.id.bloodGlucoseMeasurementEditButton);
-            mTimeImageView = mView.findViewById(R.id.timeImageView);
+            _measurementUnits = mView.findViewById(R.id.bloodGlucoseMeasurementAmountUnitsLabel);
+            _correctiveDoseAmount = mView.findViewById(R.id.bloodGlucoseMeasurementCorrectiveDoseAmount);
+            _baselineDoseAmount = mView.findViewById(R.id.bloodGlucoseMeasurementBaselineDoseAmount);
+            _baselineDoseDrugName = mView.findViewById(R.id.bloodGlucoseMeasurementBaselineDoseDrugName);
+            _correctiveDoseDrugName = mView.findViewById(R.id.bloodGlucoseMeasurementCorrectiveDoseDrugName);
+            _notes = mView.findViewById(R.id.bloodGlucoseMeasurementNotes);
+            _warningImage = mView.findViewById(R.id.bloodMeasurementWarning);
+            _deleteImage = mView.findViewById(R.id.bloodGlucoseMeasurementDeleteButton);
+            _editImage = mView.findViewById(R.id.bloodGlucoseMeasurementEditButton);
+            _timeImageView = mView.findViewById(R.id.timeImageView);
             _notesRow = mView.findViewById(R.id._notesRow);
             _correctiveAmountRow = mView.findViewById(R.id._correctiveAmountRow);
             _baselineAmountRow = mView.findViewById(R.id._baselineAmountRow);
 
 
             View.OnClickListener clickListener = v -> {
-                if (v.equals(mdeleteImage)) {
+                if (v.equals(_deleteImage)) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(mView.getContext(), R.style.MyAlertDialogStyle);
 
                     alert.setTitle("Delete entry");
                     alert.setMessage("Are you sure you want to delete this measurement? It cannot be undone!");
                     alert.setPositiveButton(R.string.deleteYesBtn, (dialog, which) -> {
                         // continue with delete
-                        BloodMeasurementModel model = mDataset.get(getAdapterPosition());
-                        if(_activity.getDBHelper().deleteMeasurementRecord(model.getId())==true)
+                        BloodMeasurementModel model = _dataset.get(getAdapterPosition());
+                        if(_activity.getDBHelper().deleteMeasurementRecord(model.getId()))
                             removeAt(getAdapterPosition());
                     });
                     alert.setNegativeButton(android.R.string.no, (dialog, which) -> {
@@ -185,87 +185,83 @@ public class GlucoseMeasurementAdapter extends RecyclerView.Adapter<GlucoseMeasu
                     });
                     alert.show();
                 }
-                if (v.equals(mEditImage)) {
-                    BloodMeasurementModel model = mDataset.get(getAdapterPosition());
+                if (v.equals(_editImage)) {
+                    BloodMeasurementModel model = _dataset.get(getAdapterPosition());
                     Intent intent = new Intent(_activity, AddMeasurementActivity.class);
                     intent.putExtra("ID", model.getId());
                     _activity.startActivity(intent);
                 }
             };
-            mEditImage.setOnClickListener(clickListener);
-            mdeleteImage.setOnClickListener(clickListener);
+            _editImage.setOnClickListener(clickListener);
+            _deleteImage.setOnClickListener(clickListener);
             view.setOnClickListener(this);
 
         }
 
-        public TextView getmMeasurementDateTime() {
-            return mMeasurementDateTime;
+        TextView getMeasurementDateTime() {
+            return _measurementDateTime;
         }
 
-        public TextView getmMeasurementAmount() {
-            return mMeasurementAmount;
+        TextView getMeasurementAmount() {
+            return _measurementAmount;
         }
 
-        public TextView getmMeasurementUnits() {
-            return mMeasurementUnits;
+        TextView getMeasurementUnits() {
+            return _measurementUnits;
         }
 
-        public TextView getmCorrectiveDoseAmount() {
-            return mCorrectiveDoseAmount;
+        TextView getCorrectiveDoseAmount() {
+            return _correctiveDoseAmount;
         }
 
-        public TextView getmBaselineDoseAmount() {
-            return mBaselineDoseAmount;
+        TextView getBaselineDoseAmount() {
+            return _baselineDoseAmount;
         }
 
-        public TextView getmNotes() {
-            return mNotes;
+        TextView getNotes() {
+            return _notes;
         }
 
-        public TextView getmCorrectiveDoseDrugName() {
-            return mCorrectiveDoseDrugName;
+        TextView getCorrectiveDoseDrugName() {
+            return _correctiveDoseDrugName;
         }
 
-        public TextView getmBaselineDoseDrugName() {
-            return mBaselineDoseDrugName;
+        TextView getBaselineDoseDrugName() {
+            return _baselineDoseDrugName;
         }
 
-        public ImageView getmWarningImage() {
-            return mWarningImage;
-        }
-
-        public ImageView getMdeleteImage() {
-            return mdeleteImage;
+        ImageView getWarningImage() {
+            return _warningImage;
         }
 
         @Override
         public void onClick(View v) {
-            if(v.equals(mdeleteImage)) removeAt(getPosition());
+            if(v.equals(_deleteImage)) removeAt(getPosition());
         }
 
-        public void removeAt(int position) {
-            mDataset.remove(position);
+        void removeAt(int position) {
+            _dataset.remove(position);
             notifyItemRemoved(position);
-            notifyItemRangeChanged(position, mDataset.size());
+            notifyItemRangeChanged(position, _dataset.size());
         }
         public void addAt(int position, BloodMeasurementModel model){
-            mDataset.add(position,model);
+            _dataset.add(position,model);
             notifyDataSetChanged();
         }
 
-        public TableRow getNotesRow() {
+        TableRow getNotesRow() {
             return _notesRow;
         }
 
         public ImageView getTimeImageView() {
-            return mTimeImageView;
+            return _timeImageView;
         }
 
-        public TableRow getCorrectiveAmountRow() {
+        TableRow getCorrectiveAmountRow() {
             return _correctiveAmountRow;
         }
 
-        public TableRow getBaselineAmountRow() {
+        TableRow getBaselineAmountRow() {
             return _baselineAmountRow;
         }
     }

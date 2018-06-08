@@ -32,7 +32,7 @@ import java.util.List;
 
 public class AddMeasurementActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private DBHelper _dbHelper;
-    private DateFormat dbDateFormat;
+    private DateFormat _dbDateFormat;
     private Spinner _measurementUnitsDropdown;
     private Spinner _correctiveDoseDrugDropdown;
     private Spinner _baselineDoseDrugDropdown;
@@ -66,7 +66,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
         _dateLbl = findViewById(R.id.addMeasurementTimeLabel);
 
 
-        dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
+        _dbDateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
         _dbHelper = new DBHelper(getApplicationContext(), getFilesDir().getPath(),  this);
 
 
@@ -89,6 +89,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
         Toolbar toolbar = findViewById(R.id.toolbar_add_measurement);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
+        assert actionbar != null;
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
         SetInitialValues();
@@ -114,7 +115,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
 
         //Use defaults
         if (!_isEditMode) {
-            _dateLbl.setText(dbDateFormat.format(Calendar.getInstance().getTime()));
+            _dateLbl.setText(_dbDateFormat.format(Calendar.getInstance().getTime()));
             _measurementUnitsDropdown.setSelection(((GenericSpinnerAdapter) _measurementUnitsDropdown.getAdapter()).getPosition(defaultMeasurementUnitID));
             _correctiveDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _correctiveDoseDrugDropdown.getAdapter()).getPosition(defaultCorrectiveDrugID));
             _baselineDoseDrugDropdown.setSelection(((GenericSpinnerAdapter) _baselineDoseDrugDropdown.getAdapter()).getPosition(defaultBaselineDrugID));
@@ -156,7 +157,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
 
             if (_isEditMode && _dataModel != null) {
                 try {
-                    Date modelDate = dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
+                    Date modelDate = _dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
                     cal.setTime(modelDate);
                     _year = cal.get(Calendar.YEAR);
                     _month = cal.get(Calendar.MONTH) ;
@@ -188,7 +189,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     }
 
     private boolean saveData() {
-        boolean retval = false;
+        boolean retval;
         try {
             double glucoseMeasurement = _glucoseAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(_glucoseAmountTB.getText().toString());
             double correctiveDoseAmount = _correctiveDrugAmountTB.getText().toString().isEmpty() ? 0 : Double.parseDouble(_correctiveDrugAmountTB.getText().toString());
@@ -245,7 +246,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
 
         if (_isEditMode && _dataModel != null) {
             try {
-                Date modelDate = dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
+                Date modelDate = _dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
                 cal.setTime(modelDate);
                 _minute = cal.get(Calendar.MINUTE);
                 _hour = cal.get(Calendar.HOUR);

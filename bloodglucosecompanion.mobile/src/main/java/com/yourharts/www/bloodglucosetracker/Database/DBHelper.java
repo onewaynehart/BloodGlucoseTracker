@@ -32,18 +32,18 @@ import com.yourharts.www.bloodglucosetracker.AlertDialogHelper;
 
 public class DBHelper  extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 3;
-    public static final String DATABASE_NAME = "glucose_tracker_v2.db";
+    private static final int DATABASE_VERSION = 3;
+    private static final String DATABASE_NAME = "glucose_tracker_v2.db";
     private String DATABASE_LOCATION;
     private final static String TAG = "DatabaseHelper";
     private Context _context;
     private SharedPreferences _sharedPreferences;
-    Activity _activity;
+    private Activity _activity;
     public DBHelper(Context context, String filePath, Activity activity) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         _context = context;
         _activity = activity;
-        DATABASE_LOCATION = new StringBuffer(filePath).append("/").append(DATABASE_NAME).toString();
+        DATABASE_LOCATION = filePath + "/" + DATABASE_NAME;
         _sharedPreferences  = context.getSharedPreferences(context.getString(R.string.pref_file_key), Context.MODE_PRIVATE);
 
     }
@@ -138,7 +138,7 @@ public class DBHelper  extends SQLiteOpenHelper {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);
         String query = "SELECT id, UnitName FROM GlucoseUnitTypes" + " Order By UnitName ASC";
         Cursor cursor = db.rawQuery(query, null);
-        List<DataModelInterface> retval = new ArrayList<DataModelInterface>();
+        List<DataModelInterface> retval = new ArrayList<>();
         while(cursor.moveToNext()) {
             MeasurementUnitModel drug = new MeasurementUnitModel(cursor.getInt(0),cursor.getString(1));
 
@@ -153,7 +153,7 @@ public class DBHelper  extends SQLiteOpenHelper {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);
         String query = "SELECT id, drugname FROM CorrectiveDoseDrugs Order By drugname ASC";
         Cursor cursor = db.rawQuery(query, null);
-        List<DataModelInterface> retval = new ArrayList<DataModelInterface>();
+        List<DataModelInterface> retval = new ArrayList<>();
         while(cursor.moveToNext()) {
             ShortLastingDrugModel drug = new ShortLastingDrugModel(cursor.getInt(0),cursor.getString(1));
 
@@ -168,7 +168,7 @@ public class DBHelper  extends SQLiteOpenHelper {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);
         String query = "SELECT id, drugname FROM BaselineDoseDrugs Order By drugname ASC";
         Cursor cursor = db.rawQuery(query, null);
-        List<DataModelInterface> retval = new ArrayList<DataModelInterface>();
+        List<DataModelInterface> retval = new ArrayList<>();
         while(cursor.moveToNext()) {
             LongLastingDrugModel drug = new LongLastingDrugModel(cursor.getInt(0),cursor.getString(1));
 
@@ -181,7 +181,7 @@ public class DBHelper  extends SQLiteOpenHelper {
     public List<BloodMeasurementModel> getAllBloodMeasurements()
     {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);
-        List<BloodMeasurementModel> retval = new ArrayList<BloodMeasurementModel>();
+        List<BloodMeasurementModel> retval = new ArrayList<>();
         String query = "SELECT * FROM GlucoseMeasurement Order By GlucoseMeasurementDate DESC";
         Cursor cursor = db.rawQuery(query, null);
         while(cursor.moveToNext()) {
@@ -203,7 +203,7 @@ public class DBHelper  extends SQLiteOpenHelper {
         return retval;
     }
     public String getMeasurementsCSVText(String delimiter){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("ID");
         buffer.append(delimiter);
         buffer.append("GlucoseMeasurement");
@@ -244,7 +244,7 @@ public class DBHelper  extends SQLiteOpenHelper {
             retval = true;
         }
         catch (Exception e){
-
+            e.printStackTrace();
         }
         return retval;
     }
@@ -257,10 +257,11 @@ public class DBHelper  extends SQLiteOpenHelper {
             db.close();
         }
         catch (Exception e){
+            e.printStackTrace();
         }
     }
     public boolean addGlucoseMeasurement(BloodMeasurementModel model){
-        boolean retval = false;
+        boolean retval;
         String tableName = "GlucoseMeasurement";
         String col_1 = "GlucoseMeasurement";
         String col_2 = "GlucoseMeasurementUnitID";
@@ -300,7 +301,7 @@ public class DBHelper  extends SQLiteOpenHelper {
 
     public BloodMeasurementModel getBloodMeasurement(int modelID) {
         SQLiteDatabase db = SQLiteDatabase.openDatabase(DATABASE_LOCATION, null, SQLiteDatabase.OPEN_READONLY);
-        List<BloodMeasurementModel> retval = new ArrayList<BloodMeasurementModel>();
+        List<BloodMeasurementModel> retval = new ArrayList<>();
         String query = "SELECT * FROM GlucoseMeasurement WHERE ID = "+ modelID;
         Cursor cursor = db.rawQuery(query, null);
         while(cursor.moveToNext()) {

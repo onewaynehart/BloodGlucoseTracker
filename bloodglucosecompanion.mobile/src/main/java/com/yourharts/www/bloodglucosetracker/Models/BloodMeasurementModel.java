@@ -59,48 +59,46 @@ public class BloodMeasurementModel extends DataModelInterface {
 
     @Override
     public String getString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(_id);
-        buffer.append(" ");
-        buffer.append(_glucoseMeasurement);
-        buffer.append(" ");
-        buffer.append(_glucoseMeasurementUnitID);
-        buffer.append(" ");
-        buffer.append(_glucoseMeasurementDate);
-        buffer.append(" ");
-        buffer.append(_correctiveDoseAmount);
-        buffer.append(" ");
-        buffer.append(_correctiveDoseTypeID);
-        buffer.append(" ");
-        buffer.append(_baselineDoseAmount);
-        buffer.append(" ");
-        buffer.append(_baselineDoseTypeID);
-        buffer.append(" ");
-        buffer.append(_notes);
-        buffer.append("\n");
-        return buffer.toString();
+        String buffer = String.valueOf(_id) +
+                " " +
+                _glucoseMeasurement +
+                " " +
+                _glucoseMeasurementUnitID +
+                " " +
+                _glucoseMeasurementDate +
+                " " +
+                _correctiveDoseAmount +
+                " " +
+                _correctiveDoseTypeID +
+                " " +
+                _baselineDoseAmount +
+                " " +
+                _baselineDoseTypeID +
+                " " +
+                _notes +
+                "\n";
+        return buffer;
     }
     public String getString(String delimiter){
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(_id);
-        buffer.append(delimiter);
-        buffer.append(_glucoseMeasurement);
-        buffer.append(delimiter);
-        buffer.append(_glucoseMeasurementUnitID);
-        buffer.append(delimiter);
-        buffer.append(_glucoseMeasurementDate);
-        buffer.append(delimiter);
-        buffer.append(_correctiveDoseAmount);
-        buffer.append(delimiter);
-        buffer.append(_correctiveDoseTypeID);
-        buffer.append(delimiter);
-        buffer.append(_baselineDoseAmount);
-        buffer.append(delimiter);
-        buffer.append(_baselineDoseTypeID);
-        buffer.append(delimiter);
-        buffer.append(_notes);
-        buffer.append("\n");
-        return buffer.toString();
+        String buffer = String.valueOf(_id) +
+                delimiter +
+                _glucoseMeasurement +
+                delimiter +
+                _glucoseMeasurementUnitID +
+                delimiter +
+                _glucoseMeasurementDate +
+                delimiter +
+                _correctiveDoseAmount +
+                delimiter +
+                _correctiveDoseTypeID +
+                delimiter +
+                _baselineDoseAmount +
+                delimiter +
+                _baselineDoseTypeID +
+                delimiter +
+                _notes +
+                "\n";
+        return buffer;
     }
     public double getGlucoseMeasurement() {
         return _glucoseMeasurement;

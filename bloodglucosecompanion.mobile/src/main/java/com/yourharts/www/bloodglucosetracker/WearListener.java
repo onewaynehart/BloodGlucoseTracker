@@ -38,13 +38,13 @@ public class WearListener extends WearableListenerService {
     public void onMessageReceived(MessageEvent messageEvent) {
         if (messageEvent.getPath().equals(MESSAGE_PATH)) {
             try {
-                String newMeasurement = new String(messageEvent.getData()).toString();
+                String newMeasurement = new String(messageEvent.getData());
                 System.out.println("I got something: " + newMeasurement);
                 String[] data = newMeasurement.split("~");
                 double measurement = Double.parseDouble(data[0]);
                 String date = data[1];
-                Double shortLasting = data[2].isEmpty() == false ? Double.parseDouble(data[2]) : 0;
-                Double longLasting = data[3].isEmpty() == false ? Double.parseDouble(data[3]) : 0;
+                Double shortLasting = !data[2].isEmpty() ? Double.parseDouble(data[2]) : 0;
+                Double longLasting = !data[3].isEmpty() ? Double.parseDouble(data[3]) : 0;
                 int defaultBaselineDrugID = _sharedPref.getInt(getString(R.string.pref_defaultBaselineDrugID), 1);
                 int defaultCorrectiveDrugID = _sharedPref.getInt(getString(R.string.pref_defaultCorrectiveDrugID), 1);
                 int defaultMeasurementUnitID = _sharedPref.getInt(getString(R.string.pref_defaultMeasurementUnitID), 1);
@@ -63,9 +63,11 @@ public class WearListener extends WearableListenerService {
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 500 milliseconds
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    assert v != null;
                     v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                 } else {
                     //deprecated in API 26
+                    assert v != null;
                     v.vibrate(500);
                 }
             } catch (Exception e) {

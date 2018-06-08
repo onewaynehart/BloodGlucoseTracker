@@ -76,6 +76,7 @@ public class DataActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_data);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
+        assert actionbar != null;
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_back_black_24dp);
 
@@ -131,12 +132,14 @@ public class DataActivity extends AppCompatActivity {
     public List<BloodMeasurementModel> importData(Intent data){
         Uri uri = data.getData();
         List<BloodMeasurementModel> retval = new ArrayList<>();
-        BufferedReader mBufferedReader = null;
+        BufferedReader mBufferedReader;
         String line;
         try
         {
             int added = 0;
+            assert uri != null;
             InputStream inputStream = getContentResolver().openInputStream(uri);
+            assert inputStream != null;
             mBufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             List<BloodMeasurementModel> currentMeasurements = _dbHelper.getAllBloodMeasurements();
             boolean printedColumns = false;
@@ -145,12 +148,12 @@ public class DataActivity extends AppCompatActivity {
 
                 try {
                     double measurement = Double.parseDouble(columns[1]);
-                    int measurementType = columns[2].isEmpty() == false ?  Integer.parseInt(columns[2]) : 1;
+                    int measurementType = !columns[2].isEmpty() ?  Integer.parseInt(columns[2]) : 1;
                     String measurementDate = columns[3];
-                    double correctiveAmount = columns[4].isEmpty() == false ? Double.parseDouble(columns[4]): 0;
-                    int correctiveType =columns[5].isEmpty() == false ?  Integer.parseInt(columns[5]) : 1;
-                    double baselineAmt =columns[6].isEmpty() == false ?  Double.parseDouble(columns[6]) : 0;
-                    int baselineType =columns[7].isEmpty() == false ?  Integer.parseInt(columns[7]) : 1;
+                    double correctiveAmount = !columns[4].isEmpty() ? Double.parseDouble(columns[4]): 0;
+                    int correctiveType = !columns[5].isEmpty() ?  Integer.parseInt(columns[5]) : 1;
+                    double baselineAmt = !columns[6].isEmpty() ?  Double.parseDouble(columns[6]) : 0;
+                    int baselineType = !columns[7].isEmpty() ?  Integer.parseInt(columns[7]) : 1;
                     String notes = columns.length == 9 ? columns[8] : "";
                     BloodMeasurementModel newModel = new BloodMeasurementModel(0, measurement, measurementType, measurementDate, correctiveAmount, correctiveType, baselineAmt, baselineType, notes, _sharedPref, this);
 
@@ -165,7 +168,7 @@ public class DataActivity extends AppCompatActivity {
                             break;
                         }
                     }
-                    if(duplicateFound == false){
+                    if(!duplicateFound){
                         _dbHelper.addGlucoseMeasurement(newModel);
                         retval.add(newModel);
                         added++;
@@ -191,7 +194,7 @@ class DataActivityListener implements OnClickListener {
     private SharedPreferences _sharedPreferences;
     private DBHelper _dbHelper;
 
-    public DataActivityListener(DataActivity dataActivity, SharedPreferences sharedPreferences, DBHelper dbHelper) {
+    DataActivityListener(DataActivity dataActivity, SharedPreferences sharedPreferences, DBHelper dbHelper) {
         _dataActivity = dataActivity;
         _sharedPreferences = sharedPreferences;
         _dbHelper = dbHelper;
