@@ -174,7 +174,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     @Override
     public void onStop() {
         super.onStop();
-        this.setResult(RESULT_OK);
+
     }
     @Override
     public void onResume(){
@@ -185,7 +185,7 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.setResult(RESULT_OK);
+
     }
 
     private boolean saveData() {

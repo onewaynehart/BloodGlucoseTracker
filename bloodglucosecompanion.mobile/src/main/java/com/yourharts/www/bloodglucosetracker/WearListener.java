@@ -64,11 +64,11 @@ public class WearListener extends WearableListenerService {
                 // Vibrate for 500 milliseconds
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     assert v != null;
-                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    v.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                 } else {
                     //deprecated in API 26
                     assert v != null;
-                    v.vibrate(500);
+                    v.vibrate(1000);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
