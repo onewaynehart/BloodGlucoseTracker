@@ -49,7 +49,6 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
     private int _dayOfMonth;
     private int _hour;
     private int _minute;
-    private int _seconds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,15 +241,15 @@ public class AddMeasurementActivity extends AppCompatActivity implements DatePic
         Calendar cal = Calendar.getInstance();
         _minute = cal.get(Calendar.MINUTE);
         _hour = cal.get(Calendar.HOUR);
-        _seconds = cal.get(Calendar.SECOND);
+
 
         if (_isEditMode && _dataModel != null) {
             try {
                 Date modelDate = _dbDateFormat.parse(_dataModel.getGlucoseMeasurementDate());
                 cal.setTime(modelDate);
-                _minute = cal.get(Calendar.MINUTE);
-                _hour = cal.get(Calendar.HOUR);
-                _seconds = cal.get(Calendar.SECOND);
+                _minute = modelDate.getMinutes();
+                _hour = modelDate.getHours();
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }

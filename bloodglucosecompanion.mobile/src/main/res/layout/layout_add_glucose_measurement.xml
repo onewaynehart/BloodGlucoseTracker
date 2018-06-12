@@ -76,14 +76,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    android:text="Measurement Amount:"
+                    android:text="Measurement "
                     android:textAlignment="viewStart" />
 
                 <EditText
                     android:id="@+id/addMeasurementGlucoseAmountTB"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2.7"
+                    android:layout_weight="2.5"
                     android:focusedByDefault="true"
                     android:hint="@string/add_measurement_measurement_hint"
 
@@ -94,8 +94,8 @@
                     android:id="@+id/measurementUnitsDropDown"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.2"
-                    android:spinnerMode="dialog"
+                    android:layout_weight="2.3"
+
                     android:theme="@style/SpinnerStyle" />
             </TableRow>
 
@@ -107,7 +107,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    android:text="Corrective Dose Amount:" />
+                    android:text="Corrective Dose:" />
 
                 <EditText
                     android:id="@+id/addMeasurementCorrectiveDoseAmountTB"
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
 
 
-                    android:layout_weight="2.7"
+                    android:layout_weight="2.5"
                     android:hint="@string/add_measurement_corrective_dose_hint"
                     android:inputType="number" />
 
@@ -123,7 +123,7 @@
                     android:id="@+id/correctiveDoseDrugDropdown"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.2"
+                    android:layout_weight="2.3"
                     android:theme="@style/SpinnerStyle" />
             </TableRow>
 
@@ -136,13 +136,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    android:text="Baseline Dose Amount:" />
+                    android:text="Baseline Dose:" />
 
                 <EditText
                     android:id="@+id/addMeasurementBaselineDrugAmountTB"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2.7"
+                    android:layout_weight="2.5"
                     android:ems="10"
                     android:hint="@string/add_measurement_baseline_amount_hint"
                     android:inputType="number" />
@@ -151,7 +151,7 @@
                     android:id="@+id/baselineDoseDrugDropdown"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.2"
+                    android:layout_weight="2.3"
                     android:theme="@style/SpinnerStyle" />
 
             </TableRow>

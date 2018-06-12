@@ -17,7 +17,7 @@
     </style>
     <style name="SpinnerStyle"
         parent="@android:style/Widget.TextView.SpinnerItem">
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
 
