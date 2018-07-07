@@ -470,7 +470,7 @@ public class ChartsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            //if(bmm.getCorrectiveDoseAmount()>0){
+            if(bmm.getCorrectiveDoseAmount()>0){
                 boolean existing = false;
                 for(Entry entry : shortActing){
                     if(entry.getX() == index)
@@ -484,9 +484,9 @@ public class ChartsActivity extends AppCompatActivity {
                     Entry newEntry = new Entry(index, (float) bmm.getCorrectiveDoseAmount());
                     shortActing.add(newEntry);
                 }
-            //}
-
-            //if(bmm.getBaselineDoseAmount()>0) {
+            }
+            boolean existing;
+            if(bmm.getBaselineDoseAmount()>0) {
                 existing = false;
                 for(Entry entry : longActing){
                     if(entry.getX() == index)
@@ -500,7 +500,7 @@ public class ChartsActivity extends AppCompatActivity {
                     Entry newEntry = new Entry(index, (float) bmm.getBaselineDoseAmount());
                     longActing.add(newEntry);
                 }
-            //}
+            }
         }
 
 

@@ -1,11 +1,17 @@
 package com.yourharts.www.bloodglucosetracker;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.MessageEvent;
@@ -19,6 +25,8 @@ public class WearListener extends WearableListenerService {
     private GoogleApiClient _googleApiClient;
     private DBHelper _dbHelper;
     private static final String MESSAGE_PATH = "/glucose";
+    private  static final String CHANNEL_ID= "88";
+    private static final int NOTIFICATION_ID = 888;
     private SharedPreferences _sharedPref;
 
     @Override
@@ -65,6 +73,8 @@ public class WearListener extends WearableListenerService {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     assert v != null;
                     v.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+
+
                 } else {
                     //deprecated in API 26
                     assert v != null;
@@ -76,12 +86,36 @@ public class WearListener extends WearableListenerService {
 
 
             Intent startIntent = new Intent(this, MainActivity.class);
-            startIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            //showForegroundNotification("New glucose measurement data received from watch.");
             startActivity(startIntent);
+
+
         }
         super.onMessageReceived(messageEvent);
     }
+    private void showForegroundNotification(String contentText) {
+        // Create intent that will bring our app to the front, as if it was tapped in the app
+        // launcher
+        Intent showTaskIntent = new Intent(getApplicationContext(), MainActivity.class);
+        showTaskIntent.setAction(Intent.ACTION_MAIN);
+        showTaskIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        showTaskIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                getApplicationContext(),
+                0,
+                showTaskIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new Notification.Builder(getApplicationContext())
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(contentText)
+                .setSmallIcon(R.drawable.ic_hospital)
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(contentIntent)
+                .build();
+        startForeground(NOTIFICATION_ID, notification);
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
