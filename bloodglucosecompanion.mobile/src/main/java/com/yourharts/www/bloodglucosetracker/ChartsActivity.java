@@ -154,6 +154,13 @@ public class ChartsActivity extends AppCompatActivity {
         }).start();
         new Thread(() -> {
             try{
+                drawAvgGlucoseChart();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+        new Thread(() -> {
+            try{
                 drawHighReadingChart();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -378,6 +385,61 @@ public class ChartsActivity extends AppCompatActivity {
         pieChart.setDescription(description);
         pieChart.invalidate(); // refresh
     }
+    private void drawAvgGlucoseChart(){
+        LineChart graph = findViewById(R.id.chart_avg_glucose_over_time);
+        graph.invalidate();
+        graph.clear();
+        List<BloodMeasurementModel> measurements = _dbHelper.getAllBloodMeasurements();
+        List<Entry> averages = new ArrayList<>();
+        Collections.reverse(measurements);
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.database_date_format));
+
+        long index = 0;
+        long oldIndex = index;
+        int batchCount = 0;
+        double current =0;
+        for (BloodMeasurementModel bmm : measurements) {
+
+            try {
+                cal.setTime(sdf.parse(bmm.getGlucoseMeasurementDate()));
+                oldIndex = bmm==measurements.get(0)? cal.getTimeInMillis() : index ;
+                index = cal.getTimeInMillis();
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if(index > 0){
+
+                if(index == oldIndex){
+                    current += bmm.getGlucoseMeasurement();
+                    batchCount++;
+                }
+                else{
+                    if(current > 0 && batchCount >0){
+                        averages.add(new Entry(index ,(float)(current / batchCount )));
+                    }
+
+                    current = 0;
+                    batchCount = 0;
+                }
+            }
+        }
+        LineDataSet averageDataSet = new LineDataSet(averages, "Average");
+        averageDataSet.setColor(getResources().getColor(R.color.colorPrimaryVariant));
+        averageDataSet.setDrawCircles(false);
+        LineData lineData = new LineData();
+        lineData.addDataSet(averageDataSet);
+        lineData.setDrawValues(false);
+        graph.getXAxis().setGranularity(1.0f);
+        graph.getXAxis().setTextColor(getResources().getColor(R.color.colorSurface));
+        graph.getDescription().setText("Average glucose measurements over time.");
+        graph.setData(lineData);
+        graph.invalidate();
+
+    }
     private void drawGlucoseChart() {
 
         LineChart graph = findViewById(R.id.chart_glucose_over_time);
@@ -470,7 +532,7 @@ public class ChartsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            if(bmm.getCorrectiveDoseAmount()>0){
+            //if(bmm.getCorrectiveDoseAmount()>0){
                 boolean existing = false;
                 for(Entry entry : shortActing){
                     if(entry.getX() == index)
@@ -484,9 +546,9 @@ public class ChartsActivity extends AppCompatActivity {
                     Entry newEntry = new Entry(index, (float) bmm.getCorrectiveDoseAmount());
                     shortActing.add(newEntry);
                 }
-            }
-            boolean existing;
-            if(bmm.getBaselineDoseAmount()>0) {
+           // }
+            //boolean existing;
+            //if(bmm.getBaselineDoseAmount()>0) {
                 existing = false;
                 for(Entry entry : longActing){
                     if(entry.getX() == index)
@@ -500,7 +562,7 @@ public class ChartsActivity extends AppCompatActivity {
                     Entry newEntry = new Entry(index, (float) bmm.getBaselineDoseAmount());
                     longActing.add(newEntry);
                 }
-            }
+            //}
         }
 
 
