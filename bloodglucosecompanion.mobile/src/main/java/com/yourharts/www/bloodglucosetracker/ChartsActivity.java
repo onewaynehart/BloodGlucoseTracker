@@ -42,6 +42,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -391,42 +393,41 @@ public class ChartsActivity extends AppCompatActivity {
         graph.clear();
         List<BloodMeasurementModel> measurements = _dbHelper.getAllBloodMeasurements();
         List<Entry> averages = new ArrayList<>();
+
+        LinkedHashMap<Long, List<BloodMeasurementModel>> batches = new LinkedHashMap<>();
         Collections.reverse(measurements);
 
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.database_date_format));
 
         long index = 0;
-        long oldIndex = index;
-        int batchCount = 0;
-        double current =0;
+
         for (BloodMeasurementModel bmm : measurements) {
 
             try {
                 cal.setTime(sdf.parse(bmm.getGlucoseMeasurementDate()));
-                oldIndex = bmm==measurements.get(0)? cal.getTimeInMillis() : index ;
                 index = cal.getTimeInMillis();
-
+                if(batches.containsKey(index)){
+                    batches.get(index).add(bmm);
+                }
+                else{
+                    batches.put(index, new ArrayList<>());
+                    batches.get(index).add(bmm);
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            if(index > 0){
-
-                if(index == oldIndex){
-                    current += bmm.getGlucoseMeasurement();
-                    batchCount++;
-                }
-                else{
-                    if(current > 0 && batchCount >0){
-                        averages.add(new Entry(index ,(float)(current / batchCount )));
-                    }
-
-                    current = 0;
-                    batchCount = 0;
-                }
-            }
         }
+
+        for(Long key : batches.keySet()){
+            List<BloodMeasurementModel> values = batches.get(key);
+            Double total = 0.0;
+            for(BloodMeasurementModel value : values){
+                total += value.getGlucoseMeasurement();
+            }
+            averages.add(new Entry(key ,(float)(total/ values.size() )));
+        }
+
         LineDataSet averageDataSet = new LineDataSet(averages, "Average");
         averageDataSet.setColor(getResources().getColor(R.color.colorPrimaryVariant));
         averageDataSet.setDrawCircles(false);
