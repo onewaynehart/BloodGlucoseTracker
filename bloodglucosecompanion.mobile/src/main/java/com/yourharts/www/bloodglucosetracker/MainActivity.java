@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private MainActivityListener _mainActivitylistener;
     private PopupWindow _dropDownMenu;
     private DrawerLayout _drawerLayout;
+    private MenuItem _chartsMenuItem;
     private android.support.v7.app.ActionBarDrawerToggle _drawerToggle;
 
     @Override
@@ -95,12 +96,14 @@ public class MainActivity extends AppCompatActivity {
         _measurementView.setLayoutManager(_layoutManager);
         if (_sharedPref.getBoolean("IS_FIRST_RUN", true)){
             _gettingStartedCard.setVisibility(View.VISIBLE);
+
             SharedPreferences.Editor editor = _sharedPref.edit();
             editor.putBoolean("IS_FIRST_RUN", false);
             editor.apply();
             editor.commit();
         }
         else{
+
             _gettingStartedCard.setVisibility(View.GONE);
         }
 
@@ -154,7 +157,9 @@ public class MainActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
         _drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
+        navigationView = findViewById(R.id.nav_view);
+        Menu nav_Menu = navigationView.getMenu();
+        _chartsMenuItem= nav_Menu.findItem(R.id.nav_charts);
         _drawerLayout.setDrawerListener(_drawerToggle);
     }
 
@@ -188,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (_sharedPref.getBoolean("IS_FIRST_RUN", true)){
             _gettingStartedCard.setVisibility(View.VISIBLE);
+
             SharedPreferences.Editor editor = _sharedPref.edit();
             editor.putBoolean("IS_FIRST_RUN", false);
             editor.apply();
@@ -195,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             _gettingStartedCard.setVisibility(View.GONE);
+
         }
 
     }
@@ -340,9 +347,14 @@ public class MainActivity extends AppCompatActivity {
             _measurementView.setAdapter(_adapter);
             if(result.isEmpty()){
                 _gettingStartedCard.setVisibility(View.VISIBLE);
+
             }
             else{
                 _gettingStartedCard.setVisibility(View.GONE);
+
+            }
+            if(_chartsMenuItem != null){
+                _chartsMenuItem.setVisible(result.size() > 0);
             }
         }
     }
